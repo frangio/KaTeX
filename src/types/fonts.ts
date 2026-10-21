@@ -31,7 +31,9 @@ export type FontName =
     | "Size2-Regular"
     | "Size3-Regular"
     | "Size4-Regular"
-    | "Typewriter-Regular";
+    | "Typewriter-Regular"
+    // Further delimiter sizes a font may supply (see delimiterSizes.ts).
+    | `Delim${number}-Regular`;
 
 //[depth, height, italic, skew, width]
 export type CharacterMetricsTuple = [depth: number, height: number, italic: number, skew: number, width: number];

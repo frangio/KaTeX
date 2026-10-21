@@ -30,6 +30,8 @@ import {getCharacterMetrics} from "./fontMetrics";
 import symbols from "./symbols";
 import {makeEm} from "./units";
 import fontMetricsData from "./fontMetricsData";
+import delimiterSizes from "./delimiterSizes";
+import type {DelimiterFont} from "./delimiterSizes";
 import opticalMargins from "./opticalMargins";
 import radicalMetrics from "./radicalMetrics";
 
@@ -122,22 +124,10 @@ const makeSmallDelim = function(
     return span;
 };
 
-/**
- * Builds a symbol in the given font size (note size is an integer)
- */
-const mathrmSize = function(
-    value: string,
-    size: DelimiterSize,
-    mode: Mode,
-    options: Options,
-): SymbolNode {
-    return makeSymbol(value, `Size${size}-Regular`, mode, options);
-};
-
 const withOpticalMargin = function(
     span: DomSpan,
     delim: string,
-    size: DelimiterSize | "stack",
+    size: string,
 ): DomSpan {
     const margins = opticalMargins[delim];
     const margin = margins &&
@@ -153,24 +143,25 @@ const withOpticalMargin = function(
 };
 
 /**
- * Makes a large delimiter. This is a delimiter that comes in the Size1, Size2,
- * Size3, or Size4 fonts. It is always rendered in textstyle.
+ * Makes a large delimiter. This is a delimiter that comes in one of the
+ * fonts of delimiterSizes, such as Size1 to Size4, selected by its CSS class.
+ * It is always rendered in textstyle.
  */
 const makeLargeDelim = function(delim: string,
-    size: DelimiterSize,
+    size: DelimiterFont,
     center: boolean,
     options: Options,
     mode: Mode,
     classes: string[],
 ): DomSpan {
-    const inner = mathrmSize(delim, size, mode, options);
+    const inner = makeSymbol(delim, size.font, mode, options);
     const span = styleWrap(
-        makeSpan(["delimsizing", "size" + size], [inner], options),
+        makeSpan(["delimsizing", size.className], [inner], options),
         Style.TEXT, options, classes);
     if (center) {
         centerSpan(span, options, Style.TEXT);
     }
-    return withOpticalMargin(span, delim, size);
+    return withOpticalMargin(span, delim, size.className);
 };
 
 /**
@@ -634,7 +625,8 @@ export const makeSizedDelim = function(
 
     // Sized delimiters are never centered.
     if (stackLargeDelimiters.has(delim) || stackNeverDelimiters.has(delim)) {
-        return makeLargeDelim(delim, size, false, options, mode, classes);
+        return makeLargeDelim(delim, {font: `Size${size}-Regular`, className: "size" + size},
+            false, options, mode, classes);
     } else if (stackAlwaysDelimiters.has(delim)) {
         return makeStackedDelim(
             delim,
@@ -663,18 +655,18 @@ export const makeSizedDelim = function(
 
 type Delimiter =
     {type: "small", style: StyleInterface} |
-    {type: "large", size: 1 | 2 | 3 | 4} |
+    {type: "large", size: DelimiterFont} |
     {type: "stack"};
+
+const largeDelimiters: Delimiter[] =
+    delimiterSizes.map(size => ({type: "large", size}));
 
 // Delimiters that never stack try small delimiters and large delimiters only
 const stackNeverDelimiterSequence: Delimiter[] = [
     {type: "small", style: Style.SCRIPTSCRIPT},
     {type: "small", style: Style.SCRIPT},
     {type: "small", style: Style.TEXT},
-    {type: "large", size: 1},
-    {type: "large", size: 2},
-    {type: "large", size: 3},
-    {type: "large", size: 4},
+    ...largeDelimiters,
 ];
 
 // Delimiters that always stack try the small delimiters first, then stack
@@ -691,10 +683,7 @@ const stackLargeDelimiterSequence: Delimiter[] = [
     {type: "small", style: Style.SCRIPTSCRIPT},
     {type: "small", style: Style.SCRIPT},
     {type: "small", style: Style.TEXT},
-    {type: "large", size: 1},
-    {type: "large", size: 2},
-    {type: "large", size: 3},
-    {type: "large", size: 4},
+    ...largeDelimiters,
     {type: "stack"},
 ];
 
@@ -706,7 +695,7 @@ const delimTypeToFont = function(type: Delimiter): string {
     if (type.type === "small") {
         return "Main-Regular";
     } else if (type.type === "large") {
-        return "Size" + type.size + "-Regular";
+        return type.size.font;
     } else if (type.type === "stack") {
         return "Size4-Regular";
     } else {
@@ -730,12 +719,22 @@ const traverseSequence = function(
     // in the sequence. Thus, scriptscript starts at index 3-3=0, script starts
     // at index 3-2=1, text starts at 3-1=2, and display starts at min(2,3-0)=2
     const start = Math.min(2, 3 - options.style.size);
+    // The largest size the delimiter comes in, for when none is tall enough.
+    let largest = sequence[sequence.length - 1];
     for (let i = start; i < sequence.length; i++) {
         const delimType = sequence[i];
         if (delimType.type === "stack") {
             // This is always the last delimiter, so we just break the loop now.
-            break;
+            return delimType;
         }
+
+        // Not every font of delimiterSizes has every delimiter.
+        const replace = symbols.math[delim] && symbols.math[delim].replace;
+        if (delimType.type === "large" &&
+            !getCharacterMetrics(replace || delim, delimType.size.font, "math")) {
+            continue;
+        }
+        largest = delimType;
 
         const metrics = getMetrics(delim, delimTypeToFont(delimType), "math");
         let heightDepth = metrics.height + metrics.depth;
@@ -753,8 +752,8 @@ const traverseSequence = function(
         }
     }
 
-    // If we reached the end of the sequence, return the last sequence element.
-    return sequence[sequence.length - 1];
+    // If we reached the end of the sequence, return the largest size.
+    return largest;
 };
 
 /**
