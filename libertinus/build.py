@@ -868,6 +868,10 @@ def write_wide_accent_images(images):
     lines += ["const wideAccentImages: Record<string, WideAccentImage[]> =",
               "    {widehat, widecheck, widetilde: tilde, utilde: tilde};",
               "",
+              "// The smallest images are Libertinus's ordinary accents, which keep",
+              "// their shape only at their own size.",
+              "export const naturalSizeOverNarrowBase = true;",
+              "",
               "export default wideAccentImages;"]
     (KATEX / "src/wideAccentImages.ts").write_text("\n".join(lines) + "\n")
 
