@@ -131,9 +131,9 @@ const katexImagesData: {[key: string]: SvgData} = {
     xtwoheadrightarrow: [["twoheadrightarrow"], 0.888, 554, "xMaxYMin"],
 
     overleftrightarrow: [["accentleftarrow", "accentrightarrow"], 0.888, 334],
-    overbrace: [["leftbrace", "midbrace", "rightbrace"], 1.6, 385],
+    overbrace: [["leftbrace", "midbrace", "rightbrace"], 1.6, 488],
     underbrace: [["leftbraceunder", "midbraceunder", "rightbraceunder"],
-        1.6, 385],
+        1.6, 488],
     underleftrightarrow: [["underaccentleftarrow", "underaccentrightarrow"],
         0.888, 392],
     xleftrightarrow: [["leftarrow", "rightarrow"], 1.75, 554],
