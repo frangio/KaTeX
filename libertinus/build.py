@@ -628,19 +628,19 @@ def stretched(glyph, anchor, top, bars=None):
 
 
 ARROWS = {
-    "rightarrow": (0x2192, "right", "single"),
-    "leftarrow": (0x2190, "left", "single"),
+    "rightarrow": ("arrowright.right", "right", "extender"),
+    "leftarrow": ("arrowleft.left", "left", "extender"),
     "doublerightarrow": (0x21D2, "right", "measured"),
     "doubleleftarrow": (0x21D0, "left", "measured"),
-    "rightharpoon": (0x21C0, "right", "single"),
-    "leftharpoon": (0x21BC, "left", "single"),
-    "rightharpoondown": (0x21C1, "right", "single"),
-    "leftharpoondown": (0x21BD, "left", "single"),
-    "twoheadrightarrow": (0x21A0, "right", "single"),
-    "twoheadleftarrow": (0x219E, "left", "single"),
-    "leftmapsto": ("uni21A6.left", "left", "single"),
-    "lefthook": ("uni21AA.left", "left", "single"),
-    "righthook": ("uni21A9.right", "right", "single"),
+    "rightharpoon": (0x21C0, "right", "measured"),
+    "leftharpoon": (0x21BC, "left", "measured"),
+    "rightharpoondown": (0x21C1, "right", "measured"),
+    "leftharpoondown": (0x21BD, "left", "measured"),
+    "twoheadrightarrow": (0x21A0, "right", "measured"),
+    "twoheadleftarrow": (0x219E, "left", "measured"),
+    "leftmapsto": ("uni21A6.left", "left", "extender"),
+    "lefthook": ("uni21AA.left", "left", "extender"),
+    "righthook": ("uni21A9.right", "right", "extender"),
 }
 ACCENT_ARROWS = {
     "accentrightarrow": (0x20D7, "right", "over"),
@@ -683,7 +683,7 @@ def write_stretchy():
     extender = horizontal_assembly(0x2192)[1]
     _, shaft_bottom, _, shaft_top = math.bounds(extender)
     for name, (_, anchor, shaft) in ARROWS.items():
-        bars = [(shaft_bottom, shaft_top)] if shaft == "single" else None
+        bars = [(shaft_bottom, shaft_top)] if shaft == "extender" else None
         paths[name] = stretched(glyphs[name], anchor, arrow_height / 2 + axis, bars)
         heights[name] = arrow_height
 
