@@ -27,17 +27,17 @@ defineFunction({
             options.havingCrampedStyle());
 
         // Create the line above the body
-        const line = makeLineSpan("overline-line", options);
+        const metrics = options.fontMetrics();
+        const line = makeLineSpan("overline-line", options, metrics.overbarRuleThickness);
 
         // Generate the vlist, with the appropriate kerns
-        const defaultRuleThickness = options.fontMetrics().defaultRuleThickness;
         const vlist = makeVList({
             positionType: "firstBaseline",
             children: [
                 {type: "elem", elem: innerGroup},
-                {type: "kern", size: 3 * defaultRuleThickness},
+                {type: "kern", size: metrics.overbarVerticalGap},
                 {type: "elem", elem: line},
-                {type: "kern", size: defaultRuleThickness},
+                {type: "kern", size: metrics.overbarExtraAscender},
             ],
         }, options);
 

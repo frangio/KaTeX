@@ -136,10 +136,8 @@ defineFunctionBuilders({
                 supShift, minSupShift, supm.depth + 0.25 * metrics.xHeight);
             subShift = Math.max(subShift, metrics.sub2);
 
-            const ruleWidth = metrics.defaultRuleThickness;
-
             // Rule 18e
-            const maxWidth = 4 * ruleWidth;
+            const maxWidth = metrics.subSuperscriptGapMin;
             if ((supShift - supm.depth) - (subm.height - subShift) < maxWidth) {
                 subShift = maxWidth - (supShift - supm.depth) + subm.height;
                 const psi = 0.8 * metrics.xHeight - (supShift - supm.depth);

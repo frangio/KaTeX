@@ -93,8 +93,12 @@ defineFunction({
             const rootm = html.buildGroup(group.index, newOptions, options);
 
             // The amount the index is shifted by. This is taken from the TeX
-            // source, in the definition of `\r@@t`.
-            const toShift = 0.6 * (body.height - body.depth);
+            // source, in the definition of `\r@@t`, unless the font places
+            // the index's bottom relative to the radical's.
+            const raise = options.fontMetrics().radicalDegreeBottomRaise;
+            const toShift = raise > 0
+                ? raise * (body.height + body.depth) - body.depth + rootm.depth
+                : 0.6 * (body.height - body.depth);
 
             // Build a VList with the superscript shifted up correctly
             const rootVList = makeVList({

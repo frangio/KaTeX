@@ -61,7 +61,7 @@ const htmlBuilder: HtmlBuilder<"genfrac"> = (group, options) => {
         if (ruleWidth > 0) {
             clearance = 3 * ruleSpacing;
         } else {
-            clearance = 7 * ruleSpacing;
+            clearance = options.fontMetrics().stackDisplayStyleGapMin;
         }
         denomShift = options.fontMetrics().denom1;
     } else {
@@ -70,7 +70,7 @@ const htmlBuilder: HtmlBuilder<"genfrac"> = (group, options) => {
             clearance = ruleSpacing;
         } else {
             numShift = options.fontMetrics().num3;
-            clearance = 3 * ruleSpacing;
+            clearance = options.fontMetrics().stackGapMin;
         }
         denomShift = options.fontMetrics().denom2;
     }

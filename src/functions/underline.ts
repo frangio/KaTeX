@@ -25,17 +25,17 @@ defineFunction({
         const innerGroup = html.buildGroup(group.body, options);
 
         // Create the line to go below the body
-        const line = makeLineSpan("underline-line", options);
+        const metrics = options.fontMetrics();
+        const line = makeLineSpan("underline-line", options, metrics.underbarRuleThickness);
 
         // Generate the vlist, with the appropriate kerns
-        const defaultRuleThickness = options.fontMetrics().defaultRuleThickness;
         const vlist = makeVList({
             positionType: "top",
             positionData: innerGroup.height,
             children: [
-                {type: "kern", size: defaultRuleThickness},
+                {type: "kern", size: metrics.underbarExtraDescender},
                 {type: "elem", elem: line},
-                {type: "kern", size: 3 * defaultRuleThickness},
+                {type: "kern", size: metrics.underbarVerticalGap},
                 {type: "elem", elem: innerGroup},
             ],
         }, options);

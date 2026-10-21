@@ -78,6 +78,28 @@ const sigmasAndXis: Record<string, [number, number, number]> = {
     // Since we use the same font at all sizes, this thickness doesn't scale.
     sqrtRuleThickness: [0.04, 0.04, 0.04],
 
+    // Rules and gaps TeX derives from the default rule thickness (xi8), kept
+    // as their own values so a font's can be used: the rule of \overline and
+    // \underline (xi8), its gap from the body (3 xi8) and the space beyond it
+    // (xi8); the least gap between a subscript and a superscript (4 xi8); and
+    // the gap of \atop, \binom and the like (3 xi8, 7 xi8 in display style).
+    overbarRuleThickness: [0.065, 0.065, 0.065],
+    overbarVerticalGap: [0.195, 0.195, 0.195],
+    overbarExtraAscender: [0.065, 0.065, 0.065],
+    underbarRuleThickness: [0.065, 0.065, 0.065],
+    underbarVerticalGap: [0.195, 0.195, 0.195],
+    underbarExtraDescender: [0.065, 0.065, 0.065],
+    subSuperscriptGapMin: [0.26, 0.26, 0.26],
+    stackGapMin: [0.195, 0.195, 0.195],
+    stackDisplayStyleGapMin: [0.455, 0.455, 0.455],
+
+    // Where a root's index sits. Zero follows TeX, which raises the index's
+    // baseline by 0.6 of the radical's height less its depth. Otherwise the
+    // index's bottom is raised from the radical's bottom by this fraction of
+    // the radical's height plus depth, as OpenType's
+    // RadicalDegreeBottomRaisePercent does.
+    radicalDegreeBottomRaise: [0, 0, 0],
+
     // This value determines how large a pt is, for metrics which are defined
     // in terms of pts.
     // This value is also used in katex.scss; if you change it make sure the
