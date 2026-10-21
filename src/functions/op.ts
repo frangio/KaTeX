@@ -137,6 +137,8 @@ export const htmlBuilder: HtmlBuilderSupSub<"op"> = (grp, options) => {
         if (baseShift) {
             base.style.position = "relative";
             base.style.top = makeEm(baseShift);
+            base.height -= baseShift;
+            base.depth += baseShift;
         }
 
         return base;
