@@ -382,6 +382,7 @@ EXTRA_FONT_FILES = {
     "Caligraphic-Bold": ("Caligraphic-Regular", [alphabet("boldscript"), identity("math")]),
     "Fraktur-Bold": ("Fraktur-Regular", [alphabet("boldfraktur"), identity("serif-bold")]),
 }
+ZERO_WIDTH_SPACE = 0x200B
 SKEWED_FONTS = {"Math-Italic", "Math-BoldItalic", "Caligraphic-Regular", "Script-Regular"}
 ITALIC_FONTS = {"Main-Italic", "Main-BoldItalic", "Math-Italic", "Math-BoldItalic", "SansSerif-Italic"}
 
@@ -504,6 +505,11 @@ def main():
             if file == metric_font:
                 metrics[metric_font][str(cp)] = sources[key].metrics(
                     glyph, metric_font in ITALIC_FONTS, operators, metric_font in SKEWED_FONTS)
+        # KaTeX puts a zero-width space in every multi-row vlist. It has no
+        # metrics, but without a Libertinus glyph for it the browser loads
+        # the whole KaTeX font of the surrounding family to draw nothing.
+        key = max((k for k in by_source if ZERO_WIDTH_SPACE in sources[k].cmap), key=lambda k: len(by_source[k]))
+        by_source[key][ZERO_WIDTH_SPACE] = sources[key].cmap[ZERO_WIDTH_SPACE]
         for key, mapping in by_source.items():
             name = f"Libertinus_{file}_{key}.woff2"
             source = sources[key]
