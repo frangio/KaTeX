@@ -28,6 +28,7 @@ SOURCES = {
     "math": "LibertinusMath-Regular.otf",
     "math-turned": "LibertinusMath-Regular.otf",
     "math-scaled": "LibertinusMath-Regular.otf",
+    "math-moved": "LibertinusMath-Regular.otf",
     "serif": "LibertinusSerif-Regular.otf",
     "serif-italic": "LibertinusSerif-Italic.otf",
     "serif-bold": "LibertinusSerif-Bold.otf",
@@ -46,6 +47,15 @@ SOURCES = {
 SCALED = {0x22C4: (0x25C7, 0.78), 0x25EF: (0x25CB, "stroke")}
 
 
+# KaTeX builds a tall vertical arrow from the arrowhead, a shaft drawn from
+# the stems of ⏐ (single arrows) or ‖ (double arrows), and that glyph at the
+# plain end. Libertinus has no ⏐, and its ‖ has its stems 120 units apart
+# where ⇑ has them 150 apart. Each is made of copies of its |, which has the
+# arrows' stroke, moved under the stems of ↑ and ⇑, as
+# {codepoint: (glyph replaced in the moved copy of the font, arrow)}.
+ARROW_SHAFTS = {0x23D0: ("bar", 0x2191), 0x2016: ("uni2016", 0x21D1)}
+
+
 def transform_glyph(font, glyph, matrix):
     glyphs = font.getGlyphSet()
     pen = T2CharStringPen(None, glyphs)
@@ -59,7 +69,7 @@ class Source:
     def __init__(self, key):
         self.key = key
         self.path = LIB / SOURCES[key]
-        self.scales = {}
+        self.edits = {}
         self.font = self.load()
         self.cmap = self.font.getBestCmap()
         self.glyphs = self.font.getGlyphSet()
@@ -87,26 +97,29 @@ class Source:
             }
 
     def load(self):
-        """The source font, with the glyphs given scales by scale() resized."""
+        """The source font, with the glyphs given by edit() replaced."""
         font = TTFont(self.path, recalcTimestamp=False)
-        if self.scales:
-            glyphs = font.getGlyphSet()
-            axis = font["MATH"].table.MathConstants.AxisHeight.Value
-            for glyph, scale in self.scales.items():
-                pen = BoundsPen(glyphs)
-                glyphs[glyph].draw(pen)
-                xmin, ymin, xmax, ymax = pen.bounds
-                # Keep the side bearings and centre the glyph on the math axis.
-                dx = xmin * (1 - scale)
-                dy = axis - (ymin + ymax) / 2 * scale
-                transform_glyph(font, glyph, (scale, 0, 0, scale, dx, dy))
-                advance, lsb = font["hmtx"][glyph]
-                font["hmtx"][glyph] = (round(advance - (xmax - xmin) * (1 - scale)), lsb)
+        glyphs = font.getGlyphSet()
+        charstrings = font["CFF "].cff.topDictIndex[0].CharStrings if self.edits else None
+        new = {}
+        for glyph, (parts, advance) in self.edits.items():
+            pen = T2CharStringPen(None, glyphs)
+            for part, matrix in parts:
+                glyphs[part].draw(TransformPen(pen, matrix))
+            old = charstrings[glyph]
+            new[glyph] = pen.getCharString(private=old.private, globalSubrs=old.globalSubrs)
+        for glyph, charstring in new.items():
+            charstrings[glyph] = charstring
+            font["hmtx"][glyph] = (round(self.edits[glyph][1]), font["hmtx"][glyph][1])
         return font
 
-    def scale(self, scales):
-        """Resize glyphs by the given factors, here and in the subsets written from this source."""
-        self.scales = scales
+    def edit(self, edits):
+        """Replace glyphs, here and in the subsets written from this source.
+
+        edits maps a glyph to (parts, advance): the glyph becomes the parts,
+        each a glyph of the source font drawn through an affine matrix.
+        """
+        self.edits = edits
         self.font = self.load()
         self.glyphs = self.font.getGlyphSet()
 
@@ -505,7 +518,7 @@ def resolve_font(name, resolvers, cps, original):
     for cp in cps:
         if resolvers == "sized":
             target = original[str(cp)][0] + original[str(cp)][1]
-            hit = sized(cp, target)
+            hit = arrow_shaft(cp) or sized(cp, target)
         else:
             hit = next((h for r in resolvers if (h := r(cp))), None)
         if hit:
@@ -519,19 +532,44 @@ def operator_stroke():
 
 
 def scale_glyphs():
-    scales = {}
+    edits = {}
+    axis = math.constants["AxisHeight"]
     for target, scale in SCALED.values():
         glyph = math.cmap[target]
+        xmin, ymin, xmax, ymax = math.bounds(glyph)
         if scale == "stroke":
-            _, ymin, _, ymax = math.bounds(glyph)
             left, _ = crossings(glyph, y=(ymin + ymax) / 2)
             scale = operator_stroke() / (left[1] - left[0])
-        scales[glyph] = scale
-    sources["math-scaled"].scale(scales)
+        # Keep the side bearings and centre the glyph on the math axis.
+        matrix = (scale, 0, 0, scale, xmin * (1 - scale), axis - (ymin + ymax) / 2 * scale)
+        edits[glyph] = ([(glyph, matrix)], math.glyphs[glyph].width - (xmax - xmin) * (1 - scale))
+    sources["math-scaled"].edit(edits)
+
+
+def move_arrow_shafts():
+    # Each stem of the arrow becomes a copy of |, which has the arrows'
+    # stroke, moved under it, in a glyph as wide as the arrow.
+    edits = {}
+    bar = math.cmap[ord("|")]
+    _, ymin, _, ymax = math.bounds(bar)
+    (left, right), = crossings(bar, y=(ymin + ymax) / 2)
+    for cp, (glyph, arrow) in ARROW_SHAFTS.items():
+        arrow = math.cmap[arrow]
+        _, ymin, _, _ = math.bounds(arrow)
+        stems = crossings(arrow, y=ymin + 50)
+        if any(abs((b - a) - (right - left)) > 1 for a, b in stems):
+            raise ValueError(f"U+{cp:04X}: arrow stems {stems} are not as wide as | ({left}, {right})")
+        edits[glyph] = ([(bar, (1, 0, 0, 1, a - left, 0)) for a, _ in stems], math.glyphs[arrow].width)
+    sources["math-moved"].edit(edits)
+
+
+def arrow_shaft(cp):
+    return ("math-moved", ARROW_SHAFTS[cp][0]) if cp in ARROW_SHAFTS else None
 
 
 def main():
     scale_glyphs()
+    move_arrow_shafts()
     original = load_katex_metrics()
     metrics = copy.deepcopy(original)
     report = {}
@@ -554,8 +592,8 @@ def main():
             for cp, (key, glyph) in chosen.items():
                 if cp in OPTICAL and key == "math":
                     optical.setdefault(chr(cp), {})[file.split("-")[0].lower()] = optical_margin(cp, glyph)
-                if cp in EXTENDERS and key == "math" and file in ("Size1-Regular", "Size4-Regular"):
-                    extenders.setdefault(cp, {})[file] = bar_ranges(math, glyph)
+                if cp in EXTENDERS and key in ("math", "math-moved") and file in ("Size1-Regular", "Size4-Regular"):
+                    extenders.setdefault(cp, {})[file] = bar_ranges(sources[key], glyph)
         by_source = {}
         for cp, (key, glyph) in chosen.items():
             by_source.setdefault(key, {})[cp] = glyph

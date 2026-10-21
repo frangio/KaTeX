@@ -67,6 +67,12 @@ overwrites its own output.
   (1.92 times, 0.90em across, against Computer Modern's 0.93em), the
   diamond to Computer Modern's 0.48em, which leaves its stroke lighter
   than the operators'. `\textcircled` draws its circle with the same ○.
+- Tall vertical arrows are built, as in KaTeX, from the arrowhead, a
+  shaft taken from ⏐ (single arrows) or ‖ (double arrows), and that glyph
+  at the plain end. Libertinus has no ⏐, and its ‖ has its stems 120
+  units apart where ⇑ has them 150 apart. In the Size1 font both are
+  copies of Libertinus's `|`, which has the arrows' 50-unit stroke, moved
+  under the stems of ↑ and ⇑, in glyphs as wide as the arrows.
 - `\eqslantless` (⪕) and `\eqslantgtr` (⪖) are not in Libertinus. They are
   drawn as its `\leqslant` (⩽) and `\geqslant` (⩾) turned upside down,
   which is the shape these characters have: the slanted bar above the
