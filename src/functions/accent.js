@@ -61,6 +61,7 @@ export const htmlBuilder: HtmlBuilderSupSub<"accent"> = (grp, options) => {
     // Note that our skew metrics are just the kern between each character
     // and the skewchar.
     let skew = 0;
+    let italic = 0;
     if (mustShift) {
         // If the base is a character box, then we want the skew of the
         // innermost character. To do that, we find the innermost character:
@@ -68,7 +69,12 @@ export const htmlBuilder: HtmlBuilderSupSub<"accent"> = (grp, options) => {
         // Then, we render its group to get the symbol inside it
         const baseGroup = html.buildGroup(baseChar, options.havingCrampedStyle());
         // Finally, we pull the skew off of the symbol.
-        skew = assertSymbolDomNode(baseGroup).skew;
+        const baseSymbol = assertSymbolDomNode(baseGroup);
+        skew = baseSymbol.skew;
+        // The character's italic correction is rendered as a right margin,
+        // which widens the box the accent is centered over. TeX centers the
+        // accent over the character's own width, so we take it back out.
+        italic = baseSymbol.italic;
         // Note that we now throw away baseGroup, because the layers we
         // removed with getBaseElem might contain things like \color which
         // we can't get rid of.
@@ -122,7 +128,7 @@ export const htmlBuilder: HtmlBuilderSupSub<"accent"> = (grp, options) => {
         }
 
         // Shift the accent over by the skew.
-        let left = skew;
+        let left = skew - italic / 2;
 
         // CSS defines `.katex .accent .accent-body:not(.accent-full) { width: 0 }`
         // so that the accent doesn't contribute to the bounding box.
@@ -160,10 +166,11 @@ export const htmlBuilder: HtmlBuilderSupSub<"accent"> = (grp, options) => {
                     type: "elem",
                     elem: accentBody,
                     wrapperClasses: ["svg-align"],
-                    wrapperStyle: skew > 0
+                    wrapperStyle: skew > 0 || italic > 0
                         ? {
-                            width: `calc(100% - ${makeEm(2 * skew)})`,
-                            marginLeft: makeEm(2 * skew),
+                            width: `calc(100% - ${
+                                makeEm(2 * Math.max(skew, 0) + italic)})`,
+                            marginLeft: makeEm(2 * Math.max(skew, 0)),
                         }
                         : undefined,
                 },
