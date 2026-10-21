@@ -82,6 +82,10 @@
         U+22E6-22ED,
         U+2322-2323,
         U+24C8,
+        U+250C,
+        U+2510,
+        U+2514,
+        U+2518,
         U+25A0-25A1,
         U+25B2-25B3,
         U+25B6,
@@ -92,6 +96,26 @@
         U+2A7D-2A7E,
         U+2A87-2A88,
         U+2AB5-2AB6;
+}
+
+@font-face {
+    font-family: KaTeX_AMS;
+    src: url("#{fonts.$font-folder}/Libertinus_AMS-Regular_serif.woff2") format("woff2");
+    font-weight: normal;
+    font-style: normal;
+    font-display: fonts.$font-display;
+    unicode-range:
+        U+2132;
+}
+
+@font-face {
+    font-family: KaTeX_AMS;
+    src: url("#{fonts.$font-folder}/Libertinus_AMS-Regular_math-turned.woff2") format("woff2");
+    font-weight: normal;
+    font-style: normal;
+    font-display: fonts.$font-display;
+    unicode-range:
+        U+2A95-2A96;
 }
 
 @font-face {
@@ -227,7 +251,9 @@
         U+2322-2323,
         U+23B0-23B1,
         U+25B3,
+        U+25B9,
         U+25BD,
+        U+25C3,
         U+2660-2663,
         U+266D-266F,
         U+27E8-27E9,
@@ -235,7 +261,8 @@
         U+27F5-27FA,
         U+27FC,
         U+2A3F,
-        U+2AAF-2AB0;
+        U+2AAF-2AB0,
+        U+E020;
 }
 
 @font-face {
@@ -302,10 +329,13 @@
         U+2295-2298,
         U+22C5,
         U+25B3,
+        U+25B9,
         U+25BD,
+        U+25C3,
         U+2660,
         U+2663,
-        U+27E8-27E9;
+        U+27E8-27E9,
+        U+E020;
 }
 
 @font-face {
