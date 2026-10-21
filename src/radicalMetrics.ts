@@ -13,8 +13,11 @@ const radicalMetrics: {
     sizes: [
         {height: 1.233, advance: 0.665, minWidth: 0.72},
         {height: 1.683, advance: 0.71, minWidth: 0.765},
+        {height: 2.133, advance: 0.779, minWidth: 0.834},
         {height: 2.483, advance: 0.787, minWidth: 0.842},
         {height: 2.933, advance: 0.857, minWidth: 0.912},
+        {height: 3.383, advance: 0.937, minWidth: 0.992},
+        {height: 3.833, advance: 0.947, minWidth: 1.002},
     ],
     tall: {advance: 0.817, minWidth: 0.872},
 };

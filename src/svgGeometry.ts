@@ -60,21 +60,42 @@ v${40 + extraVinculum}h400000v-${40 + extraVinculum}z`;
 };
 
 const sqrtSize3 = function(extraVinculum: number, hLinePad: number): string {
-    // sqrtSize3 path geometry is from glyph radical.size4 in Libertinus Math.
+    // sqrtSize3 path geometry is from glyph radical.size3 in Libertinus Math.
+    return `M746 120L814 120L814 80L701 80L701 86L494 2089L148 1395
+C113 1421 76 1445 35 1466L48 1494L112 1468L484 2213L532 2188zM779 ${hLinePad}
+v${40 + extraVinculum}h400000v-${40 + extraVinculum}z`;
+};
+
+const sqrtSize4 = function(extraVinculum: number, hLinePad: number): string {
+    // sqrtSize4 path geometry is from glyph radical.size4 in Libertinus Math.
     return `M754 120L822 120L822 80L709 80L709 86L502 2430L148 1585
 C113 1611 76 1635 35 1656L48 1684L112 1658L492 2563L540 2538zM787 ${hLinePad}
 v${40 + extraVinculum}h400000v-${40 + extraVinculum}z`;
 };
 
-const sqrtSize4 = function(extraVinculum: number, hLinePad: number): string {
-    // sqrtSize4 path geometry is from glyph radical.size5 in Libertinus Math.
+const sqrtSize5 = function(extraVinculum: number, hLinePad: number): string {
+    // sqrtSize5 path geometry is from glyph radical.size5 in Libertinus Math.
     return `M824 120L892 120L892 80L779 80L779 86L571 2872L148 1805
 C113 1831 76 1855 35 1876L48 1904L112 1878L562 3013L610 2988zM857 ${hLinePad}
 v${40 + extraVinculum}h400000v-${40 + extraVinculum}z`;
 };
 
+const sqrtSize6 = function(extraVinculum: number, hLinePad: number): string {
+    // sqrtSize6 path geometry is from glyph radical.size6 in Libertinus Math.
+    return `M904 120L972 120L972 80L859 80L859 86L649 3320L148 2065
+C113 2091 76 2115 35 2136L48 2164L112 2138L642 3463L690 3438zM937 ${hLinePad}
+v${40 + extraVinculum}h400000v-${40 + extraVinculum}z`;
+};
+
+const sqrtSize7 = function(extraVinculum: number, hLinePad: number): string {
+    // sqrtSize7 path geometry is from glyph radical.size7 in Libertinus Math.
+    return `M914 115L982 120L982 80L869 80L869 86L661 3764L148 2335
+C113 2361 76 2385 35 2406L48 2434L112 2408L652 3913L700 3888zM947 ${hLinePad}
+v${40 + extraVinculum}h400000v-${40 + extraVinculum}z`;
+};
+
 // The radical sizes, smallest first, matching radicalMetrics.sizes.
-const sqrtSizes = [sqrtSize1, sqrtSize2, sqrtSize3, sqrtSize4];
+const sqrtSizes = [sqrtSize1, sqrtSize2, sqrtSize3, sqrtSize4, sqrtSize5, sqrtSize6, sqrtSize7];
 
 export const phasePath = function(y: number): string {
     const x = y / 2;  // x coordinate at top of angle
