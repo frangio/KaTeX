@@ -83,22 +83,22 @@ const sigmasAndXis: Record<string, [number, number, number]> = {
     // \underline (xi8), its gap from the body (3 xi8) and the space beyond it
     // (xi8); the least gap between a subscript and a superscript (4 xi8); and
     // the gap of \atop, \binom and the like (3 xi8, 7 xi8 in display style).
-    overbarRuleThickness: [0.065, 0.065, 0.065],
-    overbarVerticalGap: [0.195, 0.195, 0.195],
-    overbarExtraAscender: [0.065, 0.065, 0.065],
-    underbarRuleThickness: [0.065, 0.065, 0.065],
-    underbarVerticalGap: [0.195, 0.195, 0.195],
-    underbarExtraDescender: [0.065, 0.065, 0.065],
-    subSuperscriptGapMin: [0.26, 0.26, 0.26],
-    stackGapMin: [0.195, 0.195, 0.195],
-    stackDisplayStyleGapMin: [0.455, 0.455, 0.455],
+    overbarRuleThickness: [0.04, 0.04, 0.04],
+    overbarVerticalGap: [0.12, 0.12, 0.12],
+    overbarExtraAscender: [0.04, 0.04, 0.04],
+    underbarRuleThickness: [0.04, 0.04, 0.04],
+    underbarVerticalGap: [0.12, 0.12, 0.12],
+    underbarExtraDescender: [0.04, 0.04, 0.04],
+    subSuperscriptGapMin: [0.15, 0.15, 0.15],
+    stackGapMin: [0.2, 0.2, 0.2],
+    stackDisplayStyleGapMin: [0.33, 0.33, 0.33],
 
     // Where a root's index sits. Zero follows TeX, which raises the index's
     // baseline by 0.6 of the radical's height less its depth. Otherwise the
     // index's bottom is raised from the radical's bottom by this fraction of
     // the radical's height plus depth, as OpenType's
     // RadicalDegreeBottomRaisePercent does.
-    radicalDegreeBottomRaise: [0, 0, 0],
+    radicalDegreeBottomRaise: [0.5, 0.5, 0.5],
 
     // This value determines how large a pt is, for metrics which are defined
     // in terms of pts.
