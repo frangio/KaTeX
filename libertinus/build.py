@@ -478,7 +478,6 @@ def main():
     report = {}
     optical = {}
     extenders = {}
-    radicals = {}
     faces = []
 
     jobs = [(name, name, resolvers) for name, resolvers in KATEX_FONTS.items()]
@@ -497,8 +496,6 @@ def main():
                     optical.setdefault(chr(cp), {})[file.split("-")[0].lower()] = optical_margin(cp, glyph)
                 if cp in EXTENDERS and key == "math" and file in ("Size1-Regular", "Size4-Regular"):
                     extenders.setdefault(cp, {})[file] = bar_ranges(math, glyph)
-        if file in RADICAL_SLOTS and chosen.get(0x221A, (None,))[0] == "math":
-            radicals[RADICAL_SLOTS[file]] = chosen[0x221A][1]
         by_source = {}
         for cp, (key, glyph) in chosen.items():
             by_source.setdefault(key, {})[cp] = glyph
@@ -530,7 +527,7 @@ def main():
     write_size_style_map(size_style_map())
     write_optical_margins(optical)
     write_inner_paths(extenders)
-    write_radicals(radicals)
+    write_radicals()
     write_stretchy()
     if REPORT:
         REPORT.write_text(json.dumps(
@@ -630,10 +627,6 @@ def write_inner_paths(extenders):
     path.write_text(text[:start] + body + text[end:])
 
 
-RADICAL_SLOTS = {"Main-Regular": "main", "Size1-Regular": "size1", "Size2-Regular": "size2",
-                 "Size3-Regular": "size3", "Size4-Regular": "size4"}
-RADICAL_FUNCTIONS = {"main": "sqrtMain", "size1": "sqrtSize1", "size2": "sqrtSize2",
-                     "size3": "sqrtSize3", "size4": "sqrtSize4"}
 
 
 def radical_assembly():
@@ -949,7 +942,7 @@ def write_vec_data(vec_data):
     common.write_text(text)
 
 
-def write_radicals(radicals):
+def write_radicals():
     geometry = KATEX / "src/svgGeometry.ts"
     text = geometry.read_text()
     pad = int(re.search(r"^const hLinePad = (\d+);", text, re.M).group(1))
@@ -962,18 +955,35 @@ def write_radicals(radicals):
         end = text.index("\n};\n", start) + 4
         return text[:start] + body + text[end:]
 
-    for slot, glyph in radicals.items():
+    # Every pre-drawn radical in Libertinus Math: the first is the text-size
+    # surd, the rest are the sizes used before a tall surd is assembled.
+    variants = math.vvariants[math.cmap[0x221A]]
+    sizes = []
+    for i, glyph in enumerate(variants):
         xmin, ymin, xmax, ymax = math.bounds(glyph)
         advance = math.glyphs[glyph].width
-        name = RADICAL_FUNCTIONS[slot]
+        name = "sqrtMain" if i == 0 else f"sqrtSize{i}"
         path = (glyph_path(glyph, pad + ymax) +
                 f"M{advance} ${{hLinePad}}v${{{rule} + extraVinculum}}h400000v-${{{rule} + extraVinculum}}z")
         body = "\n".join(
             [f"const {name} = function(extraVinculum: number, hLinePad: number): string {{"]
             + comment(f"{name} path geometry is from glyph {glyph} in Libertinus Math.")
             + path_lines(path, "    return `") + ["};", ""])
-        text = replace_function(text, name, body)
-        table[slot] = {"height": (ymax - ymin) / u, "advance": advance / u, "minWidth": (xmax + 20) / u}
+        metrics = {"height": (ymax - ymin) / u, "advance": advance / u, "minWidth": (xmax + 20) / u}
+        if i == 0:
+            text = replace_function(text, name, body)
+            table["main"] = metrics
+        else:
+            sizes.append(body)
+            table.setdefault("sizes", []).append(metrics)
+    while match := re.search(r"^const sqrtSize\d+ = function\(", text, re.M):
+        text = text[:match.start()] + text[text.index("\n};\n", match.start()) + 5:]
+    anchor = text.index("// The radical sizes, smallest first")
+    text = text[:anchor] + "\n".join(sizes) + "\n" + text[anchor:]
+    names = ", ".join(f"sqrtSize{i}" for i in range(1, len(sizes) + 1))
+    text, n = re.subn(r"^const sqrtSizes = \[[^\]]*\];", f"const sqrtSizes = [{names}];", text, flags=re.M)
+    if n != 1:
+        raise ValueError("sqrtSizes not found in svgGeometry.ts")
 
     bottom, extender, top, overlap = radical_assembly()
     _, bottom_min, _, bottom_max = math.bounds(bottom)
@@ -1006,19 +1016,17 @@ def write_radicals(radicals):
              "// Radical sizes, in em: the surd's height from vinculum top to bottom,",
              "// its advance width (where the radicand starts) and the minimum width",
              "// that keeps the whole surd visible.",
-             'import type {DelimiterSize} from "./types";',
-             "",
              "export type RadicalSize = {height: number, advance: number, minWidth: number};",
              "",
              "const radicalMetrics: {",
              "    main: RadicalSize,",
-             "    sizes: Record<DelimiterSize, RadicalSize>,",
+             "    sizes: RadicalSize[],",
              "    tall: {advance: number, minWidth: number},",
              "} = {",
              f"    main: {entry(table['main'])},",
-             "    sizes: {"]
-    lines += [f"        {n}: {entry(table[f'size{n}'])}," for n in (1, 2, 3, 4)]
-    lines += ["    },", f"    tall: {entry(table['tall'])},", "};", "", "export default radicalMetrics;"]
+             "    sizes: ["]
+    lines += [f"        {entry(size)}," for size in table["sizes"]]
+    lines += ["    ],", f"    tall: {entry(table['tall'])},", "};", "", "export default radicalMetrics;"]
     if any(len(line) > MAX_LINE for line in lines):
         raise ValueError("radicalMetrics.ts line too long")
     (KATEX / "src/radicalMetrics.ts").write_text("\n".join(lines) + "\n")
