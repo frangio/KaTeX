@@ -468,62 +468,52 @@ C611 67 888 79 1035 102C1353 150 1651 166 1855 166C2060 166 2354 117 2384 0z`,
 
 // The width of each tall delimiter's image, in thousandths of an em.
 export const tallDelimWidths: Record<string, number> = {
-    lbrack: 667, rbrack: 667, vert: 333, doublevert: 556, lfloor: 667,
-    rfloor: 667, lceil: 667, rceil: 667, lparen: 875, rparen: 875,
+    lbrack: 585, rbrack: 585, vert: 210, doublevert: 390, lfloor: 585, rfloor: 585,
+    lceil: 585, rceil: 585, lparen: 484, rparen: 484,
 };
 
 export const tallDelim = function(label: string, midHeight: number): string {
+    // Tall delimiters assembled from Libertinus Math's pieces, written by
+    // libertinus/build.py.
     switch (label) {
         case "lbrack":
-            return `M403 1759 V84 H666 V0 H319 V1759 v${midHeight} v1759 v84 h347 v-84
-H403z M403 1759 V0 H319 V1759 v${midHeight} v1759 v84 h84z`;
+            return `M463 49L463 0L135 0L135 1274L247 1274L247 49z
+M247 ${midHeight + 2548 - 49}l0 -1225l-112 0l0 1274l328 0l0 -49zM135 1254
+V${midHeight + 1294}H247V1254z`;
         case "rbrack":
-            return `M347 1759 V0 H0 V84 H263 V1759 v${midHeight} v1759 H0 v84 H347z
-M347 1759 V0 H263 V1759 v${midHeight} v1759 h84z`;
+            return `M338 49L338 1274L450 1274L450 0L122 0L122 49z
+M122 ${midHeight + 2548 - 49}l0 49l328 0l0 -1274l-112 0l0 1225zM338 1254
+V${midHeight + 1294}H450V1254z`;
         case "vert":
-            return `M145 15 v585 v${midHeight} v585 c2.667,10,9.667,15,21,15
-c10,0,16.667,-5,20,-15 v-585 v${-midHeight} v-585 c-2.667,-10,-9.667,-15,-21,-15
-c-10,0,-16.667,5,-20,15z M188 15 H145 v585 v${midHeight} v585 h43z`;
+            return `M130 917L130 0L80 0L80 917zM130 ${midHeight + 1648 - -186}
+l0 -917l-50 0l0 917zM80 897V${midHeight + 937}H130V897z`;
         case "doublevert":
-            return `M145 15 v585 v${midHeight} v585 c2.667,10,9.667,15,21,15
-c10,0,16.667,-5,20,-15 v-585 v${-midHeight} v-585 c-2.667,-10,-9.667,-15,-21,-15
-c-10,0,-16.667,5,-20,15z M188 15 H145 v585 v${midHeight} v585 h43z
-M367 15 v585 v${midHeight} v585 c2.667,10,9.667,15,21,15
-c10,0,16.667,-5,20,-15 v-585 v${-midHeight} v-585 c-2.667,-10,-9.667,-15,-21,-15
-c-10,0,-16.667,5,-20,15z M410 15 H367 v585 v${midHeight} v585 h43z`;
+            return `M130 917L130 0L80 0L80 917zM310 917L310 0L260 0L260 917z
+M130 ${midHeight + 1648 - -186}l0 -917l-50 0l0 917zm180 0l0 -917l-50 0l0 917zM80 897
+V${midHeight + 937}H130V897zM260 897V${midHeight + 937}H310V897z`;
         case "lfloor":
-            return `M319 602 V0 H403 V602 v${midHeight} v1715 h263 v84 H319z
-MM319 602 V0 H403 V602 v${midHeight} v1715 H319z`;
+            return `M247 1000L247 0L135 0L135 1000zM247 ${midHeight + 2274 - 49}
+l0 -1225l-112 0l0 1274l328 0l0 -49zM135 980V${midHeight + 1020}H247V980z`;
         case "rfloor":
-            return `M319 602 V0 H403 V602 v${midHeight} v1799 H0 v-84 H319z
-MM319 602 V0 H403 V602 v${midHeight} v1715 H319z`;
+            return `M450 1000L450 0L338 0L338 1000zM122 ${midHeight + 2274 - 49}
+l0 49l328 0l0 -1274l-112 0l0 1225zM338 980V${midHeight + 1020}H450V980z`;
         case "lceil":
-            return `M403 1759 V84 H666 V0 H319 V1759 v${midHeight} v602 h84z
-M403 1759 V0 H319 V1759 v${midHeight} v602 h84z`;
+            return `M463 49L463 0L135 0L135 1274L247 1274L247 49z
+M247 ${midHeight + 2274 - 0}l0 -1000l-112 0l0 1000zM135 1254V${midHeight + 1294}H247
+V1254z`;
         case "rceil":
-            return `M347 1759 V0 H0 V84 H263 V1759 v${midHeight} v602 h84z
-M347 1759 V0 h-84 V1759 v${midHeight} v602 h84z`;
+            return `M338 49L338 1274L450 1274L450 0L122 0L122 49z
+M450 ${midHeight + 2274 - 0}l0 -1000l-112 0l0 1000zM338 1254V${midHeight + 1294}H450
+V1254z`;
         case "lparen":
-            return `M863,9c0,-2,-2,-5,-6,-9c0,0,-17,0,-17,0c-12.7,0,-19.3,0.3,-20,1
-c-5.3,5.3,-10.3,11,-15,17c-242.7,294.7,-395.3,682,-458,1162c-21.3,163.3,-33.3,349,
--36,557 l0,${midHeight + 84}c0.2,6,0,26,0,60c2,159.3,10,310.7,24,454c53.3,528,210,
-949.7,470,1265c4.7,6,9.7,11.7,15,17c0.7,0.7,7,1,19,1c0,0,18,0,18,0c4,-4,6,-7,6,-9
-c0,-2.7,-3.3,-8.7,-10,-18c-135.3,-192.7,-235.5,-414.3,-300.5,-665c-65,-250.7,-102.5,
--544.7,-112.5,-882c-2,-104,-3,-167,-3,-189
-l0,-${midHeight + 92}c0,-162.7,5.7,-314,17,-454c20.7,-272,63.7,-513,129,-723c65.3,
--210,155.3,-396.3,270,-559c6.7,-9.3,10,-15.3,10,-18z`;
+            return `M416 0C159 202 51 545 51 891L51 1272L163 1272L163 845
+C163 525 247 228 444 30zM444 ${midHeight + 2544 - 30}c-197 -198 -281 -495 -281 -815
+l0 -427l-112 0l0 381c0 346 108 689 365 891zM51 1252V${midHeight + 1292}H163V1252z`;
         case "rparen":
-            return `M76,0c-16.7,0,-25,3,-25,9c0,2,2,6.3,6,13c21.3,28.7,42.3,60.3,
-63,95c96.7,156.7,172.8,332.5,228.5,527.5c55.7,195,92.8,416.5,111.5,664.5
-c11.3,139.3,17,290.7,17,454c0,28,1.7,43,3.3,45l0,${midHeight + 9}
-c-3,4,-3.3,16.7,-3.3,38c0,162,-5.7,313.7,-17,455c-18.7,248,-55.8,469.3,-111.5,664
-c-55.7,194.7,-131.8,370.3,-228.5,527c-20.7,34.7,-41.7,66.3,-63,95c-2,3.3,-4,7,-6,11
-c0,7.3,5.7,11,17,11c0,0,11,0,11,0c9.3,0,14.3,-0.3,15,-1c5.3,-5.3,10.3,-11,15,-17
-c242.7,-294.7,395.3,-681.7,458,-1161c21.3,-164.7,33.3,-350.7,36,-558
-l0,-${midHeight + 144}c-2,-159.3,-10,-310.7,-24,-454c-53.3,-528,-210,-949.7,
--470,-1265c-4.7,-6,-9.7,-11.7,-15,-17c-0.7,-0.7,-6.7,-1,-18,-1z`;
+            return `M40 30C237 228 321 525 321 845L321 1272L433 1272L433 891
+C433 545 325 202 68 0zM68 ${midHeight + 2544 - 0}c257 -202 365 -545 365 -891l0 -381
+l-112 0l0 427c0 320 -84 617 -281 815zM321 1252V${midHeight + 1292}H433V1252z`;
         default:
-            // We should not ever get here.
             throw new Error("Unknown stretchy delimiter.");
     }
 };
