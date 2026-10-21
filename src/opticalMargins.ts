@@ -11,22 +11,42 @@ export type OpticalMargin = {
 const opticalMargins: Partial<Record<string, OpticalMargin>> = {
     "\\{": {
         side: "right",
-        sizes: {size1: 0.056, size2: 0.071, size3: 0.06, size4: 0.07},
+        sizes: {
+            size1: 0.056, size2: 0.071, size3: 0.06, size4: 0.07, delim1: 0.056,
+            delim2: 0.063, delim3: 0.069, delim4: 0.071, delim5: 0.066, delim6: 0.06,
+            delim7: 0.062, delim8: 0.068, delim9: 0.07, delim10: 0.07,
+            delim11: 0.071, delim12: 0.07,
+        },
         stack: 0.07,
     },
     "\\lbrace": {
         side: "right",
-        sizes: {size1: 0.056, size2: 0.071, size3: 0.06, size4: 0.07},
+        sizes: {
+            size1: 0.056, size2: 0.071, size3: 0.06, size4: 0.07, delim1: 0.056,
+            delim2: 0.063, delim3: 0.069, delim4: 0.071, delim5: 0.066, delim6: 0.06,
+            delim7: 0.062, delim8: 0.068, delim9: 0.07, delim10: 0.07,
+            delim11: 0.071, delim12: 0.07,
+        },
         stack: 0.07,
     },
     "\\}": {
         side: "left",
-        sizes: {size1: 0.056, size2: 0.071, size3: 0.06, size4: 0.069},
+        sizes: {
+            size1: 0.056, size2: 0.071, size3: 0.06, size4: 0.069, delim1: 0.056,
+            delim2: 0.063, delim3: 0.064, delim4: 0.071, delim5: 0.066, delim6: 0.06,
+            delim7: 0.062, delim8: 0.068, delim9: 0.069, delim10: 0.07,
+            delim11: 0.072, delim12: 0.071,
+        },
         stack: 0.069,
     },
     "\\rbrace": {
         side: "left",
-        sizes: {size1: 0.056, size2: 0.071, size3: 0.06, size4: 0.069},
+        sizes: {
+            size1: 0.056, size2: 0.071, size3: 0.06, size4: 0.069, delim1: 0.056,
+            delim2: 0.063, delim3: 0.064, delim4: 0.071, delim5: 0.066, delim6: 0.06,
+            delim7: 0.062, delim8: 0.068, delim9: 0.069, delim10: 0.07,
+            delim11: 0.072, delim12: 0.071,
+        },
         stack: 0.069,
     },
 };

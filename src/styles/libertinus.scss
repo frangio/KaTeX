@@ -895,3 +895,208 @@
         U+61-7A,
         U+200B;
 }
+
+@font-face {
+    font-family: KaTeX_Delim1;
+    src: url("#{fonts.$font-folder}/Libertinus_Delim1-Regular_math.woff2") format("woff2");
+    font-weight: normal;
+    font-style: normal;
+    font-display: fonts.$font-display;
+    unicode-range:
+        U+28-29,
+        U+2F,
+        U+5B-5D,
+        U+7B,
+        U+7D,
+        U+2308-230B,
+        U+27E8-27E9;
+}
+
+@font-face {
+    font-family: KaTeX_Delim2;
+    src: url("#{fonts.$font-folder}/Libertinus_Delim2-Regular_math.woff2") format("woff2");
+    font-weight: normal;
+    font-style: normal;
+    font-display: fonts.$font-display;
+    unicode-range:
+        U+28-29,
+        U+2F,
+        U+5B-5D,
+        U+7B,
+        U+7D,
+        U+2308-230B,
+        U+27E8-27E9;
+}
+
+@font-face {
+    font-family: KaTeX_Delim3;
+    src: url("#{fonts.$font-folder}/Libertinus_Delim3-Regular_math.woff2") format("woff2");
+    font-weight: normal;
+    font-style: normal;
+    font-display: fonts.$font-display;
+    unicode-range:
+        U+28-29,
+        U+2F,
+        U+5B-5D,
+        U+7B,
+        U+7D,
+        U+2308-230B,
+        U+27E8-27E9;
+}
+
+@font-face {
+    font-family: KaTeX_Delim4;
+    src: url("#{fonts.$font-folder}/Libertinus_Delim4-Regular_math.woff2") format("woff2");
+    font-weight: normal;
+    font-style: normal;
+    font-display: fonts.$font-display;
+    unicode-range:
+        U+28-29,
+        U+2F,
+        U+5B-5D,
+        U+7B,
+        U+7D,
+        U+2308-230B,
+        U+27E8-27E9;
+}
+
+@font-face {
+    font-family: KaTeX_Delim5;
+    src: url("#{fonts.$font-folder}/Libertinus_Delim5-Regular_math.woff2") format("woff2");
+    font-weight: normal;
+    font-style: normal;
+    font-display: fonts.$font-display;
+    unicode-range:
+        U+28-29,
+        U+5B,
+        U+5D,
+        U+7B,
+        U+7D,
+        U+2308-230B,
+        U+27E8-27E9;
+}
+
+@font-face {
+    font-family: KaTeX_Delim6;
+    src: url("#{fonts.$font-folder}/Libertinus_Delim6-Regular_math.woff2") format("woff2");
+    font-weight: normal;
+    font-style: normal;
+    font-display: fonts.$font-display;
+    unicode-range:
+        U+28-29,
+        U+5B,
+        U+5D,
+        U+7B,
+        U+7D,
+        U+2308-230B,
+        U+27E8-27E9;
+}
+
+@font-face {
+    font-family: KaTeX_Delim7;
+    src: url("#{fonts.$font-folder}/Libertinus_Delim7-Regular_math.woff2") format("woff2");
+    font-weight: normal;
+    font-style: normal;
+    font-display: fonts.$font-display;
+    unicode-range:
+        U+28-29,
+        U+5B,
+        U+5D,
+        U+7B,
+        U+7D,
+        U+2308-230B,
+        U+27E8-27E9;
+}
+
+@font-face {
+    font-family: KaTeX_Delim8;
+    src: url("#{fonts.$font-folder}/Libertinus_Delim8-Regular_math.woff2") format("woff2");
+    font-weight: normal;
+    font-style: normal;
+    font-display: fonts.$font-display;
+    unicode-range:
+        U+28-29,
+        U+5B,
+        U+5D,
+        U+7B,
+        U+7D,
+        U+2308-230B,
+        U+27E8-27E9;
+}
+
+@font-face {
+    font-family: KaTeX_Delim9;
+    src: url("#{fonts.$font-folder}/Libertinus_Delim9-Regular_math.woff2") format("woff2");
+    font-weight: normal;
+    font-style: normal;
+    font-display: fonts.$font-display;
+    unicode-range:
+        U+28-29,
+        U+5B,
+        U+5D,
+        U+7B,
+        U+7D,
+        U+2308-230B,
+        U+27E8-27E9;
+}
+
+@font-face {
+    font-family: KaTeX_Delim10;
+    src: url("#{fonts.$font-folder}/Libertinus_Delim10-Regular_math.woff2") format("woff2");
+    font-weight: normal;
+    font-style: normal;
+    font-display: fonts.$font-display;
+    unicode-range:
+        U+28-29,
+        U+5B,
+        U+5D,
+        U+7B,
+        U+7D,
+        U+2308-230B,
+        U+27E8-27E9;
+}
+
+@font-face {
+    font-family: KaTeX_Delim11;
+    src: url("#{fonts.$font-folder}/Libertinus_Delim11-Regular_math.woff2") format("woff2");
+    font-weight: normal;
+    font-style: normal;
+    font-display: fonts.$font-display;
+    unicode-range:
+        U+28-29,
+        U+5B,
+        U+5D,
+        U+7B,
+        U+7D,
+        U+2308-230B,
+        U+27E8-27E9;
+}
+
+@font-face {
+    font-family: KaTeX_Delim12;
+    src: url("#{fonts.$font-folder}/Libertinus_Delim12-Regular_math.woff2") format("woff2");
+    font-weight: normal;
+    font-style: normal;
+    font-display: fonts.$font-display;
+    unicode-range:
+        U+28-29,
+        U+5B,
+        U+5D,
+        U+7B,
+        U+7D,
+        U+2308-230B,
+        U+27E8-27E9;
+}
+
+.katex .delimsizing.delim1 { font-family: KaTeX_Delim1; }
+.katex .delimsizing.delim2 { font-family: KaTeX_Delim2; }
+.katex .delimsizing.delim3 { font-family: KaTeX_Delim3; }
+.katex .delimsizing.delim4 { font-family: KaTeX_Delim4; }
+.katex .delimsizing.delim5 { font-family: KaTeX_Delim5; }
+.katex .delimsizing.delim6 { font-family: KaTeX_Delim6; }
+.katex .delimsizing.delim7 { font-family: KaTeX_Delim7; }
+.katex .delimsizing.delim8 { font-family: KaTeX_Delim8; }
+.katex .delimsizing.delim9 { font-family: KaTeX_Delim9; }
+.katex .delimsizing.delim10 { font-family: KaTeX_Delim10; }
+.katex .delimsizing.delim11 { font-family: KaTeX_Delim11; }
+.katex .delimsizing.delim12 { font-family: KaTeX_Delim12; }
