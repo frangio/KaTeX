@@ -33,7 +33,10 @@ overwrites its own output.
 | `src/Options.js` | Script and scriptscript sizes from `ScriptPercentScaleDown` and `ScriptScriptPercentScaleDown`. |
 | `src/opticalMargins.js` | Extra space on the content side of large braces. Libertinus's brace curls inward and keeps its stem close to the content, so it leaves 0.06–0.07em less white space than the parenthesis of the same size; this is that difference, measured from the outlines. |
 | `src/radicalMetrics.js` | Height, advance and minimum width of each radical size. |
-| `src/svgGeometry.js` | Radical paths from Libertinus's radical glyphs and its radical assembly, and the extender bars of assembled delimiters at Libertinus's stem positions. |
+| `src/svgGeometry.js` | Radical paths from Libertinus's radical glyphs and its radical assembly; the extender bars of assembled delimiters at Libertinus's stem positions; and the stretchy paths: arrows, harpoons, two-headed arrows, `\xlongequal`, over and under accent arrows, over and under braces, wide accents and `\vec`. Each stretchy path is the Libertinus glyph or assembly piece at its anchored end, with its straight shaft extended across the box. |
+| `src/stretchy.js` | Box heights of the converted stretchy elements in `katexImagesData`, and over and under arrows switched to Libertinus's accent arrows (U+20D6, U+20D7, U+20E1, U+20EE, U+20EF and the over harpoons). |
+| `src/wideAccentImages.js` | The five Libertinus sizes of `\widehat`, `\widecheck` and `\widetilde`/`\utilde`, chosen by the number of characters under the accent, each in a box whose bottom is the font's `AccentBaseHeight`. |
+| `src/buildCommon.js` | Size of the `\vec` image. |
 | `src/styles/katex.scss` | Root index spacing from `RadicalKernBeforeDegree` and `RadicalKernAfterDegree`. |
 
 ## Still from Computer Modern
@@ -43,5 +46,9 @@ overwrites its own output.
 - Parentheses, brackets and bars taller than the largest pre-drawn size
   (about 3.1em) are KaTeX's single SVG paths. Libertinus's curved, tapering
   shapes don't split into stretchable pieces.
-- Stretchy accents and arrows (`\widehat`, `\widetilde`, `\overrightarrow`,
-  `\xrightarrow`, `\overbrace`, `\vec`) are KaTeX's SVG paths.
+- Stretchy elements Libertinus has no pieces for keep KaTeX's paths:
+  `\overgroup`, `\undergroup`, `\overlinesegment`, `\underlinesegment`,
+  and the compound arrows `\xrightleftharpoons`, `\xleftrightharpoons`,
+  `\xtofrom` and mhchem's `\xrightleftarrows`, `\xrightequilibrium` and
+  `\xleftequilibrium`. `\Overrightarrow` uses the full-size Libertinus ⇒,
+  since Libertinus has no double accent arrow.
