@@ -297,8 +297,8 @@ class FlippedPath(BasePen):
         return "".join(self.parts)
 
 
-def glyph_path(glyph, top, top_expr=None):
-    pen = FlippedPath(math.glyphs, top, top_expr=top_expr)
+def glyph_path(glyph, top, top_expr=None, dx=0):
+    pen = FlippedPath(math.glyphs, top, dx=dx, top_expr=top_expr)
     math.glyphs[glyph].draw(pen)
     return pen.path()
 
@@ -471,6 +471,7 @@ def main():
     write_optical_margins(optical)
     write_inner_paths(extenders)
     write_radicals(radicals)
+    write_stretchy()
     if REPORT:
         REPORT.write_text(json.dumps(
             {"fonts": report, "sigmas": sigmas, "sizeStyleMap": size_style_map(), "optical": optical},
@@ -579,6 +580,246 @@ def radical_assembly():
     if [p.PartFlags for p in parts] != [0, 1, 0]:
         raise ValueError("unexpected radical assembly")
     return bottom, extender, top, variants.MinConnectorOverlap
+
+
+BOX = 400000
+OVERLAP = 20
+
+
+def rect(x0, y0, x1, y1):
+    return f"M{fmt(x0)} {fmt(y0)}V{fmt(y1)}H{fmt(x1)}V{fmt(y0)}z"
+
+
+def crossings(glyph, x=None, y=None):
+    pen = Polygons(math.glyphs)
+    math.glyphs[glyph].draw(pen)
+    hits = []
+    for c in pen.contours:
+        for a, b in zip(c, c[1:] + c[:1]):
+            if x is not None and (a[0] <= x < b[0] or b[0] <= x < a[0]):
+                hits.append(a[1] + (x - a[0]) * (b[1] - a[1]) / (b[0] - a[0]))
+            if y is not None and (a[1] <= y < b[1] or b[1] <= y < a[1]):
+                hits.append(a[0] + (y - a[1]) * (b[0] - a[0]) / (b[1] - a[1]))
+    hits.sort()
+    return list(zip(hits[::2], hits[1::2]))
+
+
+def stretched(glyph, anchor, top, bars=None):
+    xmin, _, xmax, _ = math.bounds(glyph)
+    if anchor == "right":
+        dx = BOX - xmax
+        tail = xmin
+    elif anchor == "left":
+        dx = -xmin
+        tail = xmax
+    else:
+        dx = BOX / 2 - (xmin + xmax) / 2
+    if bars is None:
+        inside = (xmax - xmin) / 4
+        bars = crossings(glyph, x=tail + inside if anchor == "right" else tail - inside)
+    path = glyph_path(glyph, top, dx=dx)
+    for y0, y1 in bars:
+        a, b = top - y1, top - y0
+        if anchor in ("right", "mid"):
+            path += rect(0, a, xmin + dx + OVERLAP, b)
+        if anchor in ("left", "mid"):
+            path += rect(xmax + dx - OVERLAP, a, BOX, b)
+    return path
+
+
+ARROWS = {
+    "rightarrow": (0x2192, "right", "single"),
+    "leftarrow": (0x2190, "left", "single"),
+    "doublerightarrow": (0x21D2, "right", "measured"),
+    "doubleleftarrow": (0x21D0, "left", "measured"),
+    "rightharpoon": (0x21C0, "right", "single"),
+    "leftharpoon": (0x21BC, "left", "single"),
+    "rightharpoondown": (0x21C1, "right", "single"),
+    "leftharpoondown": (0x21BD, "left", "single"),
+    "twoheadrightarrow": (0x21A0, "right", "single"),
+    "twoheadleftarrow": (0x219E, "left", "single"),
+    "leftmapsto": ("uni21A6.left", "left", "single"),
+    "lefthook": ("uni21AA.left", "left", "single"),
+    "righthook": ("uni21A9.right", "right", "single"),
+}
+ACCENT_ARROWS = {
+    "accentrightarrow": (0x20D7, "right", "over"),
+    "accentleftarrow": (0x20D6, "left", "over"),
+    "accentrightharpoon": (0x20D1, "right", "over"),
+    "accentleftharpoon": (0x20D0, "left", "over"),
+    "underaccentrightarrow": (0x20EF, "right", "under"),
+    "underaccentleftarrow": (0x20EE, "left", "under"),
+}
+ROW_PATHS = {
+    "overrightarrow": ["accentrightarrow"],
+    "overleftarrow": ["accentleftarrow"],
+    "overleftrightarrow": ["accentleftarrow", "accentrightarrow"],
+    "overrightharpoon": ["accentrightharpoon"],
+    "overleftharpoon": ["accentleftharpoon"],
+    "underrightarrow": ["underaccentrightarrow"],
+    "underleftarrow": ["underaccentleftarrow"],
+    "underleftrightarrow": ["underaccentleftarrow", "underaccentrightarrow"],
+}
+BRACES = {0x23DE: ("leftbrace", "midbrace", "rightbrace"),
+          0x23DF: ("leftbraceunder", "midbraceunder", "rightbraceunder")}
+WIDE_ACCENTS = {"widehat": 0x302, "widecheck": 0x30C, "tilde": 0x303}
+WIDE_ACCENT_SIZES = [1, 1, 2, 3, 4, 4, 5]
+
+
+def horizontal_assembly(cp):
+    variants = math.font["MATH"].table.MathVariants
+    index = variants.HorizGlyphCoverage.glyphs.index(math.cmap[cp])
+    return [p.glyph for p in variants.HorizGlyphConstruction[index].GlyphAssembly.PartRecords]
+
+
+def write_stretchy():
+    axis = math.constants["AxisHeight"]
+    paths = {}
+    heights = {}
+
+    glyphs = {name: math.cmap[g] if isinstance(g, int) else g for name, (g, _, _) in ARROWS.items()}
+    reach = max(max(math.bounds(g)[3] - axis, axis - math.bounds(g)[1]) for g in glyphs.values())
+    arrow_height = 2 * round(reach)
+    extender = horizontal_assembly(0x2192)[1]
+    _, shaft_bottom, _, shaft_top = math.bounds(extender)
+    for name, (_, anchor, shaft) in ARROWS.items():
+        bars = [(shaft_bottom, shaft_top)] if shaft == "single" else None
+        paths[name] = stretched(glyphs[name], anchor, arrow_height / 2 + axis, bars)
+        heights[name] = arrow_height
+
+    base = math.constants["AccentBaseHeight"]
+    for name, (cp, anchor, side) in ACCENT_ARROWS.items():
+        glyph = math.cmap[cp]
+        _, ymin, _, ymax = math.bounds(glyph)
+        shaft = horizontal_assembly(cp)[0 if anchor == "right" else 1]
+        _, y0, _, y1 = math.bounds(shaft)
+        top = ymax if side == "over" else 0
+        paths[name] = stretched(glyph, anchor, top, [(y0, y1)])
+        heights[name] = round(ymax - base) if side == "over" else round(-ymin)
+
+    equal = math.cmap[ord("=")]
+    _, ymin, _, ymax = math.bounds(equal)
+    equal_height = 2 * round(max(ymax - axis, axis - ymin))
+    top = equal_height / 2 + axis
+    paths["longequal"] = "".join(rect(0, top - y1, BOX, top - y0)
+                                 for y0, y1 in crossings(equal, x=(math.bounds(equal)[0] + math.bounds(equal)[2]) / 2))
+    heights["longequal"] = equal_height
+
+    for cp, (left, mid, right) in BRACES.items():
+        lt, ex, md, ex2, rt = horizontal_assembly(cp)
+        parts = (lt, ex, md, rt)
+        top = max(math.bounds(g)[3] for g in parts)
+        bottom = min(math.bounds(g)[1] for g in parts)
+        _, ey0, _, ey1 = math.bounds(ex)
+        bars = [(ey0, ey1)]
+        paths[left] = stretched(lt, "left", top, bars)
+        paths[mid] = stretched(md, "mid", top, bars)
+        paths[right] = stretched(rt, "right", top, bars)
+        for name in (left, mid, right):
+            heights[name] = round(top - bottom)
+
+    images = {}
+    for name, cp in WIDE_ACCENTS.items():
+        variants = math.font["MATH"].table.MathVariants
+        index = variants.HorizGlyphCoverage.glyphs.index(math.cmap[cp])
+        ladder = [r.VariantGlyph for r in variants.HorizGlyphConstruction[index].MathGlyphVariantRecord]
+        rows = {}
+        for size in sorted(set(WIDE_ACCENT_SIZES)):
+            glyph = ladder[size]
+            xmin, _, xmax, ymax = math.bounds(glyph)
+            paths[f"{name}{size}"] = glyph_path(glyph, ymax, dx=-xmin)
+            rows[size] = [f"{name}{size}", round(xmax - xmin), round(ymax - base), round(ymax - base) / 1000]
+        images[name] = [rows[size] for size in WIDE_ACCENT_SIZES]
+
+    vec = math.cmap[0x20D7]
+    _, _, _, vec_top = math.bounds(vec)
+    paths["vec"] = glyph_path(vec, vec_top)
+    vec_data = (math.glyphs[vec].width / 1000, vec_top / 1000)
+
+    write_svg_paths(paths)
+    write_image_heights(heights)
+    write_wide_accent_images(images)
+    write_vec_data(vec_data)
+
+
+def write_svg_paths(paths):
+    geometry = KATEX / "src/svgGeometry.ts"
+    text = geometry.read_text()
+    start = text.index("export const path")
+    end = text.index("\n};", start)
+    block = text[start:end]
+    for name, path in paths.items():
+        entry = "\n".join(path_lines(path, f"    {name}: `", "`,"))
+        block, n = re.subn(rf"^    {name}: (?:doubleBrushStroke\()?`[^`]*`\)?,", lambda m: entry, block,
+                           flags=re.M)
+        if n == 0:
+            block += "\n" + entry
+        elif n > 1:
+            raise ValueError(f"path {name} defined twice")
+    geometry.write_text(text[:start] + block + text[end:])
+
+
+def write_image_heights(heights):
+    stretchy = KATEX / "src/stretchy.ts"
+    text = stretchy.read_text()
+    start = text.index("const katexImagesData")
+    end = text.index("\n};", start)
+    block = text[start:end]
+    row = re.compile(r'(\n\s+(?:"[^"]+"|\w+): \[\[)([^\]]*)(\],\s*[\d.]+,\s*)(\d+)')
+    used = {}
+
+    def replace(m):
+        label = m.group(1).strip().split(":")[0].strip('"')
+        names = re.findall(r'"(\w+)"', m.group(2))
+        if label in ROW_PATHS:
+            names = ROW_PATHS[label]
+            m = re.match(row, m.group(1) + ", ".join(f'"{n}"' for n in names) + m.group(3) + m.group(4))
+        for n in names:
+            used.setdefault(n, set()).add(all(x in heights for x in names))
+        if not all(n in heights for n in names):
+            return m.group(0)
+        sizes = {heights[n] for n in names}
+        if len(sizes) != 1:
+            raise ValueError(f"paths {names} need different heights")
+        return m.group(1) + m.group(2) + m.group(3) + str(sizes.pop())
+
+    block = row.sub(replace, block)
+    block = "\n".join(line.replace("], ", "],\n        ", 1) if len(line) > MAX_LINE else line
+                      for line in block.split("\n"))
+    mixed = [n for n, kinds in used.items() if n in heights and False in kinds]
+    if mixed:
+        raise ValueError(f"paths {mixed} are also used with Computer Modern paths")
+    stretchy.write_text(text[:start] + block + text[end:])
+
+
+def write_wide_accent_images(images):
+    lines = ["// This file is GENERATED by libertinus/build.py. DO NOT MODIFY.",
+             "export type WideAccentImage = [string, number, number, number];",
+             "",
+             "// Images for \\widehat, \\widecheck, \\widetilde and \\utilde, indexed by",
+             "// the number of characters under the accent (the last entry covers",
+             "// anything longer): [path name, viewBox width, viewBox height, height",
+             "// in em]. The image is stretched to the width of its base.",
+             ""]
+    for name, rows in images.items():
+        lines.append(f"const {name}: WideAccentImage[] = [")
+        lines += [f'    ["{r[0]}", {r[1]}, {r[2]}, {js_number(r[3])}],' for r in rows]
+        lines += ["];", ""]
+    lines += ["const wideAccentImages: Record<string, WideAccentImage[]> =",
+              "    {widehat, widecheck, widetilde: tilde, utilde: tilde};",
+              "",
+              "export default wideAccentImages;"]
+    (KATEX / "src/wideAccentImages.ts").write_text("\n".join(lines) + "\n")
+
+
+def write_vec_data(vec_data):
+    common = KATEX / "src/buildCommon.ts"
+    text = common.read_text()
+    width, height = (js_number(v) for v in vec_data)
+    text, n = re.subn(r'vec: \["vec", [\d.]+, [\d.]+\],', f'vec: ["vec", {width}, {height}],', text)
+    if n != 1:
+        raise ValueError("vec svgData not found in buildCommon.ts")
+    common.write_text(text)
 
 
 def write_radicals(radicals):
@@ -695,17 +936,17 @@ def comment(text, indent=4):
     return [" " * indent + "// " + line for line in wrap(text.split(), " ", 0, 0, MAX_LINE - indent - 3)]
 
 
-def path_lines(path, lead):
+def path_lines(path, lead, end="`;"):
     segments = re.findall(r"[MmLlCcHhVvZz](?:\$\{[^}]*\}|[^MmLlCcHhVvZz$])*", path)
     if "".join(segments) != path:
         raise ValueError("could not split path")
     lines = wrap(segments, "", 0, len(lead))
     lines[0] = lead + lines[0][len(lead):]
-    if len(lines[-1]) + 2 > MAX_LINE:
+    if len(lines[-1]) + len(end) > MAX_LINE:
         last = segments[-1]
         lines[-1] = lines[-1][:-len(last)]
         lines.append(last)
-    lines[-1] += "`;"
+    lines[-1] += end
     return lines
 
 
