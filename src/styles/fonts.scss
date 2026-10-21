@@ -52,24 +52,3 @@ $font-display: block !default;
         font-display: $font-display;
     }
 }
-
-@include font-face('AMS', normal, normal);
-@include font-face('Caligraphic', bold, normal);
-@include font-face('Caligraphic', normal, normal);
-@include font-face('Fraktur', bold, normal);
-@include font-face('Fraktur', normal, normal);
-@include font-face('Main', bold, normal);
-@include font-face('Main', bold, italic);
-@include font-face('Main', normal, italic);
-@include font-face('Main', normal, normal);
-@include font-face('Math', bold, italic);
-@include font-face('Math', normal, italic);
-@include font-face('SansSerif', bold, normal);
-@include font-face('SansSerif', normal, italic);
-@include font-face('SansSerif', normal, normal);
-@include font-face('Script', normal, normal);
-@include font-face('Size1', normal, normal);
-@include font-face('Size2', normal, normal);
-@include font-face('Size3', normal, normal);
-@include font-face('Size4', normal, normal);
-@include font-face('Typewriter', normal, normal);
