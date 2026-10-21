@@ -40,15 +40,41 @@ const wideAccentImages: Record<string, WideAccentImage[]> =
     {widehat, widecheck, widetilde: tilde, utilde: tilde};
 
 // Every size, narrowest first, for an accent over a single character.
-const unique = (images: WideAccentImage[]) =>
-    images.filter((image, i) => images.findIndex(([name]) => name === image[0]) === i);
+// The narrowest is Libertinus's ordinary accent.
+const widehatSizes: WideAccentImage[] = [
+    ["widehat0", 252, 273, 0.273],
+    ["widehat1", 573, 331, 0.331],
+    ["widehat2", 1002, 332, 0.332],
+    ["widehat3", 1495, 334, 0.334],
+    ["widehat4", 1931, 334, 0.334],
+    ["widehat5", 2384, 334, 0.334],
+];
+
+const widecheckSizes: WideAccentImage[] = [
+    ["widecheck0", 253, 236, 0.236],
+    ["widecheck1", 573, 332, 0.332],
+    ["widecheck2", 1002, 332, 0.332],
+    ["widecheck3", 1495, 334, 0.334],
+    ["widecheck4", 1931, 334, 0.334],
+    ["widecheck5", 2384, 334, 0.334],
+];
+
+const tildeSizes: WideAccentImage[] = [
+    ["tilde0", 278, 234, 0.234],
+    ["tilde1", 573, 270, 0.27],
+    ["tilde2", 1002, 270, 0.27],
+    ["tilde3", 1495, 284, 0.284],
+    ["tilde4", 1931, 281, 0.281],
+    ["tilde5", 2384, 280, 0.28],
+];
+
 export const wideAccentSizes: Record<string, WideAccentImage[]> = {
-    widehat: unique(widehat), widecheck: unique(widecheck),
-    widetilde: unique(tilde), utilde: unique(tilde),
+    widehat: widehatSizes, widecheck: widecheckSizes,
+    widetilde: tildeSizes, utilde: tildeSizes,
 };
 
-// The smallest images are Libertinus's ordinary accents, which keep
-// their shape only at their own size.
+// Libertinus's accents keep their shape only at their own size, so
+// over a single character they are never stretched.
 export const naturalSizeOverCharacter = true;
 
 export default wideAccentImages;
