@@ -8,6 +8,7 @@ import {LineNode, PathNode, SvgNode} from "./domTree";
 import {makeSpan, makeSvgSpan} from "./buildCommon";
 import {MathNode, TextNode} from "./mathMLTree";
 import {makeEm} from "./units";
+import wideAccentImages from "./wideAccentImages";
 
 import type Options from "./Options";
 import type {ParseNode} from "./types/nodes";
@@ -178,40 +179,13 @@ export const stretchySvg = function(
         let viewBoxWidth = 400000;  // default
         const label = group.label.slice(1);
         if (wideAccentLabels.has(label) && 'base' in group) {
-            // There are four SVG images available for each function.
-            // Choose a taller image when there are more characters.
+            // Choose a wider image when there are more characters.
             const numChars = group.base.type === "ordgroup" ?
                 group.base.body.length : 1;
-            let viewBoxHeight;
-            let pathName;
-            let height;
-
-            if (numChars > 5) {
-                if (label === "widehat" || label === "widecheck") {
-                    viewBoxHeight = 420;
-                    viewBoxWidth = 2364;
-                    height = 0.42;
-                    pathName = label + "4";
-                } else {
-                    viewBoxHeight = 312;
-                    viewBoxWidth = 2340;
-                    height = 0.34;
-                    pathName = "tilde4";
-                }
-            } else {
-                const imgIndex = [1, 1, 2, 2, 3, 3][numChars];
-                if (label === "widehat" || label === "widecheck") {
-                    viewBoxWidth = [0, 1062, 2364, 2364, 2364][imgIndex];
-                    viewBoxHeight = [0, 239, 300, 360, 420][imgIndex];
-                    height = [0, 0.24, 0.3, 0.3, 0.36, 0.42][imgIndex];
-                    pathName = label + imgIndex;
-                } else {
-                    viewBoxWidth = [0, 600, 1033, 2339, 2340][imgIndex];
-                    viewBoxHeight = [0, 260, 286, 306, 312][imgIndex];
-                    height = [0, 0.26, 0.286, 0.3, 0.306, 0.34][imgIndex];
-                    pathName = "tilde" + imgIndex;
-                }
-            }
+            const images = wideAccentImages[label];
+            const [pathName, imageWidth, viewBoxHeight, height] =
+                images[Math.min(numChars, images.length - 1)];
+            viewBoxWidth = imageWidth;
             const path = new PathNode(pathName);
             const svgNode = new SvgNode([path], {
                 "width": "100%",
