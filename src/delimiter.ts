@@ -24,7 +24,7 @@ import ParseError from "./ParseError";
 import Style from "./Style";
 
 import {PathNode, SvgNode, SymbolNode} from "./domTree";
-import {sqrtPath, innerPath, tallDelim} from "./svgGeometry";
+import {sqrtPath, innerPath, tallDelim, tallDelimWidths} from "./svgGeometry";
 import {makeSpan, makeSymbol, makeSvgSpan, makeVList} from "./buildCommon";
 import {getCharacterMetrics} from "./fontMetrics";
 import symbols from "./symbols";
@@ -250,7 +250,6 @@ const makeStackedDelim = function(
     let repeat;
     let bottom;
     let svgLabel = "";
-    let viewBoxWidth = 0;
     top = repeat = bottom = delim;
     middle = null;
     // Also keep track of what font the delimiters are in
@@ -278,63 +277,53 @@ const makeStackedDelim = function(
     } else if (verts.has(delim)) {
         repeat = "\u2223";
         svgLabel = "vert";
-        viewBoxWidth = 333;
     } else if (doubleVerts.has(delim)) {
         repeat = "\u2225";
         svgLabel = "doublevert";
-        viewBoxWidth = 556;
     } else if (delim === "[" || delim === "\\lbrack") {
         top = "\u23a1";
         repeat = "\u23a2";
         bottom = "\u23a3";
         font = "Size4-Regular";
         svgLabel = "lbrack";
-        viewBoxWidth = 667;
     } else if (delim === "]" || delim === "\\rbrack") {
         top = "\u23a4";
         repeat = "\u23a5";
         bottom = "\u23a6";
         font = "Size4-Regular";
         svgLabel = "rbrack";
-        viewBoxWidth = 667;
     } else if (delim === "\\lfloor" || delim === "\u230a") {
         repeat = top = "\u23a2";
         bottom = "\u23a3";
         font = "Size4-Regular";
         svgLabel = "lfloor";
-        viewBoxWidth = 667;
     } else if (delim === "\\lceil" || delim === "\u2308") {
         top = "\u23a1";
         repeat = bottom = "\u23a2";
         font = "Size4-Regular";
         svgLabel = "lceil";
-        viewBoxWidth = 667;
     } else if (delim === "\\rfloor" || delim === "\u230b") {
         repeat = top = "\u23a5";
         bottom = "\u23a6";
         font = "Size4-Regular";
         svgLabel = "rfloor";
-        viewBoxWidth = 667;
     } else if (delim === "\\rceil" || delim === "\u2309") {
         top = "\u23a4";
         repeat = bottom = "\u23a5";
         font = "Size4-Regular";
         svgLabel = "rceil";
-        viewBoxWidth = 667;
     } else if (delim === "(" || delim === "\\lparen") {
         top = "\u239b";
         repeat = "\u239c";
         bottom = "\u239d";
         font = "Size4-Regular";
         svgLabel = "lparen";
-        viewBoxWidth = 875;
     } else if (delim === ")" || delim === "\\rparen") {
         top = "\u239e";
         repeat = "\u239f";
         bottom = "\u23a0";
         font = "Size4-Regular";
         svgLabel = "rparen";
-        viewBoxWidth = 875;
     } else if (delim === "\\{" || delim === "\\lbrace") {
         top = "\u23a7";
         middle = "\u23a8";
@@ -414,6 +403,7 @@ const makeStackedDelim = function(
     if (svgLabel.length > 0) {
         // Instead of stacking glyphs, create a single SVG.
         // This evades browser problems with imprecise positioning of spans.
+        const viewBoxWidth = tallDelimWidths[svgLabel];
         const midHeight = realHeightTotal - topHeightTotal - bottomHeightTotal;
         const viewBoxHeight = Math.round(realHeightTotal  * 1000);
         const pathStr = tallDelim(svgLabel, Math.round(midHeight * 1000));

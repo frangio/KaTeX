@@ -466,6 +466,12 @@ C1052 23 663 0 564 0C381 0 36 45 0 166L29 166C63 100 402 67 550 67
 C611 67 888 79 1035 102C1353 150 1651 166 1855 166C2060 166 2354 117 2384 0z`,
 };
 
+// The width of each tall delimiter's image, in thousandths of an em.
+export const tallDelimWidths: Record<string, number> = {
+    lbrack: 667, rbrack: 667, vert: 333, doublevert: 556, lfloor: 667,
+    rfloor: 667, lceil: 667, rceil: 667, lparen: 875, rparen: 875,
+};
+
 export const tallDelim = function(label: string, midHeight: number): string {
     switch (label) {
         case "lbrack":
