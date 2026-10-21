@@ -157,10 +157,10 @@ export const innerPath = function(name: string, height: number): string {
         case "\u23aa":
             return doubleBrushStroke(`M244 0 H356 V${height} H244z`);
         case "\u23d0":
-            return doubleBrushStroke(`M312 0 H355 V${height} H312z`);
+            return doubleBrushStroke(`M212 0 H262 V${height} H212z`);
         case "\u2016":
-            return doubleBrushStroke(`M80 0 H130 V${height} H80z`) +
-                doubleBrushStroke(`M200 0 H250 V${height} H200z`);
+            return doubleBrushStroke(`M137 0 H187 V${height} H137z`) +
+                doubleBrushStroke(`M287 0 H337 V${height} H287z`);
         default:
             return "";
     }
