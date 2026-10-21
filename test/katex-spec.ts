@@ -1707,7 +1707,7 @@ describe("A style change parser", function() {
     it("should reset math font when switching from text to math", function() {
         for (const expression of [r`\text{\sf $x$}`, r`\textsf{$x$}`]) {
             const markup = katex.renderToString(expression);
-            expect(markup).toMatch(/<span class="mord mathnormal">x<\/span>/);
+            expect(markup).toMatch(/<span class="mord mathnormal"( style="[^"]*")?>x<\/span>/);
             expect(markup).not.toMatch(/<span class="mord mathsf(?: mtight)?">x<\/span>/);
             expect(markup).not.toContain("textsf\">x</span>");
         }
@@ -1716,7 +1716,7 @@ describe("A style change parser", function() {
     it("should preserve text font after switching back from math to text", function() {
         const markup = katex.renderToString(r`\textsf{$\text{x}$}`);
         expect(markup).toContain("<span class=\"mord textsf\">x</span>");
-        expect(markup).not.toMatch(/<span class="mord mathnormal">x<\/span>/);
+        expect(markup).not.toMatch(/<span class="mord mathnormal"( style="[^"]*")?>x<\/span>/);
         expect(markup).not.toMatch(/<span class="mord mathsf(?: mtight)?">x<\/span>/);
     });
 
@@ -1726,7 +1726,7 @@ describe("A style change parser", function() {
             r`\mathsf{\begin{array}{c}x\end{array}}`,
         ]) {
             const markup = katex.renderToString(expression);
-            expect(markup).toMatch(/<span class="mord mathnormal">x<\/span>/);
+            expect(markup).toMatch(/<span class="mord mathnormal"( style="[^"]*")?>x<\/span>/);
             expect(markup).not.toMatch(/<span class="mord mathsf(?: mtight)?">x<\/span>/);
         }
     });
@@ -1736,9 +1736,9 @@ describe("A style change parser", function() {
             r`\mathsf{\begin{CD}A @>x>> B\end{CD}}`,
             new Settings({displayMode: true}),
         );
-        expect(cdMarkup).toMatch(/<span class="mord mathnormal">A<\/span>/);
+        expect(cdMarkup).toMatch(/<span class="mord mathnormal"( style="[^"]*")?>A<\/span>/);
         expect(cdMarkup).toMatch(/<span class="mord mathnormal"[^>]*>B<\/span>/);
-        expect(cdMarkup).toMatch(/<span class="mord mathnormal mtight">x<\/span>/);
+        expect(cdMarkup).toMatch(/<span class="mord mathnormal mtight"( style="[^"]*")?>x<\/span>/);
         expect(cdMarkup).not.toMatch(/<span class="mord mathsf(?: mtight)?">[ABx]<\/span>/);
     });
 
@@ -1760,7 +1760,7 @@ describe("A style change parser", function() {
 
     it("should reset hbox math to textstyle", function() {
         const scriptMarkup = katex.renderToString(r`\scriptstyle x`);
-        expect(scriptMarkup).toMatch(/<span class="mord mathnormal mtight[^"]*">x<\/span>/);
+        expect(scriptMarkup).toMatch(/<span class="mord mathnormal mtight[^"]*"( style="[^"]*")?>x<\/span>/);
 
         for (const expression of [
             r`\scriptstyle \hbox{$x$}`,
@@ -1769,8 +1769,8 @@ describe("A style change parser", function() {
             r`\scriptstyle \fcolorbox{blue}{red}{$x$}`,
         ]) {
             const markup = katex.renderToString(expression);
-            expect(markup).toMatch(/<span class="mord mathnormal[^"]*">x<\/span>/);
-            expect(markup).not.toMatch(/<span class="mord mathnormal mtight[^"]*">x<\/span>/);
+            expect(markup).toMatch(/<span class="mord mathnormal[^"]*"( style="[^"]*")?>x<\/span>/);
+            expect(markup).not.toMatch(/<span class="mord mathnormal mtight[^"]*"( style="[^"]*")?>x<\/span>/);
         }
     });
 });
@@ -1987,7 +1987,7 @@ describe("An HTML font tree-builder", function() {
 
     it("should render \\mathcal{R} with the correct font", function() {
         const markup = katex.renderToString(r`\mathcal{R}`);
-        expect(markup).toContain("<span class=\"mord mathcal\">R</span>");
+        expect(markup).toMatch(/<span class="mord mathcal"( style="[^"]*")?>R<\/span>/);
     });
 
     it("should render \\mathfrak{R} with the correct font", function() {
@@ -2515,10 +2515,10 @@ describe("A markup generator", function() {
     });
 
     it("still combines mathnormal glyphs when italic correction is zero", function() {
-        const markup = katex.renderToString("ab", {output: "html"});
+        const markup = katex.renderToString("hh", {output: "html"});
         const mathnormalSpans = markup.match(/class="mord mathnormal"/g) || [];
         expect(mathnormalSpans.length).toBe(1);
-        expect(markup).toContain(">ab</span>");
+        expect(markup).toContain(">hh</span>");
     });
 
     it("still combines non-mathnormal glyphs with italic correction", function() {

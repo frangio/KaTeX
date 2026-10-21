@@ -11,6 +11,7 @@
 );
 
 @use "fonts.scss";
+@use "libertinus.scss";
 
 // The mu unit is defined as 1/18 em
 $mu: calc(1em / 18);
@@ -341,12 +342,10 @@ $display-margin: 1em 0 !default;
 
     .sqrt {
         > .katex-root {
-            /* These values are taken from the definition of `\r@@t`,
-             `\mkern 5mu` and `\mkern -10mu`. */
-            /* stylelint-disable-next-line declaration-property-value-no-unknown */
-            margin-left: calc(5*$mu);
-            /* stylelint-disable-next-line declaration-property-value-no-unknown */
-            margin-right: calc(-10*$mu);
+            /* RadicalKernBeforeDegree and RadicalKernAfterDegree,
+             written by libertinus/build.py. */
+            margin-left: 0.085em;
+            margin-right: -0.38em;
         }
     }
 

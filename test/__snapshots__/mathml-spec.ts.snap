@@ -194,7 +194,7 @@ exports[`A MathML builder normal spaces render normally 1`] = `
     <mrow>
       <mspace width="1em">
       </mspace>
-      <mspace width="0.431em">
+      <mspace width="0.429em">
       </mspace>
     </mrow>
     <annotation encoding="application/x-tex">
