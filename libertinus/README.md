@@ -36,7 +36,7 @@ overwrites its own output.
 | `src/radicalMetrics.ts` | Height, advance and minimum width of each radical size. |
 | `src/svgGeometry.ts` | Radical paths from Libertinus's radical glyphs and its radical assembly; tall parentheses, brackets, floors, ceilings and bars from the pieces of their MATH assemblies, with their widths in `tallDelimWidths`; the extender bars of assembled delimiters at Libertinus's stem positions; and the stretchy paths: arrows, harpoons, two-headed arrows, `\xlongequal`, over and under accent arrows, over and under braces, over and under brackets (`\overbracket`, `\underbracket`), wide accents and `\vec` (see below for the braces). Each stretchy path is the Libertinus glyph or assembly piece at its anchored end, with its straight shaft extended across the box. |
 | `src/stretchy.ts` | Box heights of the converted stretchy elements in `katexImagesData`, and over and under arrows switched to Libertinus's accent arrows (U+20D6, U+20D7, U+20E1, U+20EE, U+20EF and the over harpoons). |
-| `src/wideAccentImages.ts` | The five Libertinus sizes of `\widehat`, `\widecheck` and `\widetilde`/`\utilde`, chosen by the number of characters under the accent, each in a box whose bottom is the font's `AccentBaseHeight`, and the flag that draws them at natural size over a narrower character (see below). |
+| `src/wideAccentImages.ts` | The five Libertinus sizes of `\widehat`, `\widecheck` and `\widetilde`/`\utilde`, chosen by the number of characters under the accent, each in a box whose bottom is the font's `AccentBaseHeight`, all six sizes for single characters, and the flag that draws them at natural size there (see below). |
 | `src/buildCommon.ts` | Size of the `\vec` image. |
 | `src/styles/katex.scss` | Root index spacing from `RadicalKernBeforeDegree` and `RadicalKernAfterDegree`. |
 
@@ -70,14 +70,16 @@ overwrites its own output.
   `\utilde` to the width of its base, also when that squeezes it over a
   single character: over *x* it draws Computer Modern's smallest image at
   half its width, over *f* at a quarter. Computer Modern's image is flat
-  enough that this goes unnoticed. Libertinus's smallest wide accent is its
-  ordinary accent, which squeezed turns into a narrow spike or vanishes.
-  With this build, an image wider than its single-character base keeps its
-  natural size and is centred over or under the character, as in TeX,
-  which never squeezes an accent and uses the largest size no wider than
-  the base. Wider bases are stretched as in KaTeX. The code is in
-  `src/functions/accent.ts` and `src/functions/accentunder.ts`, enabled by
-  `naturalSizeOverNarrowBase` in `src/wideAccentImages.ts`.
+  enough that this goes unnoticed; Libertinus's accents keep their shape
+  only at their own size. With this build, the accent over or under a
+  single character is never stretched: as in TeX, it is the widest of
+  Libertinus's six sizes that fits the character, or the narrowest, which
+  is the ordinary accent, drawn at its natural size and centred on the
+  character. Over *x* that is the same hat as `\hat`. Bases of several
+  characters, whose width KaTeX doesn't know, are stretched as in KaTeX.
+  The code is in `src/functions/accent.ts`, `src/functions/accentunder.ts`
+  and `src/stretchy.ts`, enabled by `naturalSizeOverCharacter` in
+  `src/wideAccentImages.ts`.
 
 ## Not covered by Libertinus
 
