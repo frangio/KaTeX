@@ -19,7 +19,7 @@ const radicalMetrics: {
         {height: 3.383, advance: 0.937, minWidth: 0.992},
         {height: 3.833, advance: 0.947, minWidth: 1.002},
     ],
-    tall: {advance: 0.817, minWidth: 0.872},
+    tall: {advance: 0.89807, minWidth: 0.91807},
 };
 
 export default radicalMetrics;

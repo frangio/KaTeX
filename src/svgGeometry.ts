@@ -112,7 +112,7 @@ const sqrtTall = function(
     // the top and a straight stem between them.
     return `M659 239L704 239L704 120L852 120L852 80L659 80z
 M704 ${viewBoxHeight - 20 - 7}l0 -1658l-45 0l0 1533l-511 -1426c-35 26 -72 50 -113 71
-l13 28l64 -26l540 1505zM659 139V${viewBoxHeight - 1585}H704V139zM817 ${hLinePad}
+l13 28l64 -26l540 1505zM659 139V${viewBoxHeight - 1585}H704V139zM659 ${hLinePad}
 v${40 + extraVinculum}h400000v-${40 + extraVinculum}z`;
 };
 
