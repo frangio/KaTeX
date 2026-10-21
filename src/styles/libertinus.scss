@@ -172,8 +172,9 @@
         U+61-7E,
         U+A0,
         U+A3,
-        U+A7-A8,
+        U+A7-A9,
         U+AC,
+        U+AE,
         U+B0-B1,
         U+B6,
         U+B8,
@@ -271,6 +272,17 @@
 
 @font-face {
     font-family: KaTeX_Main;
+    src: url("#{fonts.$font-folder}/Libertinus_Main-Regular_math-scaled.woff2") format("woff2");
+    font-weight: normal;
+    font-style: normal;
+    font-display: fonts.$font-display;
+    unicode-range:
+        U+22C4,
+        U+25EF;
+}
+
+@font-face {
+    font-family: KaTeX_Main;
     src: url("#{fonts.$font-folder}/Libertinus_Main-Bold_serif-bold.woff2") format("woff2");
     font-weight: bold;
     font-style: normal;
@@ -282,8 +294,9 @@
         U+7B-7E,
         U+A0,
         U+A3,
-        U+A8,
+        U+A8-A9,
         U+AC,
+        U+AE,
         U+B0-B1,
         U+B8,
         U+C6,
@@ -386,6 +399,17 @@
 
 @font-face {
     font-family: KaTeX_Main;
+    src: url("#{fonts.$font-folder}/Libertinus_Main-Bold_math-scaled.woff2") format("woff2");
+    font-weight: bold;
+    font-style: normal;
+    font-display: fonts.$font-display;
+    unicode-range:
+        U+22C4,
+        U+25EF;
+}
+
+@font-face {
+    font-family: KaTeX_Main;
     src: url("#{fonts.$font-folder}/Libertinus_Main-Italic_serif-italic.woff2") format("woff2");
     font-weight: normal;
     font-style: italic;
@@ -399,7 +423,8 @@
         U+61-7A,
         U+7E,
         U+A0,
-        U+A8,
+        U+A8-A9,
+        U+AE,
         U+B0,
         U+B8,
         U+C6,
@@ -442,7 +467,8 @@
         U+61-7A,
         U+7E,
         U+A0,
-        U+A8,
+        U+A8-A9,
+        U+AE,
         U+B0,
         U+B8,
         U+C6,
