@@ -71,10 +71,16 @@ export const htmlBuilder: HtmlBuilderSupSub<"accent"> = (grp, options) => {
     // Note that our skew metrics are just the kern between each character
     // and the skewchar.
     let skew = 0;
+    let italic = 0;
     if (mustShift) {
         // Read the skew from the rendered base symbol.
         // This preserves font metrics from font wrappers like \mathbb.
-        skew = getBaseSymbol(body)?.skew ?? 0;
+        const baseSymbol = getBaseSymbol(body);
+        skew = baseSymbol?.skew ?? 0;
+        // The character's italic correction is rendered as a right margin,
+        // which widens the box the accent is centered over. TeX centers the
+        // accent over the character's own width, so we take it back out.
+        italic = baseSymbol?.italic ?? 0;
     }
 
     const accentBelow = group.label === "\\c";
@@ -124,7 +130,7 @@ export const htmlBuilder: HtmlBuilderSupSub<"accent"> = (grp, options) => {
         }
 
         // Shift the accent over by the skew.
-        let left = skew;
+        let left = skew - italic / 2;
 
         // CSS defines `.katex .katex-accent .accent-body:not(.accent-full) { width: 0 }`
         // so that the accent doesn't contribute to the bounding box.
@@ -162,10 +168,11 @@ export const htmlBuilder: HtmlBuilderSupSub<"accent"> = (grp, options) => {
                     type: "elem",
                     elem: accentBody,
                     wrapperClasses: ["svg-align"],
-                    wrapperStyle: skew > 0
+                    wrapperStyle: skew > 0 || italic > 0
                         ? {
-                            width: `calc(100% - ${makeEm(2 * skew)})`,
-                            marginLeft: makeEm(2 * skew),
+                            width: `calc(100% - ${
+                                makeEm(2 * Math.max(skew, 0) + italic)})`,
+                            marginLeft: makeEm(2 * Math.max(skew, 0)),
                         }
                         : undefined,
                 },
