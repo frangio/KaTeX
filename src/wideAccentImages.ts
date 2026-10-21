@@ -39,9 +39,8 @@ const tilde: WideAccentImage[] = [
 const wideAccentImages: Record<string, WideAccentImage[]> =
     {widehat, widecheck, widetilde: tilde, utilde: tilde};
 
-// Whether an image wider than a single character under it is drawn at its
-// natural size, centered over the character, instead of being squeezed to
-// the character's width.
-export const naturalSizeOverNarrowBase = false;
+// The smallest images are Libertinus's ordinary accents, which keep
+// their shape only at their own size.
+export const naturalSizeOverNarrowBase = true;
 
 export default wideAccentImages;
