@@ -53,6 +53,12 @@ overwrites its own output.
   against 0.080em) and taller (0.488em against 0.385em) than Libertinus's
   horizontal design. Set `HORIZONTAL_BRACE_DESIGN = "horizontal"` in
   `build.py` to use the font's horizontal pieces instead.
+- Radicals taller than the largest pre-drawn one (3.8em) are assembled
+  from Libertinus's radical pieces, but with the radicand 0.194em from the
+  stem instead of the assembly's 0.113em. The pre-drawn radicals have a
+  leaning stem that leaves the radicand more room the lower it goes; next
+  to them the assembly's vertical stem crowds the radicand. 0.194em is the
+  gap the largest pre-drawn radical has a quarter of the way up.
 - `\eqslantless` (⪕) and `\eqslantgtr` (⪖) are not in Libertinus. They are
   drawn as its `\leqslant` (⩽) and `\geqslant` (⩾) turned upside down,
   which is the shape these characters have: the slanted bar above the

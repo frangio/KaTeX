@@ -989,7 +989,14 @@ def write_radicals():
     _, bottom_min, _, bottom_max = math.bounds(bottom)
     ext_min, _, ext_max, _ = math.bounds(extender)
     _, top_min, top_xmax, top_max = math.bounds(top)
-    advance = math.glyphs[top].width
+    # The assembly sets its radicand 0.113em from a vertical stem, close
+    # beside the pre-drawn radicals, whose leaning stem leaves the radicand
+    # more room the lower it goes. The assembled radical gets the gap the
+    # largest pre-drawn one has a quarter of the way up.
+    largest = variants[-1]
+    _, low, _, high = math.bounds(largest)
+    stem = max(right for _, right in crossings(largest, y=low + (high - low) / 4))
+    advance = ext_max + math.glyphs[largest].width - stem
     top_part = glyph_path(top, pad + top_max)
     bottom_part = glyph_path(bottom, 0, top_expr=f"viewBoxHeight - {fmt(-bottom_min)}" if bottom_min < 0 else f"viewBoxHeight + {fmt(bottom_min)}")
     stem_top = pad + top_max - top_min - overlap
@@ -997,7 +1004,7 @@ def write_radicals():
     path = (top_part + bottom_part +
             f"M{fmt(ext_min)} {fmt(stem_top)}V${{viewBoxHeight - {fmt(stem_bottom)}}}"
             f"H{fmt(ext_max)}V{fmt(stem_top)}z"
-            f"M{advance} ${{hLinePad}}v${{{rule} + extraVinculum}}h400000v-${{{rule} + extraVinculum}}z")
+            f"M{fmt(ext_min)} ${{hLinePad}}v${{{rule} + extraVinculum}}h400000v-${{{rule} + extraVinculum}}z")
     body = "\n".join(
         ["const sqrtTall = function(", "    extraVinculum: number,", "    hLinePad: number,",
          "    viewBoxHeight: number", "): string {"]
@@ -1006,7 +1013,7 @@ def write_radicals():
                   " stem between them.")
         + path_lines(path, "    return `") + ["};", ""])
     text = replace_function(text, "sqrtTall", body)
-    table["tall"] = {"advance": advance / u, "minWidth": (top_xmax + 20) / u}
+    table["tall"] = {"advance": advance / u, "minWidth": (max(top_xmax, advance) + 20) / u}
     geometry.write_text(text)
 
     def entry(values):
