@@ -27,6 +27,7 @@ KATEX = Path(__file__).resolve().parent.parent
 SOURCES = {
     "math": "LibertinusMath-Regular.otf",
     "math-turned": "LibertinusMath-Regular.otf",
+    "math-scaled": "LibertinusMath-Regular.otf",
     "serif": "LibertinusSerif-Regular.otf",
     "serif-italic": "LibertinusSerif-Italic.otf",
     "serif-bold": "LibertinusSerif-Bold.otf",
@@ -38,11 +39,28 @@ SOURCES = {
 }
 
 
+# Glyphs Libertinus lacks that are another of its glyphs resized and centred
+# on the math axis: \bigcirc is its white circle scaled until its stroke is
+# that of the operators (−, ∘, ⊖), which is about Computer Modern's size.
+# \diamond is its white diamond at Computer Modern's size.
+SCALED = {0x22C4: (0x25C7, 0.78), 0x25EF: (0x25CB, "stroke")}
+
+
+def transform_glyph(font, glyph, matrix):
+    glyphs = font.getGlyphSet()
+    pen = T2CharStringPen(None, glyphs)
+    glyphs[glyph].draw(TransformPen(pen, matrix))
+    charstrings = font["CFF "].cff.topDictIndex[0].CharStrings
+    old = charstrings[glyph]
+    charstrings[glyph] = pen.getCharString(private=old.private, globalSubrs=old.globalSubrs)
+
+
 class Source:
     def __init__(self, key):
         self.key = key
         self.path = LIB / SOURCES[key]
-        self.font = TTFont(self.path)
+        self.scales = {}
+        self.font = self.load()
         self.cmap = self.font.getBestCmap()
         self.glyphs = self.font.getGlyphSet()
         self.upm = self.font["head"].unitsPerEm
@@ -67,6 +85,30 @@ class Source:
             self.constants = {
                 k: getattr(v, "Value", v) for k, v in vars(math.MathConstants).items()
             }
+
+    def load(self):
+        """The source font, with the glyphs given scales by scale() resized."""
+        font = TTFont(self.path, recalcTimestamp=False)
+        if self.scales:
+            glyphs = font.getGlyphSet()
+            axis = font["MATH"].table.MathConstants.AxisHeight.Value
+            for glyph, scale in self.scales.items():
+                pen = BoundsPen(glyphs)
+                glyphs[glyph].draw(pen)
+                xmin, ymin, xmax, ymax = pen.bounds
+                # Keep the side bearings and centre the glyph on the math axis.
+                dx = xmin * (1 - scale)
+                dy = axis - (ymin + ymax) / 2 * scale
+                transform_glyph(font, glyph, (scale, 0, 0, scale, dx, dy))
+                advance, lsb = font["hmtx"][glyph]
+                font["hmtx"][glyph] = (round(advance - (xmax - xmin) * (1 - scale)), lsb)
+        return font
+
+    def scale(self, scales):
+        """Resize glyphs by the given factors, here and in the subsets written from this source."""
+        self.scales = scales
+        self.font = self.load()
+        self.glyphs = self.font.getGlyphSet()
 
     def bounds(self, glyph):
         pen = BoundsPen(self.glyphs)
@@ -182,6 +224,7 @@ SUBSTITUTES = {
 TURNED = {0x2A95: 0x2A7D, 0x2A96: 0x2A7E}
 
 
+
 def not_slash(source, glyph):
     # The combining solidus overlays the glyph before it; \not overlays the
     # relation after it, so its slash is centred on a relation's width.
@@ -197,6 +240,10 @@ def upside_down(source, glyph):
 TRANSFORMS = {0xE020: not_slash, 0x2A95: upside_down, 0x2A96: upside_down}
 
 TEXT_ACCENTS = {0x7E: 0x2DC, 0x5E: 0x2C6}
+
+
+def scaled():
+    return substitute("math-scaled", {cp: target for cp, (target, _) in SCALED.items()})
 
 
 def accents(key, extra=None):
@@ -361,9 +408,9 @@ KATEX_FONTS = {
     "Caligraphic-Regular": [alphabet("script"), identity("math")],
     "Fraktur-Regular": [alphabet("fraktur"), identity("serif")],
     "Main-Regular": [accents("math", {0x2032: "minute.ssty1"}), identity("math"), identity("serif"),
-                     substitute("math", SUBSTITUTES)],
+                     substitute("math", SUBSTITUTES), scaled()],
     "Main-Bold": [accents("serif-bold"), alphabet("bold"), identity("serif-bold"), identity("math"),
-                  substitute("serif-bold", SUBSTITUTES)],
+                  substitute("serif-bold", SUBSTITUTES), scaled()],
     "Main-Italic": [accents("serif-italic"), identity("serif-italic")],
     "Main-BoldItalic": [accents("serif-bolditalic"), identity("serif-bolditalic")],
     "Math-Italic": [alphabet("italic", dotless=True), identity("math")],
@@ -383,6 +430,9 @@ EXTRA_FONT_FILES = {
     "Fraktur-Bold": ("Fraktur-Regular", [alphabet("boldfraktur"), identity("serif-bold")]),
 }
 ZERO_WIDTH_SPACE = 0x200B
+# Characters KaTeX's fonts lack that Libertinus has and KaTeX uses when the
+# font does: © and ® for \textcopyright and \textregistered.
+EXTRA_CODEPOINTS = {font: [0xA9, 0xAE] for font in ("Main-Regular", "Main-Bold", "Main-Italic", "Main-BoldItalic")}
 SKEWED_FONTS = {"Math-Italic", "Math-BoldItalic", "Caligraphic-Regular", "Script-Regular"}
 ITALIC_FONTS = {"Main-Italic", "Main-BoldItalic", "Math-Italic", "Math-BoldItalic", "SansSerif-Italic"}
 
@@ -426,17 +476,8 @@ def copy_vertical_metrics(font, reference):
     font["OS/2"].fsSelection = (font["OS/2"].fsSelection & ~use_typo) | (reference["OS/2"].fsSelection & use_typo)
 
 
-def transform_glyph(font, glyph, matrix):
-    glyphs = font.getGlyphSet()
-    pen = T2CharStringPen(None, glyphs)
-    glyphs[glyph].draw(TransformPen(pen, matrix))
-    charstrings = font["CFF "].cff.topDictIndex[0].CharStrings
-    old = charstrings[glyph]
-    charstrings[glyph] = pen.getCharString(private=old.private, globalSubrs=old.globalSubrs)
-
-
 def write_subset(source, mapping, reference, path, advances, transforms):
-    font = TTFont(source.path, recalcTimestamp=False)
+    font = source.load()
     hmtx = font["hmtx"]
     for glyph, advance in advances.items():
         hmtx[glyph] = (advance, hmtx[glyph][1])
@@ -472,10 +513,29 @@ def resolve_font(name, resolvers, cps, original):
     return chosen
 
 
+def operator_stroke():
+    _, ymin, _, ymax = math.bounds(math.cmap[0x2212])
+    return ymax - ymin
+
+
+def scale_glyphs():
+    scales = {}
+    for target, scale in SCALED.values():
+        glyph = math.cmap[target]
+        if scale == "stroke":
+            _, ymin, _, ymax = math.bounds(glyph)
+            left, _ = crossings(glyph, y=(ymin + ymax) / 2)
+            scale = operator_stroke() / (left[1] - left[0])
+        scales[glyph] = scale
+    sources["math-scaled"].scale(scales)
+
+
 def main():
+    scale_glyphs()
     original = load_katex_metrics()
     metrics = copy.deepcopy(original)
     report = {}
+    missing = {}
     optical = {}
     extenders = {}
     faces = []
@@ -485,7 +545,7 @@ def main():
 
     for file, metric_font, resolvers in jobs:
         family, weight, style = FACES[file]
-        cps = sorted(map(int, original[metric_font]))
+        cps = sorted({*map(int, original[metric_font]), *EXTRA_CODEPOINTS.get(file, [])})
         chosen = resolve_font(file, resolvers, cps, original[metric_font])
         reference = TTFont(KATEX / f"fonts/KaTeX_{file}.ttf")
 
@@ -515,6 +575,7 @@ def main():
             write_subset(source, mapping, reference, KATEX / "fonts" / name, advances, transforms)
             faces.append(face(family, weight, style, name, unicode_range(mapping)))
 
+        missing[file] = {cp for cp in cps if cp not in chosen}
         report[file] = {
             "from": {key: len(m) for key, m in by_source.items()},
             "katex_fallback": "".join(chr(cp) for cp in cps if cp not in chosen and cp > 32),
@@ -523,6 +584,7 @@ def main():
     sigmas = global_metrics()
     rules = write_delimiter_sizes(metrics, faces, optical)
     write_scss(faces, rules)
+    write_unavailable(missing)
     write_metrics_data(metrics)
     write_sigmas(sigmas)
     write_size_style_map(size_style_map())
@@ -535,6 +597,38 @@ def main():
         REPORT.write_text(json.dumps(
             {"fonts": report, "sigmas": sigmas, "sizeStyleMap": size_style_map(), "optical": optical},
             indent=1, ensure_ascii=False))
+
+
+def write_unavailable(missing):
+    # The commands whose glyph the build found nowhere in Libertinus, the
+    # characters that stand for them in input, and the macros that use them.
+    font = {"main": "Main-Regular", "ams": "AMS-Regular"}
+    names = set()
+    symbols = (KATEX / "src/symbols.ts").read_text()
+    pattern = r'defineSymbol\((?:math|text), (main|ams), \w+, "\\u([0-9a-f]{4})", "([^"]+)"(, true)?\)'
+    for m in re.finditer(pattern, symbols):
+        cp = int(m.group(2), 16)
+        if cp in missing[font[m.group(1)]]:
+            names.add(m.group(3).replace("\\\\", "\\"))
+            if m.group(4):
+                names.add(chr(cp))
+    macros = [(m.group(1).replace("\\\\", "\\"), m.group(2).replace("\\\\", "\\"))
+              for m in re.finditer(r'defineMacro\("((?:[^"\\]|\\.)+)",\s*"((?:[^"\\]|\\.)*)"\)',
+                                   (KATEX / "src/macros.ts").read_text())]
+    while True:
+        uses = {name for name, body in macros if name not in names
+                and any(re.search(re.escape(n) + r"(?![A-Za-z@])", body) for n in names)}
+        if not uses:
+            break
+        names |= uses
+    lines = "".join(f"    {json.dumps(n, ensure_ascii=False)},\n" for n in sorted(names, key=lambda n: (len(n) == 1, n)))
+    (KATEX / "src/unavailableSymbols.ts").write_text(
+        "// This file is GENERATED by libertinus/build.py. DO NOT MODIFY.\n"
+        "// Commands and characters that Libertinus has no glyph for. Using one is\n"
+        "// a parse error rather than text drawn in whatever font the browser falls\n"
+        "// back to.\n"
+        f"const unavailableSymbols: string[] = [\n{lines}];\n"
+        "export default unavailableSymbols;\n")
 
 
 def face(family, weight, style, file, urange):

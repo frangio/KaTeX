@@ -26,7 +26,8 @@ overwrites its own output.
 
 | File | Contents |
 |---|---|
-| `fonts/Libertinus_*.woff2` | Subsets of Libertinus Math, Serif, Sans and Mono with glyphs remapped to the codepoints KaTeX emits, for example math italic *x* (U+1D465) at `x` and each delimiter size at its plain codepoint in the Size fonts. Big operators have their advance reduced by their italic correction, converting OpenType's convention to TeX's. Where KaTeX keeps a symbol at a codepoint Libertinus leaves empty, the Libertinus glyph for the same symbol is placed there: the AMS corners `\ulcorner` … `\lrcorner` (KaTeX's box-drawing codepoints) from ⌜ ⌝ ⌞ ⌟, `\triangleright` and `\triangleleft` from ▷ and ◁, `\Finv` from Libertinus Serif, and the slash of `\not` from the combining long solidus U+0338, moved right to sit over the relation that follows it rather than the character before it. |
+| `fonts/Libertinus_*.woff2` | Subsets of Libertinus Math, Serif, Sans and Mono with glyphs remapped to the codepoints KaTeX emits, for example math italic *x* (U+1D465) at `x` and each delimiter size at its plain codepoint in the Size fonts. Big operators have their advance reduced by their italic correction, converting OpenType's convention to TeX's. Where KaTeX keeps a symbol at a codepoint Libertinus leaves empty, the Libertinus glyph for the same symbol is placed there: the AMS corners `\ulcorner` … `\lrcorner` (KaTeX's box-drawing codepoints) from ⌜ ⌝ ⌞ ⌟, `\triangleright` and `\triangleleft` from ▷ and ◁, `\Finv` from Libertinus Serif, and the slash of `\not` from the combining long solidus U+0338, moved right to sit over the relation that follows it rather than the character before it. The Main fonts also get © and ®, which KaTeX's fonts lack (the regular weight from Libertinus Math, the others from Libertinus Serif), so `\textcopyright` and `\textregistered` use them instead of building them with `\textcircled`. |
+| `src/unavailableSymbols.ts` | The commands whose glyph is in no Libertinus font, the characters that stand for them in input, and the macros built on them. KaTeX reports each as a parse error instead of drawing it in a fallback font (see below). |
 | `src/styles/libertinus.scss` | `@font-face` rules for those subsets under KaTeX's family names, with `unicode-range`. Each subset also covers the zero-width space KaTeX puts in its vertical layouts. |
 | `src/styles/fonts.scss` | KaTeX's own `@font-face` rules removed, so the build ships only the Libertinus subsets. |
 | `src/fontMetricsData.js` | Height, depth, italic correction, skew and width of every glyph, from the outlines and the MATH table. |
@@ -60,6 +61,12 @@ overwrites its own output.
   leaning stem that leaves the radicand more room the lower it goes; next
   to them the assembly's vertical stem crowds the radicand. 0.194em is the
   gap the largest pre-drawn radical has a quarter of the way up.
+- `\bigcirc` (◯) and `\diamond` (⋄) are not in Libertinus. They are
+  its white circle ○ and white diamond ◇ resized and centred on the math
+  axis: the circle until its stroke is that of the operators −, ∘ and ⊖
+  (1.92 times, 0.90em across, against Computer Modern's 0.93em), the
+  diamond to Computer Modern's 0.48em, which leaves its stroke lighter
+  than the operators'. `\textcircled` draws its circle with the same ○.
 - `\eqslantless` (⪕) and `\eqslantgtr` (⪖) are not in Libertinus. They are
   drawn as its `\leqslant` (⩽) and `\geqslant` (⩾) turned upside down,
   which is the shape these characters have: the slanted bar above the
@@ -82,14 +89,25 @@ overwrites its own output.
   and `src/stretchy.ts`, enabled by `naturalSizeOverCharacter` in
   `src/wideAccentImages.ts`.
 
-## Not covered by Libertinus
+## Not available
 
-- About 50 characters that KaTeX's fonts have are in no Libertinus font,
-  such as `\lessapprox`, `\subseteqq`, `\multimap` and `\checkmark`.
-  KaTeX's own fonts are not shipped, so the browser draws them with a font
-  installed on the reader's system, spaced with KaTeX's Computer Modern
-  metrics. KaTeX's private-use negated relations, such as `\nleqq`, have
-  no glyph in any other font.
+- 38 AMS symbols are in no Libertinus font: `\lessapprox` `\gtrapprox`
+  `\lnapprox` `\gnapprox` `\lesseqqgtr` `\gtreqqless` `\precapprox`
+  `\succapprox` `\precnapprox` `\succnapprox` `\subseteqq` `\supseteqq`
+  `\subsetneqq` `\supsetneqq` `\Subset` `\Supset` `\bumpeq` `\Bumpeq`
+  `\pitchfork` `\multimap` `\Cap` `\doublecap` `\Cup` `\doublecup`
+  `\intercal` `\veebar` `\barwedge` `\doublebarwedge` `\divideontimes`
+  `\leftthreetimes` `\rightthreetimes` `\Game` `\diagup` `\diagdown`
+  `\checkmark` `\maltese` `\blacklozenge`. Nor are the 14 negated
+  relations KaTeX draws from its private-use glyphs: `\nleqq` `\ngeqq`
+  `\nleqslant` `\ngeqslant` `\lvertneqq` `\gvertneqq` `\nsubseteqq`
+  `\nsupseteqq` `\varsubsetneq` `\varsupsetneq` `\varsubsetneqq`
+  `\varsupsetneqq` `\nshortmid` `\nshortparallel`. Using one of these
+  commands, or typing its character, is a parse error ("`\checkmark` is
+  not available: the fonts have no glyph for it"). KaTeX's own fonts are
+  not shipped, so the alternative would be the reader's system fonts with
+  Computer Modern's metrics. A page that defines one with `\renewcommand`
+  gets its own definition.
 
 ## Still from Computer Modern
 
