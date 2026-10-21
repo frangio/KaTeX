@@ -14,7 +14,7 @@ import type {MacroMap} from "../src/defineMacro";
 import type {Strict} from "../src/strict";
 import {
     strictSettings, nonstrictSettings, trustSettings, r,
-    getBuilt, getParsed, stripPositions,
+    getBuilt, getParsed, stripPositions, available,
 } from "./helpers";
 
 // TODO(ts)
@@ -3627,7 +3627,7 @@ describe("Symbols", function() {
     it("should support AMS symbols in both text and math mode", function() {
         // These text+math symbols are from Section 6 of
         // http://mirrors.ctan.org/fonts/amsfonts/doc/amsfonts.pdf
-        const symbols = r`\yen\checkmark\circledR\maltese`;
+        const symbols = available(r`\yen\checkmark\circledR\maltese`);
         expect(symbols).toBuild();
         expect(`\\text{${symbols}}`).toBuild(strictSettings);
     });
@@ -3926,9 +3926,9 @@ describe("A macro expander", function() {
     });
 
     it("should build Unicode private area characters", function() {
-        expect`\gvertneqq\lvertneqq\ngeqq\ngeqslant\nleqq`.toBuild();
-        expect`\nleqslant\nshortmid\nshortparallel\varsubsetneq`.toBuild();
-        expect`\varsubsetneqq\varsupsetneq\varsupsetneqq`.toBuild();
+        expect(available(r`\gvertneqq\lvertneqq\ngeqq\ngeqslant\nleqq`)).toBuild();
+        expect(available(r`\nleqslant\nshortmid\nshortparallel\varsubsetneq`)).toBuild();
+        expect(available(r`\varsubsetneqq\varsupsetneq\varsupsetneqq`)).toBuild();
     });
 
     it("\\TextOrMath should work in a macro passed to \\text", function() {
@@ -4420,11 +4420,11 @@ describe("Unicode accents", function() {
 
 describe("Unicode", function() {
     it("should parse negated relations", function() {
-        expect`∉∤∦≁≆≠≨≩≮≯≰≱⊀⊁⊈⊉⊊⊋⊬⊭⊮⊯⋠⋡⋦⋧⋨⋩⋬⋭⪇⪈⪉⪊⪵⪶⪹⪺⫋⫌`.toParse(strictSettings);
+        expect(available("∉∤∦≁≆≠≨≩≮≯≰≱⊀⊁⊈⊉⊊⊋⊬⊭⊮⊯⋠⋡⋦⋧⋨⋩⋬⋭⪇⪈⪉⪊⪵⪶⪹⪺⫋⫌")).toParse(strictSettings);
     });
 
     it("should build relations", function() {
-        expect`∈∋∝∼∽≂≃≅≈≊≍≎≏≐≑≒≓≖≗≜≡≤≥≦≧≪≫≬≳≷≺≻≼≽≾≿∴∵∣≔≕⩴⋘⋙⟂⊨∌`.toBuild(strictSettings);
+        expect(available("∈∋∝∼∽≂≃≅≈≊≍≎≏≐≑≒≓≖≗≜≡≤≥≦≧≪≫≬≳≷≺≻≼≽≾≿∴∵∣≔≕⩴⋘⋙⟂⊨∌")).toBuild(strictSettings);
     });
 
     it("should parse relations", function() {
@@ -4437,11 +4437,11 @@ describe("Unicode", function() {
     });
 
     it("should build more relations", function() {
-        expect`⊂⊃⊆⊇⊏⊐⊑⊒⊢⊣⊩⊪⊸⋈⋍⋐⋑⋔⋛⋞⋟⌢⌣⩾⪆⪌⪕⪖⪯⪰⪷⪸⫅⫆≘≙≚≛≝≞≟≲⩽⪅≶⋚⪋`.toBuild(strictSettings);
+        expect(available("⊂⊃⊆⊇⊏⊐⊑⊒⊢⊣⊩⊪⊸⋈⋍⋐⋑⋔⋛⋞⋟⌢⌣⩾⪆⪌⪕⪖⪯⪰⪷⪸⫅⫆≘≙≚≛≝≞≟≲⩽⪅≶⋚⪋")).toBuild(strictSettings);
     });
 
     it("should parse symbols", function() {
-        expect("£¥ℂℍℑℎℓℕ℘ℙℚℜℝℤℲℵðℶℷℸ⅁∀∁∂∃∇∞∠∡∢♠♡♢♣♭♮♯✓°¬‼⋮\u00B7\u00A9").toBuild(strictSettings);
+        expect(available("£¥ℂℍℑℎℓℕ℘ℙℚℜℝℤℲℵðℶℷℸ⅁∀∁∂∃∇∞∠∡∢♠♡♢♣♭♮♯✓°¬‼⋮\u00B7\u00A9")).toBuild(strictSettings);
         expect("\\text{£¥ℂℍℎ\u00A9\u00AE}").toBuild(strictSettings);
     });
 
@@ -4469,11 +4469,11 @@ describe("Unicode", function() {
     });
 
     it("should build binary operators", function() {
-        expect("±×÷∓∔∧∨∩∪≀⊎⊓⊔⊕⊖⊗⊘⊙⊚⊛⊝◯⊞⊟⊠⊡⊺⊻⊼⋇⋉⋊⋋⋌⋎⋏⋒⋓⩞\u22C5\u2218\u2216\u2219").toBuild(strictSettings);
+        expect(available("±×÷∓∔∧∨∩∪≀⊎⊓⊔⊕⊖⊗⊘⊙⊚⊛⊝◯⊞⊟⊠⊡⊺⊻⊼⋇⋉⋊⋋⋌⋎⋏⋒⋓⩞\u22C5\u2218\u2216\u2219")).toBuild(strictSettings);
     });
 
     it("should build common ords", function() {
-        expect("§¶£¥∇∞⋅∠∡∢♠♡♢♣♭♮♯✓…⋮⋯⋱! ‼ ⦵").toBuild(strictSettings);
+        expect(available("§¶£¥∇∞⋅∠∡∢♠♡♢♣♭♮♯✓…⋮⋯⋱! ‼ ⦵")).toBuild(strictSettings);
     });
 
     it("should build delimiters", function() {

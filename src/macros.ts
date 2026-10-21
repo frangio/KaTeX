@@ -13,6 +13,7 @@ import functions from "./functions";
 import symbols from "./symbols";
 import {makeEm} from "./units";
 import ParseError from "./ParseError";
+import unavailableSymbols from "./unavailableSymbols";
 
 import type {MacroContextInterface, MacroExpansion} from "./defineMacro";
 
@@ -247,10 +248,15 @@ defineMacro("\\AA", "\\r A");
 //      \check@mathfonts\fontsize\sf@size\z@\math@fontsfalse\selectfont R}}
 // \DeclareRobustCommand{\copyright}{%
 //    \ifmmode{\nfss@text{\textcopyright}}\else\textcopyright\fi}
-defineMacro("\\textcopyright", "\\html@mathml{\\textcircled{c}}{\\char`©}");
+// Fonts that have © and ® draw them; KaTeX's own fonts don't, so they are
+// built from \textcircled.
+const hasCopyright = 0xA9 in fontMetricsData["Main-Regular"];
+const hasRegistered = 0xAE in fontMetricsData["Main-Regular"];
+defineMacro("\\textcopyright", hasCopyright ? "\\char`©" :
+    "\\html@mathml{\\textcircled{c}}{\\char`©}");
 defineMacro("\\copyright",
     "\\TextOrMath{\\textcopyright}{\\text{\\textcopyright}}");
-defineMacro("\\textregistered",
+defineMacro("\\textregistered", hasRegistered ? "\\char`®" :
     "\\html@mathml{\\textcircled{\\scriptsize R}}{\\char`®}");
 
 // Characters omitted from Unicode range 1D400–1D7FF
@@ -1036,3 +1042,9 @@ defineMacro("\\grayH", "\\textcolor{##3b3e40}{#1}");
 defineMacro("\\grayI", "\\textcolor{##21242c}{#1}");
 defineMacro("\\kaBlue", "\\textcolor{##314453}{#1}");
 defineMacro("\\kaGreen", "\\textcolor{##71B307}{#1}");
+
+for (const name of unavailableSymbols) {
+    defineMacro(name, function() {
+        throw new ParseError(`${name} is not available: the fonts have no glyph for it`);
+    });
+}

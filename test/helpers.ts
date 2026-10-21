@@ -2,6 +2,7 @@ import katex from "../katex";
 import ParseError from "../src/ParseError";
 import parseTree from "../src/parseTree";
 import Settings from "../src/Settings";
+import unavailableSymbols from "../src/unavailableSymbols";
 
 import {diff} from 'jest-diff';
 import {RECEIVED_COLOR, printReceived, printExpected} from 'jest-matcher-utils';
@@ -63,6 +64,20 @@ const printExpectedResult = (mode: any, isNot: any, expectedError: any) => expec
     ? (isNot ? 'fail ' : 'success ') + mode
     : (isNot ? 'not throw a ' : `fail ${mode} with a `) +
         (expectedError.name || `ParseError matching "${expectedError}"`);
+
+/**
+ * Removes the commands and characters the fonts have no glyph for, so that
+ * tests of KaTeX's symbols pass for a build with fonts that lack some. With
+ * KaTeX's own fonts it returns the input unchanged.
+ */
+export function available(tex: string): string {
+    for (const name of unavailableSymbols) {
+        const pattern = name.startsWith("\\") ? name.replace(/[\\@]/g, "\\$&") + "(?![a-zA-Z@])"
+            : name;
+        tex = tex.replace(new RegExp(pattern, "g"), "");
+    }
+    return tex;
+}
 
 export const nonstrictSettings = new Settings({strict: false});
 export const strictSettings = new Settings({strict: true});
