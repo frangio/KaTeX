@@ -1780,7 +1780,7 @@ describe("An HTML font tree-builder", function() {
 
     it("should render \\mathcal{R} with the correct font", function() {
         const markup = katex.renderToString(r`\mathcal{R}`);
-        expect(markup).toContain("<span class=\"mord mathcal\">R</span>");
+        expect(markup).toMatch(/<span class="mord mathcal"( style="[^"]*")?>R<\/span>/);
     });
 
     it("should render \\mathfrak{R} with the correct font", function() {

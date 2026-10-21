@@ -1,5 +1,6 @@
 /* stylelint-disable font-family-no-missing-generic-family-keyword */
 @import "./fonts.scss";
+@import "./libertinus.scss";
 
 // The mu unit is defined as 1/18 em
 $mu: calc(1em / 18);
@@ -326,10 +327,10 @@ $version: "" !default;
 
     .sqrt {
         > .root {
-            /* These values are taken from the definition of `\r@@t`,
-             `\mkern 5mu` and `\mkern -10mu`. */
-            margin-left: calc(5*$mu);
-            margin-right: calc(-10*$mu);
+            /* RadicalKernBeforeDegree and RadicalKernAfterDegree,
+             written by libertinus/build.py. */
+            margin-left: 0.085em;
+            margin-right: -0.38em;
         }
     }
 

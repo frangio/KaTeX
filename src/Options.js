@@ -15,15 +15,15 @@ const sizeStyleMap = [
     // The size mappings are taken from TeX with \normalsize=10pt.
     [1, 1, 1],    // size1: [5, 5, 5]              \tiny
     [2, 1, 1],    // size2: [6, 5, 5]
-    [3, 1, 1],    // size3: [7, 5, 5]              \scriptsize
+    [3, 2, 1],    // size3: [7, 6, 5]              \scriptsize
     [4, 2, 1],    // size4: [8, 6, 5]              \footnotesize
-    [5, 2, 1],    // size5: [9, 6, 5]              \small
-    [6, 3, 1],    // size6: [10, 7, 5]             \normalsize
-    [7, 4, 2],    // size7: [12, 8, 6]             \large
-    [8, 6, 3],    // size8: [14.4, 10, 7]          \Large
-    [9, 7, 6],    // size9: [17.28, 12, 10]        \LARGE
-    [10, 8, 7],   // size10: [20.74, 14.4, 12]     \huge
-    [11, 10, 9],  // size11: [24.88, 20.74, 17.28] \HUGE
+    [5, 3, 1],    // size5: [9, 7, 5]              \small
+    [6, 4, 2],    // size6: [10, 8, 6]             \normalsize
+    [7, 6, 3],    // size7: [12, 10, 7]             \large
+    [8, 7, 5],    // size8: [14.4, 12, 9]          \Large
+    [9, 8, 6],    // size9: [17.28, 14.4, 10]        \LARGE
+    [10, 9, 7],   // size10: [20.74, 17.28, 12]     \huge
+    [11, 10, 8],  // size11: [24.88, 20.74, 14.4] \HUGE
 ];
 
 const sizeMultipliers = [

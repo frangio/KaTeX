@@ -149,15 +149,15 @@ exports[`A font parser \\boldsymbol should inherit mbin/mrel from argument 1`] =
       "mord",
       "mathnormal"
     ],
-    "depth": 0,
-    "height": 0.43056,
-    "italic": 0,
+    "depth": 0.01,
+    "height": 0.439,
+    "italic": 0.026,
     "maxFontSize": 1,
-    "skew": 0,
+    "skew": 0.038,
     "style": {
     },
     "text": "a",
-    "width": 0.52859
+    "width": 0.428
   },
   {
     "attributes": {
@@ -192,15 +192,15 @@ exports[`A font parser \\boldsymbol should inherit mbin/mrel from argument 1`] =
       "mord",
       "mathnormal"
     ],
-    "depth": 0,
-    "height": 0.69444,
-    "italic": 0,
+    "depth": 0.01,
+    "height": 0.698,
+    "italic": 0.034,
     "maxFontSize": 1,
-    "skew": 0,
+    "skew": -0.039,
     "style": {
     },
     "text": "b",
-    "width": 0.42917
+    "width": 0.4
   },
   {
     "attributes": {
@@ -230,22 +230,22 @@ exports[`A font parser \\boldsymbol should inherit mbin/mrel from argument 1`] =
               "mrel",
               "mathbf"
             ],
-            "depth": -0.10889,
-            "height": 0.39111,
+            "depth": 0,
+            "height": 0.323,
             "italic": 0,
             "maxFontSize": 1,
             "skew": 0,
             "style": {
             },
             "text": "=",
-            "width": 0.89444
+            "width": 0.551
           }
         ],
         "classes": [
           "mord"
         ],
         "depth": 0,
-        "height": 0.39111,
+        "height": 0.323,
         "maxFontSize": 1,
         "style": {
         }
@@ -255,7 +255,7 @@ exports[`A font parser \\boldsymbol should inherit mbin/mrel from argument 1`] =
       "mrel"
     ],
     "depth": 0,
-    "height": 0.39111,
+    "height": 0.323,
     "maxFontSize": 1,
     "style": {
     }
@@ -280,15 +280,15 @@ exports[`A font parser \\boldsymbol should inherit mbin/mrel from argument 1`] =
       "mord",
       "mathnormal"
     ],
-    "depth": 0,
-    "height": 0.43056,
-    "italic": 0,
+    "depth": 0.01,
+    "height": 0.439,
+    "italic": 0.054,
     "maxFontSize": 1,
-    "skew": 0.05556,
+    "skew": 0.087,
     "style": {
     },
     "text": "c",
-    "width": 0.43276
+    "width": 0.326
   },
   {
     "attributes": {
@@ -318,22 +318,22 @@ exports[`A font parser \\boldsymbol should inherit mbin/mrel from argument 1`] =
               "mord",
               "mathbf"
             ],
-            "depth": 0.13333,
-            "height": 0.63333,
+            "depth": 0,
+            "height": 0.433,
             "italic": 0,
             "maxFontSize": 1,
             "skew": 0,
             "style": {
             },
             "text": "+",
-            "width": 0.89444
+            "width": 0.537
           }
         ],
         "classes": [
           "mord"
         ],
-        "depth": 0.13333,
-        "height": 0.63333,
+        "depth": 0,
+        "height": 0.433,
         "maxFontSize": 1,
         "style": {
         }
@@ -342,8 +342,8 @@ exports[`A font parser \\boldsymbol should inherit mbin/mrel from argument 1`] =
     "classes": [
       "mbin"
     ],
-    "depth": 0.13333,
-    "height": 0.63333,
+    "depth": 0,
+    "height": 0.433,
     "maxFontSize": 1,
     "style": {
     }
@@ -368,15 +368,15 @@ exports[`A font parser \\boldsymbol should inherit mbin/mrel from argument 1`] =
       "mord",
       "mathnormal"
     ],
-    "depth": 0,
-    "height": 0.69444,
-    "italic": 0,
+    "depth": 0.01,
+    "height": 0.698,
+    "italic": 0.078,
     "maxFontSize": 1,
-    "skew": 0.16667,
+    "skew": 0.049,
     "style": {
     },
     "text": "d",
-    "width": 0.52049
+    "width": 0.428
   },
   {
     "attributes": {
@@ -406,22 +406,22 @@ exports[`A font parser \\boldsymbol should inherit mbin/mrel from argument 1`] =
               "mord",
               "mathbf"
             ],
-            "depth": 0.13333,
-            "height": 0.63333,
+            "depth": 0,
+            "height": 0.433,
             "italic": 0,
             "maxFontSize": 1,
             "skew": 0,
             "style": {
             },
             "text": "++",
-            "width": 0.89444
+            "width": 0.537
           }
         ],
         "classes": [
           "mord"
         ],
-        "depth": 0.13333,
-        "height": 0.63333,
+        "depth": 0,
+        "height": 0.433,
         "maxFontSize": 1,
         "style": {
         }
@@ -430,8 +430,8 @@ exports[`A font parser \\boldsymbol should inherit mbin/mrel from argument 1`] =
     "classes": [
       "mbin"
     ],
-    "depth": 0.13333,
-    "height": 0.63333,
+    "depth": 0,
+    "height": 0.433,
     "maxFontSize": 1,
     "style": {
     }
@@ -456,15 +456,15 @@ exports[`A font parser \\boldsymbol should inherit mbin/mrel from argument 1`] =
       "mord",
       "mathnormal"
     ],
-    "depth": 0,
-    "height": 0.43056,
-    "italic": 0,
+    "depth": 0.01,
+    "height": 0.439,
+    "italic": 0.043,
     "maxFontSize": 1,
-    "skew": 0.05556,
+    "skew": 0.07,
     "style": {
     },
     "text": "e",
-    "width": 0.46563
+    "width": 0.338
   },
   {
     "attributes": {
@@ -479,22 +479,52 @@ exports[`A font parser \\boldsymbol should inherit mbin/mrel from argument 1`] =
               "mord",
               "boldsymbol"
             ],
-            "depth": 0.19444,
-            "height": 0.44444,
-            "italic": 0.04213,
+            "depth": 0.01,
+            "height": 0.439,
+            "italic": 0.07,
             "maxFontSize": 1,
-            "skew": 0,
+            "skew": 0.0895,
             "style": {
             },
-            "text": "xyz",
-            "width": 0.65903
+            "text": "x",
+            "width": 0.511
+          },
+          {
+            "classes": [
+              "mord",
+              "boldsymbol"
+            ],
+            "depth": 0.232,
+            "height": 0.444,
+            "italic": 0.059,
+            "maxFontSize": 1,
+            "skew": 0.149,
+            "style": {
+            },
+            "text": "y",
+            "width": 0.516
+          },
+          {
+            "classes": [
+              "mord",
+              "boldsymbol"
+            ],
+            "depth": 0.015,
+            "height": 0.457,
+            "italic": 0.052,
+            "maxFontSize": 1,
+            "skew": 0.1185,
+            "style": {
+            },
+            "text": "z",
+            "width": 0.431
           }
         ],
         "classes": [
           "mord"
         ],
-        "depth": 0.19444,
-        "height": 0.44444,
+        "depth": 0.232,
+        "height": 0.457,
         "maxFontSize": 1,
         "style": {
         }
@@ -503,8 +533,8 @@ exports[`A font parser \\boldsymbol should inherit mbin/mrel from argument 1`] =
     "classes": [
       "mord"
     ],
-    "depth": 0.19444,
-    "height": 0.44444,
+    "depth": 0.232,
+    "height": 0.457,
     "maxFontSize": 1,
     "style": {
     }
@@ -514,15 +544,15 @@ exports[`A font parser \\boldsymbol should inherit mbin/mrel from argument 1`] =
       "mord",
       "mathnormal"
     ],
-    "depth": 0.19444,
-    "height": 0.69444,
-    "italic": 0.10764,
+    "depth": 0.238,
+    "height": 0.698,
+    "italic": 0.168,
     "maxFontSize": 1,
-    "skew": 0.16667,
+    "skew": 0.2625,
     "style": {
     },
     "text": "f",
-    "width": 0.48959
+    "width": 0.421
   }
 ]
 `;
@@ -635,15 +665,15 @@ exports[`An HTML extension builder should not affect spacing 1`] = `
           "mord",
           "mathnormal"
         ],
-        "depth": 0,
-        "height": 0.43056,
-        "italic": 0,
+        "depth": 0.01,
+        "height": 0.439,
+        "italic": 0.081,
         "maxFontSize": 1,
-        "skew": 0.02778,
+        "skew": 0.091,
         "style": {
         },
         "text": "x",
-        "width": 0.57153
+        "width": 0.46
       },
       {
         "attributes": {
@@ -664,15 +694,15 @@ exports[`An HTML extension builder should not affect spacing 1`] = `
         "classes": [
           "mbin"
         ],
-        "depth": 0.08333,
-        "height": 0.58333,
+        "depth": 0.014,
+        "height": 0.534,
         "italic": 0,
         "maxFontSize": 1,
         "skew": 0,
         "style": {
         },
         "text": "+",
-        "width": 0.77778
+        "width": 0.648
       },
       {
         "attributes": {
@@ -693,8 +723,8 @@ exports[`An HTML extension builder should not affect spacing 1`] = `
     "classes": [
       "enclosing"
     ],
-    "depth": 0.08333,
-    "height": 0.58333,
+    "depth": 0.014,
+    "height": 0.534,
     "maxFontSize": 1,
     "style": {
     }
@@ -704,15 +734,15 @@ exports[`An HTML extension builder should not affect spacing 1`] = `
       "mord",
       "mathnormal"
     ],
-    "depth": 0.19444,
-    "height": 0.43056,
-    "italic": 0.03588,
+    "depth": 0.234,
+    "height": 0.439,
+    "italic": 0.096,
     "maxFontSize": 1,
-    "skew": 0.05556,
+    "skew": 0.086,
     "style": {
     },
     "text": "y",
-    "width": 0.49028
+    "width": 0.444
   }
 ]
 `;
@@ -729,22 +759,22 @@ exports[`An HTML extension builder should render with trust and strict setting 1
           "mord",
           "mathnormal"
         ],
-        "depth": 0,
-        "height": 0.43056,
-        "italic": 0,
+        "depth": 0.01,
+        "height": 0.439,
+        "italic": 0.081,
         "maxFontSize": 1,
-        "skew": 0.02778,
+        "skew": 0.091,
         "style": {
         },
         "text": "x",
-        "width": 0.57153
+        "width": 0.46
       }
     ],
     "classes": [
       "enclosing"
     ],
-    "depth": 0,
-    "height": 0.43056,
+    "depth": 0.01,
+    "height": 0.439,
     "maxFontSize": 1,
     "style": {
     }
@@ -758,23 +788,23 @@ exports[`An HTML extension builder should render with trust and strict setting 1
           "mord",
           "mathnormal"
         ],
-        "depth": 0,
-        "height": 0.43056,
-        "italic": 0,
+        "depth": 0.01,
+        "height": 0.439,
+        "italic": 0.081,
         "maxFontSize": 1,
-        "skew": 0.02778,
+        "skew": 0.091,
         "style": {
         },
         "text": "x",
-        "width": 0.57153
+        "width": 0.46
       }
     ],
     "classes": [
       "enclosing",
       "foo"
     ],
-    "depth": 0,
-    "height": 0.43056,
+    "depth": 0.01,
+    "height": 0.439,
     "maxFontSize": 1,
     "style": {
     }
@@ -789,22 +819,22 @@ exports[`An HTML extension builder should render with trust and strict setting 1
           "mord",
           "mathnormal"
         ],
-        "depth": 0,
-        "height": 0.43056,
-        "italic": 0,
+        "depth": 0.01,
+        "height": 0.439,
+        "italic": 0.081,
         "maxFontSize": 1,
-        "skew": 0.02778,
+        "skew": 0.091,
         "style": {
         },
         "text": "x",
-        "width": 0.57153
+        "width": 0.46
       }
     ],
     "classes": [
       "enclosing"
     ],
-    "depth": 0,
-    "height": 0.43056,
+    "depth": 0.01,
+    "height": 0.439,
     "maxFontSize": 1,
     "style": {
     }
@@ -820,22 +850,22 @@ exports[`An HTML extension builder should render with trust and strict setting 1
           "mord",
           "mathnormal"
         ],
-        "depth": 0,
-        "height": 0.43056,
-        "italic": 0,
+        "depth": 0.01,
+        "height": 0.439,
+        "italic": 0.081,
         "maxFontSize": 1,
-        "skew": 0.02778,
+        "skew": 0.091,
         "style": {
         },
         "text": "x",
-        "width": 0.57153
+        "width": 0.46
       }
     ],
     "classes": [
       "enclosing"
     ],
-    "depth": 0,
-    "height": 0.43056,
+    "depth": 0.01,
+    "height": 0.439,
     "maxFontSize": 1,
     "style": {
     }
@@ -1011,8 +1041,8 @@ exports[`An includegraphics builder should not render without trust setting 1`] 
           "",
           ""
         ],
-        "depth": 0.25,
-        "height": 0.75,
+        "depth": 0.238,
+        "height": 0.72675,
         "italic": 0,
         "maxFontSize": 1,
         "skew": 0,
@@ -1020,15 +1050,15 @@ exports[`An includegraphics builder should not render without trust setting 1`] 
           "color": "#cc0000"
         },
         "text": "\\\\includegraphics",
-        "width": 0.5
+        "width": 0.525
       }
     ],
     "classes": [
       "mord",
       "text"
     ],
-    "depth": 0.25,
-    "height": 0.75,
+    "depth": 0.238,
+    "height": 0.72675,
     "maxFontSize": 1,
     "style": {
       "color": "#cc0000"
@@ -1089,7 +1119,7 @@ exports[`Extending katex by new fonts and symbols Add new font class to new exte
   >
     <span class="base">
       <span class="strut"
-            style="height:0.8442em;"
+            style="height:0.925em;"
       >
       </span>
       <span class="mord mockEasternArabicFont-Regular">
@@ -1103,14 +1133,14 @@ exports[`Extending katex by new fonts and symbols Add new font class to new exte
           <span class="vlist-t">
             <span class="vlist-r">
               <span class="vlist"
-                    style="height:0.8442em;"
+                    style="height:0.925em;"
               >
-                <span style="top:-3.063em;margin-right:0.05em;">
+                <span style="top:-3.175em;margin-right:0.05em;">
                   <span class="pstrut"
-                        style="height:2.7em;"
+                        style="height:2.8em;"
                   >
                   </span>
-                  <span class="sizing reset-size6 size3 mtight">
+                  <span class="sizing reset-size6 size4 mtight">
                     <span class="mord mtight">
                       <span class="mord mockEasternArabicFont-Regular mtight">
                         ۱۱
@@ -1170,11 +1200,11 @@ exports[`Newlines via \\\\ and \\newline \\\\ causes newline, even after mrel an
   >
     <span class="base">
       <span class="strut"
-            style="height:0.6833em;"
+            style="height:0.653em;vertical-align:-0.006em;"
       >
       </span>
       <span class="mord mathnormal"
-            style="margin-right:0.10903em;"
+            style="margin-right:0.09em;"
       >
         M
       </span>
@@ -1190,10 +1220,12 @@ exports[`Newlines via \\\\ and \\newline \\\\ causes newline, even after mrel an
     </span>
     <span class="base">
       <span class="strut"
-            style="height:0.6667em;vertical-align:-0.0833em;"
+            style="height:0.548em;vertical-align:-0.014em;"
       >
       </span>
-      <span class="mord mathnormal">
+      <span class="mord mathnormal"
+            style="margin-right:0.026em;"
+      >
         a
       </span>
       <span class="mspace"
@@ -1208,10 +1240,12 @@ exports[`Newlines via \\\\ and \\newline \\\\ causes newline, even after mrel an
     </span>
     <span class="base">
       <span class="strut"
-            style="height:0.6944em;"
+            style="height:0.708em;vertical-align:-0.01em;"
       >
       </span>
-      <span class="mord mathnormal">
+      <span class="mord mathnormal"
+            style="margin-right:0.034em;"
+      >
         b
       </span>
     </span>
@@ -1219,10 +1253,12 @@ exports[`Newlines via \\\\ and \\newline \\\\ causes newline, even after mrel an
     </span>
     <span class="base">
       <span class="strut"
-            style="height:0.4306em;"
+            style="height:0.449em;vertical-align:-0.01em;"
       >
       </span>
-      <span class="mord mathnormal">
+      <span class="mord mathnormal"
+            style="margin-right:0.054em;"
+      >
         c
       </span>
     </span>
@@ -1382,15 +1418,15 @@ exports[`href and url commands should not affect spacing around 1`] = `
       "mord",
       "mathnormal"
     ],
-    "depth": 0,
-    "height": 0.43056,
-    "italic": 0,
+    "depth": 0.01,
+    "height": 0.439,
+    "italic": 0.026,
     "maxFontSize": 1,
-    "skew": 0,
+    "skew": 0.038,
     "style": {
     },
     "text": "a",
-    "width": 0.52859
+    "width": 0.428
   },
   {
     "attributes": {
@@ -1416,15 +1452,15 @@ exports[`href and url commands should not affect spacing around 1`] = `
         "classes": [
           "mbin"
         ],
-        "depth": 0.08333,
-        "height": 0.58333,
+        "depth": 0.014,
+        "height": 0.534,
         "italic": 0,
         "maxFontSize": 1,
         "skew": 0,
         "style": {
         },
         "text": "+",
-        "width": 0.77778
+        "width": 0.648
       },
       {
         "attributes": {
@@ -1446,21 +1482,21 @@ exports[`href and url commands should not affect spacing around 1`] = `
           "mord",
           "mathnormal"
         ],
-        "depth": 0,
-        "height": 0.69444,
-        "italic": 0,
+        "depth": 0.01,
+        "height": 0.698,
+        "italic": 0.034,
         "maxFontSize": 1,
-        "skew": 0,
+        "skew": -0.039,
         "style": {
         },
         "text": "b",
-        "width": 0.42917
+        "width": 0.4
       }
     ],
     "classes": [
     ],
-    "depth": 0.08333,
-    "height": 0.69444,
+    "depth": 0.014,
+    "height": 0.698,
     "maxFontSize": 1,
     "style": {
     }
