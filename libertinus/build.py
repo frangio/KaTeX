@@ -1247,6 +1247,16 @@ def global_metrics():
         "bigOpSpacing3": c["UpperLimitBaselineRiseMin"],
         "bigOpSpacing4": c["LowerLimitBaselineDropMin"],
         "sqrtRuleThickness": c["RadicalRuleThickness"],
+        "overbarRuleThickness": c["OverbarRuleThickness"],
+        "overbarVerticalGap": c["OverbarVerticalGap"],
+        "overbarExtraAscender": c["OverbarExtraAscender"],
+        "underbarRuleThickness": c["UnderbarRuleThickness"],
+        "underbarVerticalGap": c["UnderbarVerticalGap"],
+        "underbarExtraDescender": c["UnderbarExtraDescender"],
+        "subSuperscriptGapMin": c["SubSuperscriptGapMin"],
+        "stackGapMin": c["StackGapMin"],
+        "stackDisplayStyleGapMin": c["StackDisplayStyleGapMin"],
+        "radicalDegreeBottomRaise": math.constants["RadicalDegreeBottomRaisePercent"] / 100,
     }
     return {k: round(v, 5) for k, v in values.items()}
 

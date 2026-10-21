@@ -30,7 +30,7 @@ overwrites its own output.
 | `src/styles/libertinus.scss` | `@font-face` rules for those subsets under KaTeX's family names, with `unicode-range`. Each subset also covers the zero-width space KaTeX puts in its vertical layouts. |
 | `src/styles/fonts.scss` | KaTeX's own `@font-face` rules removed, so the build ships only the Libertinus subsets. |
 | `src/fontMetricsData.js` | Height, depth, italic correction, skew and width of every glyph, from the outlines and the MATH table. |
-| `src/fontMetrics.ts` | Font-wide parameters (`sigmasAndXis`) from the MATH constants. |
+| `src/fontMetrics.ts` | Font-wide parameters (`sigmasAndXis`) from the MATH constants, including the overbar and underbar rules and gaps, the gap between a subscript and a superscript, the gaps of `\atop` and `\binom`, and the root index's raise, which KaTeX otherwise derives from the fraction rule thickness. |
 | `src/Options.ts` | Script and scriptscript sizes from `ScriptPercentScaleDown` and `ScriptScriptPercentScaleDown`. |
 | `src/opticalMargins.ts` | Extra space on the content side of large braces. Libertinus's brace curls inward and keeps its stem close to the content, so it leaves 0.06–0.07em less white space than the parenthesis of the same size; this is that difference, measured from the outlines. |
 | `src/radicalMetrics.ts` | Height, advance and minimum width of each radical size. |
