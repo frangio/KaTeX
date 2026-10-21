@@ -26,7 +26,7 @@ overwrites its own output.
 
 | File | Contents |
 |---|---|
-| `fonts/Libertinus_*.woff2` | Subsets of Libertinus Math, Serif, Sans and Mono with glyphs remapped to the codepoints KaTeX emits, for example math italic *x* (U+1D465) at `x` and each delimiter size at its plain codepoint in the Size fonts. Big operators have their advance reduced by their italic correction, converting OpenType's convention to TeX's. |
+| `fonts/Libertinus_*.woff2` | Subsets of Libertinus Math, Serif, Sans and Mono with glyphs remapped to the codepoints KaTeX emits, for example math italic *x* (U+1D465) at `x` and each delimiter size at its plain codepoint in the Size fonts. Big operators have their advance reduced by their italic correction, converting OpenType's convention to TeX's. Where KaTeX keeps a symbol at a codepoint Libertinus leaves empty, the Libertinus glyph for the same symbol is placed there: the AMS corners `\ulcorner` … `\lrcorner` (KaTeX's box-drawing codepoints) from ⌜ ⌝ ⌞ ⌟, `\triangleright` and `\triangleleft` from ▷ and ◁, `\Finv` from Libertinus Serif, and the slash of `\not` from the combining long solidus U+0338, moved right to sit over the relation that follows it rather than the character before it. |
 | `src/styles/libertinus.scss` | `@font-face` rules for those subsets under KaTeX's family names, with `unicode-range`. Imported after `fonts.scss`, so KaTeX's own fonts only supply characters Libertinus lacks. |
 | `src/fontMetricsData.js` | Height, depth, italic correction, skew and width of every glyph, from the outlines and the MATH table. |
 | `src/fontMetrics.ts` | Font-wide parameters (`sigmasAndXis`) from the MATH constants. |
@@ -52,6 +52,10 @@ overwrites its own output.
   against 0.080em) and taller (0.488em against 0.385em) than Libertinus's
   horizontal design. Set `HORIZONTAL_BRACE_DESIGN = "horizontal"` in
   `build.py` to use the font's horizontal pieces instead.
+- `\eqslantless` (⪕) and `\eqslantgtr` (⪖) are not in Libertinus. They are
+  drawn as its `\leqslant` (⩽) and `\geqslant` (⩾) turned upside down,
+  which is the shape these characters have: the slanted bar above the
+  `<` or `>` instead of below it.
 
 ## Departures from KaTeX
 

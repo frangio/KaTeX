@@ -16,6 +16,7 @@ from pathlib import Path
 from fontTools import subset
 from fontTools.pens.basePen import BasePen
 from fontTools.pens.boundsPen import BoundsPen
+from fontTools.pens.t2CharStringPen import T2CharStringPen
 from fontTools.pens.transformPen import TransformPen
 from fontTools.ttLib import TTFont
 
@@ -25,6 +26,7 @@ KATEX = Path(__file__).resolve().parent.parent
 
 SOURCES = {
     "math": "LibertinusMath-Regular.otf",
+    "math-turned": "LibertinusMath-Regular.otf",
     "serif": "LibertinusSerif-Regular.otf",
     "serif-italic": "LibertinusSerif-Italic.otf",
     "serif-bold": "LibertinusSerif-Bold.otf",
@@ -158,6 +160,41 @@ def identity(key):
         return (key, glyph) if glyph else None
     return resolve
 
+
+def substitute(key, table):
+    def resolve(cp):
+        glyph = sources[key].cmap.get(table.get(cp))
+        return (key, glyph) if glyph else None
+    return resolve
+
+
+# KaTeX's fonts keep these at codepoints Libertinus leaves empty: the AMS
+# corners at box-drawing codepoints, \triangleright and \triangleleft at the
+# small triangles, and the \not slash in the private use area.
+SUBSTITUTES = {
+    0x250C: 0x231C, 0x2510: 0x231D, 0x2514: 0x231E, 0x2518: 0x231F,
+    0x25B9: 0x25B7, 0x25C3: 0x25C1, 0xE020: 0x0338,
+}
+
+
+# Glyphs Libertinus lacks that are another of its glyphs turned over:
+# \eqslantless and \eqslantgtr are \leqslant and \geqslant upside down.
+TURNED = {0x2A95: 0x2A7D, 0x2A96: 0x2A7E}
+
+
+def not_slash(source, glyph):
+    # The combining solidus overlays the glyph before it; \not overlays the
+    # relation after it, so its slash is centred on a relation's width.
+    xmin, _, xmax, _ = source.bounds(glyph)
+    return (1, 0, 0, 1, source.glyphs[source.cmap[ord("=")]].width / 2 - (xmin + xmax) / 2, 0)
+
+
+def upside_down(source, glyph):
+    _, ymin, _, ymax = source.bounds(glyph)
+    return (1, 0, 0, -1, 0, ymin + ymax)
+
+
+TRANSFORMS = {0xE020: not_slash, 0x2A95: upside_down, 0x2A96: upside_down}
 
 TEXT_ACCENTS = {0x7E: 0x2DC, 0x5E: 0x2C6}
 
@@ -318,11 +355,15 @@ def sized(cp, target_total):
 
 
 KATEX_FONTS = {
-    "AMS-Regular": [alphabet("doublestruck", extra={ord("k"): 0x1D55C}), identity("math")],
+    "AMS-Regular": [alphabet("doublestruck", extra={ord("k"): 0x1D55C}), identity("math"),
+                    substitute("math", SUBSTITUTES), substitute("math-turned", TURNED),
+                    identity("serif")],
     "Caligraphic-Regular": [alphabet("script"), identity("math")],
     "Fraktur-Regular": [alphabet("fraktur"), identity("serif")],
-    "Main-Regular": [accents("math", {0x2032: "minute.ssty1"}), identity("math"), identity("serif")],
-    "Main-Bold": [accents("serif-bold"), alphabet("bold"), identity("serif-bold"), identity("math")],
+    "Main-Regular": [accents("math", {0x2032: "minute.ssty1"}), identity("math"), identity("serif"),
+                     substitute("math", SUBSTITUTES)],
+    "Main-Bold": [accents("serif-bold"), alphabet("bold"), identity("serif-bold"), identity("math"),
+                  substitute("serif-bold", SUBSTITUTES)],
     "Main-Italic": [accents("serif-italic"), identity("serif-italic")],
     "Main-BoldItalic": [accents("serif-bolditalic"), identity("serif-bolditalic")],
     "Math-Italic": [alphabet("italic", dotless=True), identity("math")],
@@ -384,7 +425,16 @@ def copy_vertical_metrics(font, reference):
     font["OS/2"].fsSelection = (font["OS/2"].fsSelection & ~use_typo) | (reference["OS/2"].fsSelection & use_typo)
 
 
-def write_subset(source, mapping, reference, path, advances):
+def transform_glyph(font, glyph, matrix):
+    glyphs = font.getGlyphSet()
+    pen = T2CharStringPen(None, glyphs)
+    glyphs[glyph].draw(TransformPen(pen, matrix))
+    charstrings = font["CFF "].cff.topDictIndex[0].CharStrings
+    old = charstrings[glyph]
+    charstrings[glyph] = pen.getCharString(private=old.private, globalSubrs=old.globalSubrs)
+
+
+def write_subset(source, mapping, reference, path, advances, transforms):
     font = TTFont(source.path, recalcTimestamp=False)
     hmtx = font["hmtx"]
     for glyph, advance in advances.items():
@@ -401,6 +451,8 @@ def write_subset(source, mapping, reference, path, advances):
     subsetter = subset.Subsetter(options)
     subsetter.populate(unicodes=list(mapping))
     subsetter.subset(font)
+    for glyph, matrix in transforms.items():
+        transform_glyph(font, glyph, matrix)
     copy_vertical_metrics(font, reference)
     font.flavor = "woff2"
     font.save(path)
@@ -456,7 +508,8 @@ def main():
             name = f"Libertinus_{file}_{key}.woff2"
             source = sources[key]
             advances = {g: source.operator_advance(g) for g in mapping.values() if operators and g in source.italic}
-            write_subset(source, mapping, reference, KATEX / "fonts" / name, advances)
+            transforms = {g: TRANSFORMS[cp](source, g) for cp, g in mapping.items() if cp in TRANSFORMS}
+            write_subset(source, mapping, reference, KATEX / "fonts" / name, advances, transforms)
             faces.append(face(family, weight, style, name, unicode_range(mapping)))
 
         report[file] = {
