@@ -55,18 +55,18 @@ overwrites its own output.
 
 ## Departures from KaTeX
 
-- KaTeX stretches the image of `\widehat`, `\widecheck` and `\widetilde` to
-  the width of its base, also when that squeezes it over a single
-  character: over *x* it draws Computer Modern's smallest image at half its
-  width, over *f* at a quarter. Computer Modern's image is flat enough that
-  this goes unnoticed. Libertinus's smallest wide accent is its ordinary
-  accent, which squeezed turns into a narrow spike or vanishes. With this
-  build, an image wider than the single character under it keeps its
-  natural size and is centred over the character, as TeX does, which never
-  squeezes an accent and uses the largest size no wider than the base.
-  Wider bases are stretched as in KaTeX. The code is in
-  `src/functions/accent.ts`, enabled by `naturalSizeOverNarrowBase` in
-  `src/wideAccentImages.ts`; `\utilde` is not affected.
+- KaTeX stretches the image of `\widehat`, `\widecheck`, `\widetilde` and
+  `\utilde` to the width of its base, also when that squeezes it over a
+  single character: over *x* it draws Computer Modern's smallest image at
+  half its width, over *f* at a quarter. Computer Modern's image is flat
+  enough that this goes unnoticed. Libertinus's smallest wide accent is its
+  ordinary accent, which squeezed turns into a narrow spike or vanishes.
+  With this build, an image wider than its single-character base keeps its
+  natural size and is centred over or under the character, as in TeX,
+  which never squeezes an accent and uses the largest size no wider than
+  the base. Wider bases are stretched as in KaTeX. The code is in
+  `src/functions/accent.ts` and `src/functions/accentunder.ts`, enabled by
+  `naturalSizeOverNarrowBase` in `src/wideAccentImages.ts`.
 
 ## Still from Computer Modern
 

@@ -2,7 +2,10 @@
 import defineFunction from "../defineFunction";
 import {makeSpan, makeVList} from "../buildCommon";
 import {MathNode} from "../mathMLTree";
-import {stretchyMathML, stretchySvg} from "../stretchy";
+import {stretchyMathML, stretchySvg, wideAccentNaturalWidth} from "../stretchy";
+import {isCharacterBox} from "../utils";
+import {makeEm} from "../units";
+import {getBaseSymbol} from "./accent";
 
 import * as html from "../buildHTML";
 import * as mml from "../buildMathML";
@@ -31,7 +34,22 @@ defineFunction({
         // Treat under accents much like underlines.
         const innerGroup = html.buildGroup(group.base, options);
 
-        const accentBody = stretchySvg(group, options);
+        const baseSymbol = isCharacterBox(group.base)
+            ? getBaseSymbol(innerGroup) : undefined;
+        const naturalWidth = wideAccentNaturalWidth(group);
+        let accentBody;
+        let wrapperClasses: string[] = ["svg-align"];
+        if (baseSymbol && naturalWidth > baseSymbol.width) {
+            // As in accent.ts, an image wider than the character is drawn at
+            // its natural size, centered under the character, instead of
+            // being squeezed to its width.
+            accentBody = stretchySvg(group, options, naturalWidth);
+            accentBody.style.marginLeft =
+                makeEm((baseSymbol.width - naturalWidth) / 2);
+            wrapperClasses = [];
+        } else {
+            accentBody = stretchySvg(group, options);
+        }
         const kern = group.label === "\\utilde" ? 0.12 : 0;
 
         // Generate the vlist, with the appropriate kerns
@@ -39,7 +57,7 @@ defineFunction({
             positionType: "top",
             positionData: innerGroup.height,
             children: [
-                {type: "elem", elem: accentBody, wrapperClasses: ["svg-align"]},
+                {type: "elem", elem: accentBody, wrapperClasses},
                 {type: "kern", size: kern},
                 {type: "elem", elem: innerGroup},
             ],

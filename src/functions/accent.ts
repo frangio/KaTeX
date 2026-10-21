@@ -15,7 +15,7 @@ import type {HtmlBuilderSupSub, MathMLBuilder} from "../defineFunction";
 import type {HtmlDomNode} from "../domTree";
 import type {AnyParseNode, ParseNode} from "../types/nodes";
 
-const getBaseSymbol = (group: HtmlDomNode): SymbolNode | undefined => {
+export const getBaseSymbol = (group: HtmlDomNode): SymbolNode | undefined => {
     if (group instanceof SymbolNode) {
         return group;
     }
