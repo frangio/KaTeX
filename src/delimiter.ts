@@ -30,6 +30,8 @@ import {getCharacterMetrics} from "./fontMetrics";
 import symbols from "./symbols";
 import {makeEm} from "./units";
 import fontMetricsData from "./fontMetricsData";
+import opticalMargins from "./opticalMargins";
+import radicalMetrics from "./radicalMetrics";
 
 import type Options from "./Options";
 import type {HtmlDomNode, DomSpan, SvgSpan} from "./domTree";
@@ -132,6 +134,24 @@ const mathrmSize = function(
     return makeSymbol(value, `Size${size}-Regular`, mode, options);
 };
 
+const withOpticalMargin = function(
+    span: DomSpan,
+    delim: string,
+    size: DelimiterSize | "stack",
+): DomSpan {
+    const margins = opticalMargins[delim];
+    const margin = margins &&
+        (size === "stack" ? margins.stack : margins.sizes[size]);
+    if (margins && margin) {
+        if (margins.side === "left") {
+            span.style.marginLeft = makeEm(margin);
+        } else {
+            span.style.marginRight = makeEm(margin);
+        }
+    }
+    return span;
+};
+
 /**
  * Makes a large delimiter. This is a delimiter that comes in the Size1, Size2,
  * Size3, or Size4 fonts. It is always rendered in textstyle.
@@ -150,7 +170,7 @@ const makeLargeDelim = function(delim: string,
     if (center) {
         centerSpan(span, options, Style.TEXT);
     }
-    return span;
+    return withOpticalMargin(span, delim, size);
 };
 
 /**
@@ -448,9 +468,9 @@ const makeStackedDelim = function(
         children: stack,
     }, newOptions);
 
-    return styleWrap(
+    return withOpticalMargin(styleWrap(
         makeSpan(["delimsizing", "mult"], [inner], newOptions),
-        Style.TEXT, options, classes);
+        Style.TEXT, options, classes), delim, "stack");
 };
 
 // All surds have 0.08em padding above the vinculum inside the SVG.
@@ -519,31 +539,29 @@ export const makeSqrtImage = function(
     // vertical alignment. So texHeight = span.height < span.style.height.
 
     if (delim.type === "small") {
-        // Get an SVG that is derived from glyph U+221A in font KaTeX-Main.
-        // 1000 unit normal glyph height.
-        viewBoxHeight = 1000 + 1000 * extraVinculum + vbPad;
-        if (height < 1.0) {
+        const main = radicalMetrics.main;
+        viewBoxHeight = 1000 * main.height + 1000 * extraVinculum + vbPad;
+        if (height < main.height) {
             sizeMultiplier = 1.0;   // mimic a \textfont radical
-        } else if (height < 1.4) {
+        } else if (height < main.height * 1.4) {
             sizeMultiplier = 0.7;   // mimic a \scriptfont radical
         }
-        spanHeight = (1.0 + extraVinculum + emPad) / sizeMultiplier;
-        texHeight = (1.00 + extraVinculum) / sizeMultiplier;
+        spanHeight = (main.height + extraVinculum + emPad) / sizeMultiplier;
+        texHeight = (main.height + extraVinculum) / sizeMultiplier;
         span = sqrtSvg("sqrtMain", spanHeight, viewBoxHeight, extraVinculum,
             options);
-        span.style.minWidth = "0.853em";
-        advanceWidth = 0.833 / sizeMultiplier;  // from the font.
+        span.style.minWidth = makeEm(main.minWidth);
+        advanceWidth = main.advance / sizeMultiplier;
 
     } else if (delim.type === "large") {
-        // These SVGs come from fonts: KaTeX_Size1, _Size2, etc.
-        viewBoxHeight = (1000 + vbPad) * sizeToMaxHeight[delim.size];
-        texHeight = (sizeToMaxHeight[delim.size] + extraVinculum) / sizeMultiplier;
-        spanHeight = (sizeToMaxHeight[delim.size] + extraVinculum + emPad)
-            / sizeMultiplier;
+        const size = radicalMetrics.sizes[delim.size];
+        viewBoxHeight = 1000 * size.height + 1000 * extraVinculum + vbPad;
+        texHeight = (size.height + extraVinculum) / sizeMultiplier;
+        spanHeight = (size.height + extraVinculum + emPad) / sizeMultiplier;
         span = sqrtSvg("sqrtSize" + delim.size, spanHeight, viewBoxHeight,
             extraVinculum, options);
-        span.style.minWidth = "1.02em";
-        advanceWidth = 1.0 / sizeMultiplier; // 1.0 from the font.
+        span.style.minWidth = makeEm(size.minWidth);
+        advanceWidth = size.advance / sizeMultiplier;
 
     } else {
         // Tall sqrt. In TeX, this would be stacked using multiple glyphs.
@@ -553,8 +571,8 @@ export const makeSqrtImage = function(
         viewBoxHeight = Math.floor(1000 * height + extraVinculum) + vbPad;
         span = sqrtSvg("sqrtTall", spanHeight, viewBoxHeight, extraVinculum,
             options);
-        span.style.minWidth = "0.742em";
-        advanceWidth = 1.056;
+        span.style.minWidth = makeEm(radicalMetrics.tall.minWidth);
+        advanceWidth = radicalMetrics.tall.advance;
     }
 
     span.height = texHeight;
