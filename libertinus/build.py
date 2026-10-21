@@ -527,6 +527,7 @@ def main():
     write_size_style_map(size_style_map())
     write_optical_margins(optical)
     write_inner_paths(extenders)
+    write_tall_delims(original)
     write_radicals()
     write_stretchy()
     if REPORT:
@@ -602,6 +603,66 @@ def write_optical_margins(optical):
                       "    },"]
     lines += ["};", "", "export default opticalMargins;"]
     (KATEX / "src/opticalMargins.ts").write_text("\n".join(lines) + "\n")
+
+
+# KaTeX draws these delimiters, when taller than the largest pre-drawn size,
+# as one SVG: the top piece, the bottom piece and the stems between them.
+# The pieces are the glyphs whose metrics KaTeX reads for them.
+TALL_DELIMS = {
+    "lbrack": ("Size4-Regular", 0x23A1, 0x23A2, 0x23A3),
+    "rbrack": ("Size4-Regular", 0x23A4, 0x23A5, 0x23A6),
+    "vert": ("Size1-Regular", 0x2223, 0x2223, 0x2223),
+    "doublevert": ("Size1-Regular", 0x2225, 0x2225, 0x2225),
+    "lfloor": ("Size4-Regular", 0x23A2, 0x23A2, 0x23A3),
+    "rfloor": ("Size4-Regular", 0x23A5, 0x23A5, 0x23A6),
+    "lceil": ("Size4-Regular", 0x23A1, 0x23A2, 0x23A2),
+    "rceil": ("Size4-Regular", 0x23A4, 0x23A5, 0x23A5),
+    "lparen": ("Size4-Regular", 0x239B, 0x239C, 0x239D),
+    "rparen": ("Size4-Regular", 0x239E, 0x239F, 0x23A0),
+}
+
+
+def write_tall_delims(original):
+    def piece(font, cp):
+        return sized(cp, sum(original[font][str(cp)][:2]))[1]
+
+    cases = []
+    widths = {}
+    for label, (font, top_cp, repeat_cp, bottom_cp) in TALL_DELIMS.items():
+        top, repeat, bottom = piece(font, top_cp), piece(font, repeat_cp), piece(font, bottom_cp)
+        _, top_min, _, top_max = math.bounds(top)
+        _, bottom_min, _, bottom_max = math.bounds(bottom)
+        top_height = max(0, top_max)
+        top_total = top_height + max(0, -top_min)
+        bottom_height = max(0, bottom_max)
+        bottom_offset = top_total + bottom_height
+        _, r0, _, r1 = math.bounds(repeat)
+        path = glyph_path(top, top_height) + glyph_path(
+            bottom, bottom_height, top_expr=f"midHeight + {fmt(bottom_offset)}")
+        stem_top = top_height - top_min - OVERLAP
+        stem_bottom = bottom_offset - bottom_max + OVERLAP
+        for x0, x1 in crossings(repeat, y=(r0 + r1) / 2):
+            path += (f"M{fmt(x0)} {fmt(stem_top)}V${{midHeight + {fmt(stem_bottom)}}}"
+                     f"H{fmt(x1)}V{fmt(stem_top)}z")
+        cases += [f'        case "{label}":'] + path_lines(path, "            return `")
+        widths[label] = round(math.glyphs[top].width)
+
+    geometry = KATEX / "src/svgGeometry.ts"
+    text = geometry.read_text()
+    start = text.index("export const tallDelim = function(")
+    end = text.index("\n};\n", start) + 4
+    body = "\n".join(
+        ["export const tallDelim = function(label: string, midHeight: number): string {"]
+        + comment("Tall delimiters assembled from Libertinus Math's pieces, written by libertinus/build.py.")
+        + ["    switch (label) {"] + cases
+        + ["        default:", "            throw new Error(\"Unknown stretchy delimiter.\");", "    }", "};", ""])
+    text = text[:start] + body + text[end:]
+    start = text.index("export const tallDelimWidths")
+    end = text.index("\n};\n", start) + 4
+    entries = wrap([f"{k}: {v}" for k, v in widths.items()], ", ", 4, 4)
+    text = (text[:start] + "export const tallDelimWidths: Record<string, number> = {\n"
+            + ",\n".join(entries) + ",\n};\n" + text[end:])
+    geometry.write_text(text)
 
 
 def write_inner_paths(extenders):
