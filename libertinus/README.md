@@ -22,6 +22,17 @@ The script can be rerun: it reads KaTeX's original Computer Modern metrics
 from `libertinus/katex-metrics.json` (taken from KaTeX 0.19.0, unchanged since 0.16) and
 overwrites its own output.
 
+## Licenses
+
+KaTeX's code is under the MIT license (`LICENSE`). The fonts in `fonts/`
+are modified Libertinus fonts and, like Libertinus, under the SIL Open
+Font License 1.1: `fonts/OFL.txt`, the license file of the Libertinus
+7.051 release they are built from, which `pnpm build` copies to
+`dist/fonts/OFL.txt` beside them. The OFL lets modified fonts keep the
+name Libertinus; its reserved names are "Linux Libertine", "Biolinum" and
+"STIX Fonts". When rebuilding from another Libertinus release, replace
+`fonts/OFL.txt` with that release's `OFL.txt`.
+
 ## What it writes
 
 | File | Contents |
