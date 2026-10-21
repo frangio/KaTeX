@@ -514,9 +514,13 @@ export const makeSqrtImage = function(
     // We don't pick different a height surd for \Huge. For it, we scale up.
     const newOptions = options.havingBaseSizing();
 
-    // Pick the desired surd glyph from a sequence of surds.
+    // Pick the desired surd glyph from a sequence of surds. Beyond the small
+    // surds, the first of the radical sizes that is tall enough is used, and
+    // past the last one a tall surd is assembled.
     const delim = traverseSequence("\\surd", height * newOptions.sizeMultiplier,
         stackLargeDelimiterSequence, newOptions);
+    const sizeIndex = delim.type === "small" ? -1 : radicalMetrics.sizes.findIndex(
+        size => size.height > height * newOptions.sizeMultiplier);
 
     let sizeMultiplier = newOptions.sizeMultiplier;  // default
 
@@ -553,12 +557,12 @@ export const makeSqrtImage = function(
         span.style.minWidth = makeEm(main.minWidth);
         advanceWidth = main.advance / sizeMultiplier;
 
-    } else if (delim.type === "large") {
-        const size = radicalMetrics.sizes[delim.size];
+    } else if (sizeIndex >= 0) {
+        const size = radicalMetrics.sizes[sizeIndex];
         viewBoxHeight = 1000 * size.height + 1000 * extraVinculum + vbPad;
         texHeight = (size.height + extraVinculum) / sizeMultiplier;
         spanHeight = (size.height + extraVinculum + emPad) / sizeMultiplier;
-        span = sqrtSvg("sqrtSize" + delim.size, spanHeight, viewBoxHeight,
+        span = sqrtSvg("sqrtSize" + (sizeIndex + 1), spanHeight, viewBoxHeight,
             extraVinculum, options);
         span.style.minWidth = makeEm(size.minWidth);
         advanceWidth = size.advance / sizeMultiplier;

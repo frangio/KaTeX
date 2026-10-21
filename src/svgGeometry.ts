@@ -73,6 +73,9 @@ C113 1831 76 1855 35 1876L48 1904L112 1878L562 3013L610 2988zM857 ${hLinePad}
 v${40 + extraVinculum}h400000v-${40 + extraVinculum}z`;
 };
 
+// The radical sizes, smallest first, matching radicalMetrics.sizes.
+const sqrtSizes = [sqrtSize1, sqrtSize2, sqrtSize3, sqrtSize4];
+
 export const phasePath = function(y: number): string {
     const x = y / 2;  // x coordinate at top of angle
     return `M400000 ${y} H0 L${x} 0 l65 45 L145 ${y - 80} H400000z`;
@@ -98,26 +101,18 @@ export const sqrtPath = function(
     viewBoxHeight: number
 ): string {
     extraVinculum = 1000 * extraVinculum; // Convert from document ems to viewBox.
-    let path = "";
+    let path: string;
 
     switch (size) {
         case "sqrtMain":
             path = sqrtMain(extraVinculum, hLinePad);
             break;
-        case "sqrtSize1":
-            path = sqrtSize1(extraVinculum, hLinePad);
-            break;
-        case "sqrtSize2":
-            path = sqrtSize2(extraVinculum, hLinePad);
-            break;
-        case "sqrtSize3":
-            path = sqrtSize3(extraVinculum, hLinePad);
-            break;
-        case "sqrtSize4":
-            path = sqrtSize4(extraVinculum, hLinePad);
-            break;
         case "sqrtTall":
             path = sqrtTall(extraVinculum, hLinePad, viewBoxHeight);
+            break;
+        default:
+            path = sqrtSizes[Number(size.slice("sqrtSize".length)) - 1](
+                extraVinculum, hLinePad);
     }
     return path;
 };

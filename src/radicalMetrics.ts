@@ -2,22 +2,20 @@
 // Radical sizes, in em: the surd's height from vinculum top to bottom,
 // its advance width (where the radicand starts) and the minimum width
 // that keeps the whole surd visible.
-import type {DelimiterSize} from "./types";
-
 export type RadicalSize = {height: number, advance: number, minWidth: number};
 
 const radicalMetrics: {
     main: RadicalSize,
-    sizes: Record<DelimiterSize, RadicalSize>,
+    sizes: RadicalSize[],
     tall: {advance: number, minWidth: number},
 } = {
     main: {height: 0.933, advance: 0.607, minWidth: 0.662},
-    sizes: {
-        1: {height: 1.233, advance: 0.665, minWidth: 0.72},
-        2: {height: 1.683, advance: 0.71, minWidth: 0.765},
-        3: {height: 2.483, advance: 0.787, minWidth: 0.842},
-        4: {height: 2.933, advance: 0.857, minWidth: 0.912},
-    },
+    sizes: [
+        {height: 1.233, advance: 0.665, minWidth: 0.72},
+        {height: 1.683, advance: 0.71, minWidth: 0.765},
+        {height: 2.483, advance: 0.787, minWidth: 0.842},
+        {height: 2.933, advance: 0.857, minWidth: 0.912},
+    ],
     tall: {advance: 0.817, minWidth: 0.872},
 };
 
