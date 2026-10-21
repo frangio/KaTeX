@@ -27,7 +27,8 @@ overwrites its own output.
 | File | Contents |
 |---|---|
 | `fonts/Libertinus_*.woff2` | Subsets of Libertinus Math, Serif, Sans and Mono with glyphs remapped to the codepoints KaTeX emits, for example math italic *x* (U+1D465) at `x` and each delimiter size at its plain codepoint in the Size fonts. Big operators have their advance reduced by their italic correction, converting OpenType's convention to TeX's. Where KaTeX keeps a symbol at a codepoint Libertinus leaves empty, the Libertinus glyph for the same symbol is placed there: the AMS corners `\ulcorner` … `\lrcorner` (KaTeX's box-drawing codepoints) from ⌜ ⌝ ⌞ ⌟, `\triangleright` and `\triangleleft` from ▷ and ◁, `\Finv` from Libertinus Serif, and the slash of `\not` from the combining long solidus U+0338, moved right to sit over the relation that follows it rather than the character before it. |
-| `src/styles/libertinus.scss` | `@font-face` rules for those subsets under KaTeX's family names, with `unicode-range`. Imported after `fonts.scss`, so KaTeX's own fonts only supply characters Libertinus lacks. |
+| `src/styles/libertinus.scss` | `@font-face` rules for those subsets under KaTeX's family names, with `unicode-range`. Each subset also covers the zero-width space KaTeX puts in its vertical layouts. |
+| `src/styles/fonts.scss` | KaTeX's own `@font-face` rules removed, so the build ships only the Libertinus subsets. |
 | `src/fontMetricsData.js` | Height, depth, italic correction, skew and width of every glyph, from the outlines and the MATH table. |
 | `src/fontMetrics.ts` | Font-wide parameters (`sigmasAndXis`) from the MATH constants. |
 | `src/Options.ts` | Script and scriptscript sizes from `ScriptPercentScaleDown` and `ScriptScriptPercentScaleDown`. |
@@ -72,10 +73,17 @@ overwrites its own output.
   `src/functions/accent.ts` and `src/functions/accentunder.ts`, enabled by
   `naturalSizeOverNarrowBase` in `src/wideAccentImages.ts`.
 
+## Not covered by Libertinus
+
+- About 50 characters that KaTeX's fonts have are in no Libertinus font,
+  such as `\lessapprox`, `\subseteqq`, `\multimap` and `\checkmark`.
+  KaTeX's own fonts are not shipped, so the browser draws them with a font
+  installed on the reader's system, spaced with KaTeX's Computer Modern
+  metrics. KaTeX's private-use negated relations, such as `\nleqq`, have
+  no glyph in any other font.
+
 ## Still from Computer Modern
 
-- Characters no Libertinus font has, such as `\lessapprox`, `\multimap` and
-  KaTeX's private-use negated relations, fall back to KaTeX's own fonts.
 - Parentheses, brackets and bars taller than the largest pre-drawn size
   (about 3.1em) are KaTeX's single SVG paths. Libertinus's curved, tapering
   shapes don't split into stretchable pieces.

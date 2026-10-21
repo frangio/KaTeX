@@ -563,6 +563,10 @@ def write_scss(faces):
         "// they cover and the KaTeX faces fill in the rest.\n\n"
         "@use \"fonts.scss\";\n\n"
         + "\n\n".join(faces) + "\n")
+    # KaTeX's own fonts are not shipped: Libertinus's faces are the only
+    # ones, and characters Libertinus lacks fall back to the reader's fonts.
+    fonts_scss = KATEX / "src/styles/fonts.scss"
+    fonts_scss.write_text(re.sub(r"^@include font-face\(.*\);\n", "", fonts_scss.read_text(), flags=re.M).rstrip() + "\n")
     katex_scss = KATEX / "src/styles/katex.scss"
     text = katex_scss.read_text()
     if '@use "libertinus.scss";' not in text:
