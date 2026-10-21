@@ -2,7 +2,7 @@ import defineFunction, {normalizeArgument} from "../defineFunction";
 import {makeOrd, makeSpan, makeVList, staticSvg, svgData} from "../buildCommon";
 import {isCharacterBox} from "../utils";
 import {MathNode} from "../mathMLTree";
-import {stretchyMathML, stretchySvg} from "../stretchy";
+import {stretchyMathML, stretchySvg, wideAccentNaturalWidth} from "../stretchy";
 import {assertNodeType} from "../parseNode";
 import {assertSpan, assertSymbolDomNode, hasHtmlDomChildren, SymbolNode} from "../domTree";
 import {makeEm} from "../units";
@@ -72,10 +72,11 @@ export const htmlBuilder: HtmlBuilderSupSub<"accent"> = (grp, options) => {
     // and the skewchar.
     let skew = 0;
     let italic = 0;
+    let baseSymbol: SymbolNode | undefined;
     if (mustShift) {
         // Read the skew from the rendered base symbol.
         // This preserves font metrics from font wrappers like \mathbb.
-        const baseSymbol = getBaseSymbol(body);
+        baseSymbol = getBaseSymbol(body);
         skew = baseSymbol?.skew ?? 0;
         // The character's italic correction is rendered as a right margin,
         // which widens the box the accent is centered over. TeX centers the
@@ -153,6 +154,25 @@ export const htmlBuilder: HtmlBuilderSupSub<"accent"> = (grp, options) => {
             children: [
                 {type: "elem", elem: body},
                 {type: "kern", size: -clearance},
+                {type: "elem", elem: accentBody},
+            ],
+        }, options);
+
+    } else if (baseSymbol && wideAccentNaturalWidth(group) >
+        baseSymbol.width - 2 * Math.max(skew, 0)) {
+        // Like TeX, which picks the largest size of a wide accent that is no
+        // wider than its base, we don't squeeze the image to the width of a
+        // narrower character. We draw it at its natural size and center it
+        // over the character like an ordinary accent.
+        const naturalWidth = wideAccentNaturalWidth(group);
+        accentBody = stretchySvg(group, options, naturalWidth);
+        accentBody.classes.push("accent-body");
+        accentBody.style.left = makeEm(skew - italic / 2 - naturalWidth / 2);
+
+        accentBody = makeVList({
+            positionType: "firstBaseline",
+            children: [
+                {type: "elem", elem: body},
                 {type: "elem", elem: accentBody},
             ],
         }, options);

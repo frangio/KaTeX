@@ -8,7 +8,8 @@ import {LineNode, PathNode, SvgNode} from "./domTree";
 import {makeSpan, makeSvgSpan} from "./buildCommon";
 import {MathNode, TextNode} from "./mathMLTree";
 import {makeEm} from "./units";
-import wideAccentImages from "./wideAccentImages";
+import wideAccentImages, {naturalSizeOverNarrowBase} from "./wideAccentImages";
+import type {WideAccentImage} from "./wideAccentImages";
 
 import type Options from "./Options";
 import type {ParseNode} from "./types/nodes";
@@ -163,13 +164,37 @@ const katexImagesData: {[key: string]: SvgData} = {
         "shortrightharpoonabovebar"], 1.75, 716],
 };
 
-const wideAccentLabels =
-    new Set(["widehat", "widecheck", "widetilde", "utilde"]);
+const wideAccentImage = function(
+    group: ParseNode<"accent"> | ParseNode<"accentUnder">,
+): WideAccentImage | undefined {
+    const images = wideAccentImages[group.label.slice(1)];
+    if (!images) {
+        return undefined;
+    }
+    // Choose a wider image when there are more characters.
+    const numChars = group.base.type === "ordgroup" ?
+        group.base.body.length : 1;
+    return images[Math.min(numChars, images.length - 1)];
+};
+
+// The width of a wide accent's image at its own aspect ratio, or 0 if the
+// images are only meant to be stretched to the width of their base.
+export const wideAccentNaturalWidth = function(
+    group: ParseNode<"accent"> | ParseNode<"accentUnder">,
+): number {
+    const image = wideAccentImage(group);
+    if (!image || !naturalSizeOverNarrowBase) {
+        return 0;
+    }
+    const [, viewBoxWidth, viewBoxHeight, height] = image;
+    return height * viewBoxWidth / viewBoxHeight;
+};
 
 export const stretchySvg = function(
     group: ParseNode<"accent"> | ParseNode<"accentUnder"> | ParseNode<"xArrow">
          | ParseNode<"horizBrace">,
     options: Options,
+    naturalWidth?: number,
 ): DomSpan | SvgSpan {
     // Create a span with inline SVG for the element.
     function buildSvgSpan_(): {
@@ -179,13 +204,10 @@ export const stretchySvg = function(
     } {
         let viewBoxWidth = 400000;  // default
         const label = group.label.slice(1);
-        if (wideAccentLabels.has(label) && 'base' in group) {
-            // Choose a wider image when there are more characters.
-            const numChars = group.base.type === "ordgroup" ?
-                group.base.body.length : 1;
-            const images = wideAccentImages[label];
-            const [pathName, imageWidth, viewBoxHeight, height] =
-                images[Math.min(numChars, images.length - 1)];
+        const image = (group.type === "accent" || group.type === "accentUnder")
+            ? wideAccentImage(group) : undefined;
+        if (image) {
+            const [pathName, imageWidth, viewBoxHeight, height] = image;
             viewBoxWidth = imageWidth;
             const path = new PathNode(pathName);
             const svgNode = new SvgNode([path], {
@@ -194,6 +216,11 @@ export const stretchySvg = function(
                 "viewBox": `0 0 ${viewBoxWidth} ${viewBoxHeight}`,
                 "preserveAspectRatio": "none",
             });
+            if (naturalWidth) {
+                // The stylesheet stretches every svg to the width of its
+                // container, so the natural width has to be a style.
+                svgNode.attributes.style = `width:${makeEm(naturalWidth)}`;
+            }
             return {
                 span: makeSvgSpan([], [svgNode], options),
                 minWidth: 0,
