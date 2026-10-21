@@ -719,6 +719,8 @@ ROW_PATHS = {
 }
 BRACES = {0x23DE: ("leftbrace", "midbrace", "rightbrace"),
           0x23DF: ("leftbraceunder", "midbraceunder", "rightbraceunder")}
+BRACKETS = {0x23B4: ("leftbracketover", "rightbracketover"),
+            0x23B5: ("leftbracketunder", "rightbracketunder")}
 WIDE_ACCENTS = {"widehat": 0x302, "widecheck": 0x30C, "tilde": 0x303}
 WIDE_ACCENT_SIZES = [1, 1, 2, 3, 4, 4, 5]
 
@@ -833,6 +835,15 @@ def write_stretchy():
         paths[right] = stretched(rt, "right", top, bars)
         for name in (left, mid, right):
             heights[name] = round(top - bottom)
+
+    for cp, (left, right) in BRACKETS.items():
+        lt, ex, rt = horizontal_assembly(cp)
+        top = max(math.bounds(g)[3] for g in (lt, rt))
+        bottom = min(math.bounds(g)[1] for g in (lt, rt))
+        _, ey0, _, ey1 = math.bounds(ex)
+        paths[left] = stretched(lt, "left", top, [(ey0, ey1)])
+        paths[right] = stretched(rt, "right", top, [(ey0, ey1)])
+        heights[left] = heights[right] = round(top - bottom)
 
     images = {}
     for name, cp in WIDE_ACCENTS.items():
