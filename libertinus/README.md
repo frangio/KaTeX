@@ -33,11 +33,25 @@ overwrites its own output.
 | `src/Options.ts` | Script and scriptscript sizes from `ScriptPercentScaleDown` and `ScriptScriptPercentScaleDown`. |
 | `src/opticalMargins.ts` | Extra space on the content side of large braces. Libertinus's brace curls inward and keeps its stem close to the content, so it leaves 0.06–0.07em less white space than the parenthesis of the same size; this is that difference, measured from the outlines. |
 | `src/radicalMetrics.ts` | Height, advance and minimum width of each radical size. |
-| `src/svgGeometry.ts` | Radical paths from Libertinus's radical glyphs and its radical assembly; the extender bars of assembled delimiters at Libertinus's stem positions; and the stretchy paths: arrows, harpoons, two-headed arrows, `\xlongequal`, over and under accent arrows, over and under braces, wide accents and `\vec`. Each stretchy path is the Libertinus glyph or assembly piece at its anchored end, with its straight shaft extended across the box. |
+| `src/svgGeometry.ts` | Radical paths from Libertinus's radical glyphs and its radical assembly; the extender bars of assembled delimiters at Libertinus's stem positions; and the stretchy paths: arrows, harpoons, two-headed arrows, `\xlongequal`, over and under accent arrows, over and under braces, wide accents and `\vec` (see below for the braces). Each stretchy path is the Libertinus glyph or assembly piece at its anchored end, with its straight shaft extended across the box. |
 | `src/stretchy.ts` | Box heights of the converted stretchy elements in `katexImagesData`, and over and under arrows switched to Libertinus's accent arrows (U+20D6, U+20D7, U+20E1, U+20EE, U+20EF and the over harpoons). |
 | `src/wideAccentImages.ts` | The five Libertinus sizes of `\widehat`, `\widecheck` and `\widetilde`/`\utilde`, chosen by the number of characters under the accent, each in a box whose bottom is the font's `AccentBaseHeight`. |
 | `src/buildCommon.ts` | Size of the `\vec` image. |
 | `src/styles/katex.scss` | Root index spacing from `RadicalKernBeforeDegree` and `RadicalKernAfterDegree`. |
+
+## Departures from Libertinus
+
+- `\overbrace` and `\underbrace` are drawn from Libertinus's vertical brace
+  pieces (U+23A7 to U+23AA) turned 90°, not from its horizontal brace
+  (U+23DE, U+23DF). The pieces Libertinus provides for stretching the
+  horizontal brace don't match its own pre-drawn horizontal braces: the
+  point is a different, narrower drawing and the arms meet it at a
+  different height. The vertical pieces are cut from the same drawing as
+  the pre-drawn vertical braces, so they stretch consistently, and they
+  match the brace used by `cases`. The result is heavier (0.112em stroke
+  against 0.080em) and taller (0.488em against 0.385em) than Libertinus's
+  horizontal design. Set `HORIZONTAL_BRACE_DESIGN = "horizontal"` in
+  `build.py` to use the font's horizontal pieces instead.
 
 ## Still from Computer Modern
 

@@ -16,6 +16,7 @@ from pathlib import Path
 from fontTools import subset
 from fontTools.pens.basePen import BasePen
 from fontTools.pens.boundsPen import BoundsPen
+from fontTools.pens.transformPen import TransformPen
 from fontTools.ttLib import TTFont
 
 LIB = Path(sys.argv[1])
@@ -672,6 +673,63 @@ def horizontal_assembly(cp):
     return [p.glyph for p in variants.HorizGlyphConstruction[index].GlyphAssembly.PartRecords]
 
 
+HORIZONTAL_BRACE_DESIGN = "vertical"
+ROTATED_BRACES = {
+    "over": ((0, -1, 1, 0, 0, 0), ("leftbrace", "midbrace", "rightbrace")),
+    "under": ((0, 1, -1, 0, 0, 0), ("leftbraceunder", "midbraceunder", "rightbraceunder")),
+}
+
+
+def turned_bounds(glyph, matrix):
+    pen = BoundsPen(math.glyphs)
+    math.glyphs[glyph].draw(TransformPen(pen, matrix))
+    return pen.bounds
+
+
+def turned_stretched(glyph, matrix, anchor, top, bars):
+    xmin, _, xmax, _ = turned_bounds(glyph, matrix)
+    if anchor == "right":
+        dx = BOX - xmax
+    elif anchor == "left":
+        dx = -xmin
+    else:
+        dx = BOX / 2 - (xmin + xmax) / 2
+    pen = FlippedPath(math.glyphs, top, dx=dx)
+    math.glyphs[glyph].draw(TransformPen(pen, matrix))
+    path = pen.path()
+    for y0, y1 in bars:
+        a, b = top - y1, top - y0
+        if anchor in ("right", "mid"):
+            path += rect(0, a, xmin + dx + OVERLAP, b)
+        if anchor in ("left", "mid"):
+            path += rect(xmax + dx - OVERLAP, a, BOX, b)
+    return path
+
+
+def rotated_braces(paths, heights):
+    bottom_hook, extender, middle, _, top_hook = (p.glyph for p in vertical_assembly(ord("{")))
+    for side, (matrix, names) in ROTATED_BRACES.items():
+        pieces = (bottom_hook, middle, top_hook)
+        left, right = (bottom_hook, top_hook) if side == "over" else (top_hook, bottom_hook)
+        bounds = [turned_bounds(g, matrix) for g in pieces]
+        top = max(b[3] for b in bounds)
+        bottom = min(b[1] for b in bounds)
+        _, ey0, _, ey1 = turned_bounds(extender, matrix)
+        bars = [(ey0, ey1)]
+        left_name, mid_name, right_name = names
+        paths[left_name] = turned_stretched(left, matrix, "left", top, bars)
+        paths[mid_name] = turned_stretched(middle, matrix, "mid", top, bars)
+        paths[right_name] = turned_stretched(right, matrix, "right", top, bars)
+        for name in names:
+            heights[name] = round(top - bottom)
+
+
+def vertical_assembly(cp):
+    variants = math.font["MATH"].table.MathVariants
+    index = variants.VertGlyphCoverage.glyphs.index(math.cmap[cp])
+    return variants.VertGlyphConstruction[index].GlyphAssembly.PartRecords
+
+
 def write_stretchy():
     axis = math.constants["AxisHeight"]
     paths = {}
@@ -705,7 +763,9 @@ def write_stretchy():
                                  for y0, y1 in crossings(equal, x=(math.bounds(equal)[0] + math.bounds(equal)[2]) / 2))
     heights["longequal"] = equal_height
 
-    for cp, (left, mid, right) in BRACES.items():
+    if HORIZONTAL_BRACE_DESIGN == "vertical":
+        rotated_braces(paths, heights)
+    for cp, (left, mid, right) in (BRACES if HORIZONTAL_BRACE_DESIGN == "horizontal" else {}).items():
         lt, ex, md, ex2, rt = horizontal_assembly(cp)
         parts = (lt, ex, md, rt)
         top = max(math.bounds(g)[3] for g in parts)
