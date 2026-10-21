@@ -8,7 +8,7 @@ import {LineNode, PathNode, SvgNode} from "./domTree";
 import {makeSpan, makeSvgSpan} from "./buildCommon";
 import {MathNode, TextNode} from "./mathMLTree";
 import {makeEm} from "./units";
-import wideAccentImages, {naturalSizeOverNarrowBase} from "./wideAccentImages";
+import wideAccentImages, {naturalSizeOverCharacter, wideAccentSizes} from "./wideAccentImages";
 import type {WideAccentImage} from "./wideAccentImages";
 
 import type Options from "./Options";
@@ -177,24 +177,34 @@ const wideAccentImage = function(
     return images[Math.min(numChars, images.length - 1)];
 };
 
-// The width of a wide accent's image at its own aspect ratio, or 0 if the
-// images are only meant to be stretched to the width of their base.
-export const wideAccentNaturalWidth = function(
-    group: ParseNode<"accent"> | ParseNode<"accentUnder">,
-): number {
-    const image = wideAccentImage(group);
-    if (!image || !naturalSizeOverNarrowBase) {
-        return 0;
-    }
+const naturalWidth = function(image: WideAccentImage): number {
     const [, viewBoxWidth, viewBoxHeight, height] = image;
     return height * viewBoxWidth / viewBoxHeight;
+};
+
+export type NaturalAccent = {image: WideAccentImage, width: number};
+
+// The image of a wide accent over a single character with room for `room`,
+// drawn at its natural size rather than stretched. Like TeX, which never
+// stretches an accent, this is the widest size that fits, or the narrowest
+// if none does. Undefined when the images are only meant to be stretched.
+export const wideAccentOverCharacter = function(
+    group: ParseNode<"accent"> | ParseNode<"accentUnder">,
+    room: number,
+): NaturalAccent | undefined {
+    const sizes = wideAccentSizes[group.label.slice(1)];
+    if (!naturalSizeOverCharacter || !sizes) {
+        return undefined;
+    }
+    const image = sizes.filter(size => naturalWidth(size) <= room).pop() ?? sizes[0];
+    return {image, width: naturalWidth(image)};
 };
 
 export const stretchySvg = function(
     group: ParseNode<"accent"> | ParseNode<"accentUnder"> | ParseNode<"xArrow">
          | ParseNode<"horizBrace">,
     options: Options,
-    naturalWidth?: number,
+    natural?: NaturalAccent,
 ): DomSpan | SvgSpan {
     // Create a span with inline SVG for the element.
     function buildSvgSpan_(): {
@@ -204,8 +214,9 @@ export const stretchySvg = function(
     } {
         let viewBoxWidth = 400000;  // default
         const label = group.label.slice(1);
-        const image = (group.type === "accent" || group.type === "accentUnder")
-            ? wideAccentImage(group) : undefined;
+        const image = natural ? natural.image
+            : (group.type === "accent" || group.type === "accentUnder")
+                ? wideAccentImage(group) : undefined;
         if (image) {
             const [pathName, imageWidth, viewBoxHeight, height] = image;
             viewBoxWidth = imageWidth;
@@ -216,10 +227,10 @@ export const stretchySvg = function(
                 "viewBox": `0 0 ${viewBoxWidth} ${viewBoxHeight}`,
                 "preserveAspectRatio": "none",
             });
-            if (naturalWidth) {
+            if (natural) {
                 // The stylesheet stretches every svg to the width of its
                 // container, so the natural width has to be a style.
-                svgNode.attributes.style = `width:${makeEm(naturalWidth)}`;
+                svgNode.attributes.style = `width:${makeEm(natural.width)}`;
             }
             return {
                 span: makeSvgSpan([], [svgNode], options),

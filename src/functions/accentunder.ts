@@ -2,7 +2,7 @@
 import defineFunction from "../defineFunction";
 import {makeSpan, makeVList} from "../buildCommon";
 import {MathNode} from "../mathMLTree";
-import {stretchyMathML, stretchySvg, wideAccentNaturalWidth} from "../stretchy";
+import {stretchyMathML, stretchySvg, wideAccentOverCharacter} from "../stretchy";
 import {isCharacterBox} from "../utils";
 import {makeEm} from "../units";
 import {getBaseSymbol} from "./accent";
@@ -36,16 +36,16 @@ defineFunction({
 
         const baseSymbol = isCharacterBox(group.base)
             ? getBaseSymbol(innerGroup) : undefined;
-        const naturalWidth = wideAccentNaturalWidth(group);
+        const natural = baseSymbol
+            ? wideAccentOverCharacter(group, baseSymbol.width) : undefined;
         let accentBody;
         let wrapperClasses: string[] = ["svg-align"];
-        if (baseSymbol && naturalWidth > baseSymbol.width) {
-            // As in accent.ts, an image wider than the character is drawn at
-            // its natural size, centered under the character, instead of
-            // being squeezed to its width.
-            accentBody = stretchySvg(group, options, naturalWidth);
+        if (baseSymbol && natural) {
+            // As in accent.ts, under a single character the accent is drawn
+            // at its natural size, centered under the character.
+            accentBody = stretchySvg(group, options, natural);
             accentBody.style.marginLeft =
-                makeEm((baseSymbol.width - naturalWidth) / 2);
+                makeEm((baseSymbol.width - natural.width) / 2);
             wrapperClasses = [];
         } else {
             accentBody = stretchySvg(group, options);

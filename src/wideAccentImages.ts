@@ -39,8 +39,16 @@ const tilde: WideAccentImage[] = [
 const wideAccentImages: Record<string, WideAccentImage[]> =
     {widehat, widecheck, widetilde: tilde, utilde: tilde};
 
+// Every size, narrowest first, for an accent over a single character.
+const unique = (images: WideAccentImage[]) =>
+    images.filter((image, i) => images.findIndex(([name]) => name === image[0]) === i);
+export const wideAccentSizes: Record<string, WideAccentImage[]> = {
+    widehat: unique(widehat), widecheck: unique(widecheck),
+    widetilde: unique(tilde), utilde: unique(tilde),
+};
+
 // The smallest images are Libertinus's ordinary accents, which keep
 // their shape only at their own size.
-export const naturalSizeOverNarrowBase = true;
+export const naturalSizeOverCharacter = true;
 
 export default wideAccentImages;
