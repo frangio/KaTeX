@@ -46,6 +46,13 @@ export const getBaseElem = (group: AnyParseNode): AnyParseNode => {
         }
     } else if (group.type === "font") {
         return getBaseElem(group.body);
+    } else if (group.type === "htmlmathml") {
+        // \imath and \jmath are a character wrapped in \html@mathml.
+        if (group.html.length === 1) {
+            return getBaseElem(group.html[0]);
+        } else {
+            return group;
+        }
     } else {
         return group;
     }

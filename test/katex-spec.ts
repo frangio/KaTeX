@@ -2612,6 +2612,16 @@ describe("An accent builder", function() {
         expect(getAccentOffset(r`\hat{\mathrm{I}}`))
             .toEqual(getAccentOffset(r`\mathrm{\hat{I}}`));
     });
+
+    it("should treat \\imath and \\jmath as the characters they draw", function() {
+        const html = (tex: string) => katex.renderToString(tex, {output: "html"});
+        for (const tex of [r`\hat{#}`, r`\widehat{#}`, r`\utilde{#}`, r`\hat{#}^2`, r`#^2`]) {
+            expect(html(tex.replace("#", r`\imath`)))
+                .toEqual(html(tex.replace("#", r`\@imath`)));
+            expect(html(tex.replace("#", r`\jmath`)))
+                .toEqual(html(tex.replace("#", r`\@jmath`)));
+        }
+    });
 });
 
 describe("A stretchy and shifty accent builder", function() {
