@@ -22,6 +22,28 @@ The script can be rerun: it reads KaTeX's original Computer Modern metrics
 from `libertinus/katex-metrics.json` (taken from KaTeX 0.19.0, unchanged since 0.16) and
 overwrites its own output.
 
+## Versioning
+
+For each KaTeX release V, this fork releases a version W that satisfies
+the npm range `^V`, so it can stand in for that release wherever a
+package depends on `katex` with a caret range. While KaTeX is at 0.x,
+`^0.Y.Z` allows only 0.Y.Z and later patches of 0.Y, so W keeps V's
+major and minor version, and its patch number is the larger of V's and
+one more than this fork's previous release in that minor version. The
+fork's own fixes are patch releases. For example:
+
+| Release | Version |
+|---|---|
+| KaTeX 0.19.0 | 0.19.0 |
+| A fix in this fork | 0.19.1 |
+| KaTeX 0.19.1 | 0.19.2 |
+| KaTeX 0.20.0 | 0.20.0 |
+
+The patch numbers of the fork and of KaTeX therefore drift apart, and a
+version does not say which KaTeX release it is based on: each release
+records that in its notes and in the message of its git tag.
+Prereleases can never satisfy `^V`, so versions have no suffixes.
+
 ## Licenses
 
 KaTeX's code is under the MIT license (`LICENSE`). The fonts in `fonts/`
