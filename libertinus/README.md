@@ -46,14 +46,29 @@ Prereleases can never satisfy `^V`, so versions have no suffixes.
 
 ## Licenses
 
-KaTeX's code is under the MIT license (`LICENSE`). The fonts in `fonts/`
-are modified Libertinus fonts and, like Libertinus, under the SIL Open
-Font License 1.1: `fonts/OFL.txt`, the license file of the Libertinus
-7.051 release they are built from, which `pnpm build` copies to
-`dist/fonts/OFL.txt` beside them. The OFL lets modified fonts keep the
-name Libertinus; its reserved names are "Linux Libertine", "Biolinum" and
-"STIX Fonts". When rebuilding from another Libertinus release, replace
-`fonts/OFL.txt` with that release's `OFL.txt`.
+KaTeX's code, and this fork's changes to it, are under the MIT license
+(`LICENSE`). The `Libertinus_*` fonts in `fonts/` are modified Libertinus
+fonts and, like Libertinus, under the SIL Open Font License 1.1:
+`fonts/OFL.txt`, the license file of the Libertinus 7.051 release they
+are built from, which `pnpm build` copies to `dist/fonts/OFL.txt` beside
+them. The SVG paths that `build.py` draws from Libertinus's outlines, in
+`src/svgGeometry.ts`, are under the same license, as a comment there
+says; the paths KaTeX adapted from its own fonts remain under theirs, as
+`src/stretchy.ts` says. `package.json` declares both licenses,
+`MIT AND OFL-1.1`.
+
+The OFL lets modified fonts keep the name Libertinus; its reserved names
+are "Linux Libertine", "Biolinum" and "STIX Fonts". Each font keeps its
+Libertinus name and copyright, and its version string, such as "Version
+7.051;RELEASE", gets "; modified for KaTeX" appended. When rebuilding
+from another Libertinus release, replace `fonts/OFL.txt` with that
+release's `OFL.txt`.
+
+The stylesheet declares the Libertinus fonts under KaTeX's CSS family
+names, such as `KaTeX_Main`, which KaTeX's stylesheet selects. A page
+that also loads stock KaTeX's stylesheet gets both sets of fonts under
+the same names, and both sets of rules for the same classes, so this
+fork replaces KaTeX on a page and cannot be used alongside it.
 
 ## What it writes
 

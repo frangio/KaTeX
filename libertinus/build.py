@@ -509,6 +509,10 @@ def write_subset(source, mapping, reference, path, advances, transforms):
     for glyph, matrix in transforms.items():
         transform_glyph(font, glyph, matrix)
     copy_vertical_metrics(font, reference)
+    # Keep the release's version, marked so the file isn't taken for it.
+    for record in font["name"].names:
+        if record.nameID == 5:
+            record.string = record.toUnicode() + "; modified for KaTeX"
     font.flavor = "woff2"
     font.save(path)
 
@@ -631,10 +635,36 @@ def main():
     write_tall_delims(original)
     write_radicals()
     write_stretchy()
+    write_notices()
     if REPORT:
         REPORT.write_text(json.dumps(
             {"fonts": report, "sigmas": sigmas, "sizeStyleMap": size_style_map(), "optical": optical},
             indent=1, ensure_ascii=False))
+
+
+def write_notices():
+    # The SVG paths drawn from Libertinus's outlines come under its license,
+    # as KaTeX's own paths come under its fonts'.
+    copyright = math.font["name"].getDebugName(0)
+    notice = (
+        "// Most paths below are adapted from glyphs in the Libertinus fonts by\n"
+        "// libertinus/build.py: the radicals, the tall delimiters and their\n"
+        "// extenders, and the stretchy arrows, braces, brackets and wide accents.\n"
+        f"// {copyright}\n"
+        "// Licensed under the SIL Open Font License, Version 1.1; see fonts/OFL.txt.\n"
+        "// The others are adapted from glyphs in KaTeX's fonts; see src/stretchy.ts.\n"
+    )
+    geometry = KATEX / "src/svgGeometry.ts"
+    text = geometry.read_text()
+    text = re.sub(r"\n// Most paths below are adapted from glyphs in the Libertinus fonts.*?see src/stretchy\.ts\.\n", "",
+                  text, flags=re.S)
+    anchor = "// In all paths below, the viewBox-to-em scale is 1000:1.\n"
+    geometry.write_text(text.replace(anchor, anchor + "\n" + notice, 1))
+    stretchy = KATEX / "src/stretchy.ts"
+    stretchy.write_text(stretchy.read_text().replace(
+        "// Many of the KaTeX SVG images have been adapted from glyphs in KaTeX fonts.",
+        "// The KaTeX SVG images not drawn from the Libertinus fonts (see\n"
+        "// src/svgGeometry.ts) have been adapted from glyphs in KaTeX fonts."))
 
 
 def write_unavailable(missing):
