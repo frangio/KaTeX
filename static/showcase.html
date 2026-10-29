@@ -4,249 +4,843 @@
     http://localhost:7936/showcase.html
   -->
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>KaTeX Libertinus Showcase</title>
-        <script defer src="/katex.js" type="text/javascript"></script>
-        <style>
-            :root {
-                --fg: #1b1b1b;
-                --muted: #6b6b6b;
-                --rule: #e3e0d8;
-                --bg: #fbfaf7;
-                --card: #ffffff;
-            }
-            @media (prefers-color-scheme: dark) {
-                :root {
-                    --fg: #ece9e2;
-                    --muted: #9a968d;
-                    --rule: #34322e;
-                    --bg: #171614;
-                    --card: #1f1e1b;
-                }
-            }
-            * { box-sizing: border-box; }
-            body {
-                margin: 0;
-                background: var(--bg);
-                color: var(--fg);
-                font-family: "Libertinus Serif", "Linux Libertine", Georgia, serif;
-                font-size: 18px;
-                line-height: 1.5;
-            }
-            header, section {
-                max-width: 1080px;
-                margin: 0 auto;
-                padding: 0 16px;
-            }
-            header { padding-top: 64px; padding-bottom: 32px; }
-            header h1 { font-size: 3em; font-weight: normal; margin: 0; }
-            header p { color: var(--muted); margin: 8px 0 0; }
-            section { margin-top: 48px; }
-            section h2 {
-                font-weight: normal;
-                font-variant: small-caps;
-                letter-spacing: 0.04em;
-                border-bottom: 1px solid var(--rule);
-                padding-bottom: 6px;
-            }
-            .grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-                gap: 16px;
-                grid-auto-flow: dense;
-            }
-            .grid.wide { grid-template-columns: 1fr; }
-            figure.span { grid-column: 1 / -1; }
-            figure {
-                margin: 0;
-                background: var(--card);
-                border: 1px solid var(--rule);
-                border-radius: 6px;
-                padding: 20px 16px 12px;
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-                min-width: 0;
-            }
-            .math {
-                font-size: 1.25em;
-                overflow-x: auto;
-                overflow-y: hidden;
-                padding: 4px 0;
-            }
-            figcaption {
-                color: var(--muted);
-                font-size: 0.8em;
-                margin-top: 8px;
-                cursor: pointer;
-            }
-            figcaption code {
-                display: none;
-                white-space: pre-wrap;
-                word-break: break-word;
-                margin-top: 6px;
-                font-size: 0.95em;
-            }
-            figure.show-source figcaption code { display: block; }
-            footer {
-                max-width: 1080px;
-                margin: 64px auto;
-                padding: 0 16px;
-                color: var(--muted);
-                font-size: 0.85em;
-            }
-        </style>
-    </head>
-    <body>
-        <header>
-            <h1 id="title">KaTeX with Libertinus</h1>
-            <p>Math typeset with the Libertinus fonts. Click a caption to
-                see its source.</p>
-        </header>
-        <div id="sections"></div>
-        <footer>
-            Libertinus fonts are licensed under the SIL Open Font License.
-        </footer>
-        <script>
-            // Lay out a space-separated list of symbols in evenly spaced rows.
-            function list(symbols, perRow = 6) {
-                const items = symbols.split(" ");
-                const rows = [];
-                for (let i = 0; i < items.length; i += perRow) {
-                    rows.push(items.slice(i, i + perRow).join("\\quad "));
-                }
-                return "\\begin{gathered}" + rows.join("\\\\") +
-                    "\\end{gathered}";
-            }
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KaTeX Libertinus Showcase</title>
+<style>
+  :root { --font-body: "Libertinus Serif", serif; }
+  body {
+    font-family: var(--font-body);
+    max-width: 850px;
+    margin: 2em auto;
+    padding: 0 1.5em;
+    color: #1a1a1a;
+    font-size: 17px;
+    line-height: 1.7;
+  }
+  h1 { font-size: 1.8em; font-weight: 300; border-bottom: 1px solid #ccc; padding-bottom: 0.3em; }
+  h2 { font-size: 1.15em; color: #444; margin-top: 2.5em; letter-spacing: 0.03em; text-transform: uppercase; }
+  .field-label {
+    display: inline-block;
+    background: #f0f0f0;
+    color: #555;
+    font-size: 0.75em;
+    padding: 0.15em 0.6em;
+    border-radius: 3px;
+    margin-bottom: 0.5em;
+    font-family: sans-serif;
+    letter-spacing: 0.05em;
+  }
+  .display { margin: 1.2em 0; text-align: center; }
+  .specimen-block {
+    margin: 1.5em 0;
+    padding: 0 0 1.5em;
+    border-bottom: 1px solid #eee;
+  }
+  .specimen-block:last-child { border-bottom: none; }
+  nav {
+    background: #f8f8f8;
+    padding: 0.8em 1.2em;
+    border-radius: 6px;
+    margin: 1.5em 0;
+    font-size: 0.85em;
+    font-family: sans-serif;
+  }
+  nav a { color: #4a90d9; text-decoration: none; margin-right: 1.2em; }
+  nav a:hover { text-decoration: underline; }
+  .credit { color: #777; font-size: 0.85em; }
+</style>
 
-            // [section title, wide?, [[caption, tex], ...]]
-            const SECTIONS = [
-                ["Classics", false, [
-                    ["Euler’s identity", "e^{i\\pi} + 1 = 0"],
-                    ["Gaussian integral",
-                        "\\int_{-\\infty}^{\\infty} e^{-x^2}\\,dx = \\sqrt{\\pi}"],
-                    ["Basel problem",
-                        "\\sum_{n=1}^{\\infty} \\frac{1}{n^2} = \\frac{\\pi^2}{6}"],
-                    ["Fourier transform",
-                        "\\hat f(\\xi) = \\int_{-\\infty}^{\\infty} f(x)\\, e^{-2\\pi i \\xi x}\\,dx"],
-                    ["Cauchy’s integral formula",
-                        "f(a) = \\frac{1}{2\\pi i} \\oint_\\gamma \\frac{f(z)}{z-a}\\,dz"],
-                    ["Stirling’s approximation",
-                        "n! \\sim \\sqrt{2\\pi n}\\left(\\frac{n}{e}\\right)^{\\!n}"],
-                    ["Quadratic formula",
-                        "x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}"],
-                    ["Euler product",
-                        "\\zeta(s) = \\sum_{n=1}^\\infty \\frac{1}{n^s} = \\prod_{p\\ \\text{prime}} \\frac{1}{1-p^{-s}}"],
-                ]],
-                ["Showpieces", true, [
-                    ["Rogers–Ramanujan continued fraction",
-                        "\\frac{1}{\\Bigl(\\sqrt{\\phi \\sqrt{5}}-\\phi\\Bigr) e^{\\frac25 \\pi}} = 1+\\frac{e^{-2\\pi}} {1+\\frac{e^{-4\\pi}} {1+\\frac{e^{-6\\pi}} {1+\\frac{e^{-8\\pi}} {1+\\cdots} } } }"],
-                    ["Cauchy–Schwarz inequality",
-                        "\\left( \\sum_{k=1}^n a_k b_k \\right)^{\\!2} \\leq \\left( \\sum_{k=1}^n a_k^2 \\right) \\left( \\sum_{k=1}^n b_k^2 \\right)"],
-                    ["Maxwell’s equations",
-                        "\\begin{aligned} \\nabla \\cdot \\mathbf{E} &= \\frac{\\rho}{\\varepsilon_0} & \\nabla \\times \\mathbf{E} &= -\\frac{\\partial \\mathbf{B}}{\\partial t} \\\\ \\nabla \\cdot \\mathbf{B} &= 0 & \\nabla \\times \\mathbf{B} &= \\mu_0 \\mathbf{J} + \\mu_0\\varepsilon_0 \\frac{\\partial \\mathbf{E}}{\\partial t} \\end{aligned}"],
-                    ["Navier–Stokes",
-                        "\\rho\\left(\\frac{\\partial \\mathbf{u}}{\\partial t} + (\\mathbf{u}\\cdot\\nabla)\\mathbf{u}\\right) = -\\nabla p + \\mu \\nabla^2 \\mathbf{u} + \\mathbf{f}"],
-                    ["Einstein field equations",
-                        "R_{\\mu\\nu} - \\tfrac{1}{2} R\\, g_{\\mu\\nu} + \\Lambda g_{\\mu\\nu} = \\frac{8\\pi G}{c^4} T_{\\mu\\nu}"],
-                ]],
-                ["Alphabets", false, [
-                    ["Italic", "\\begin{gathered}ABCDEFGHIJKLM\\\\ abcdefghijklm\\end{gathered}"],
-                    ["Upright", "\\begin{gathered}\\mathrm{ABCDEFGHIJKLM}\\\\ \\mathrm{abcdefghijklm}\\end{gathered}"],
-                    ["Bold", "\\begin{gathered}\\mathbf{ABCDEFGHIJKLM}\\\\ \\boldsymbol{abcdefghijklm}\\end{gathered}"],
-                    ["Greek",
-                        "\\begin{gathered}\\alpha\\beta\\gamma\\delta\\epsilon\\varepsilon\\zeta\\eta\\theta\\vartheta\\iota\\kappa\\lambda\\mu\\\\ \\nu\\xi\\pi\\varpi\\rho\\varrho\\sigma\\varsigma\\tau\\upsilon\\phi\\varphi\\chi\\psi\\omega\\end{gathered}"],
-                    ["Upright Greek",
-                        "\\Gamma\\Delta\\Theta\\Lambda\\Xi\\Pi\\Sigma\\Upsilon\\Phi\\Psi\\Omega"],
-                    ["Calligraphic", "\\begin{gathered}\\mathcal{ABCDEFGHIJKLM}\\\\ \\mathcal{NOPQRSTUVWXYZ}\\end{gathered}"],
-                    ["Script", "\\begin{gathered}\\mathscr{ABCDEFGHIJKLM}\\\\ \\mathscr{NOPQRSTUVWXYZ}\\end{gathered}"],
-                    ["Fraktur", "\\begin{gathered}\\mathfrak{ABCDEFGHIJKLM}\\\\ \\mathfrak{abcdefghijklm}\\end{gathered}"],
-                    ["Blackboard bold", "\\begin{gathered}\\mathbb{ABCDEFGHIJKLM}\\\\ \\mathbb{NOPQRSTUVWXYZ}\\end{gathered}"],
-                    ["Sans serif", "\\begin{gathered}\\mathsf{ABCDEFGHIJKLM}\\\\ \\mathsf{abcdefghijklm}\\end{gathered}"],
-                    ["Typewriter", "\\begin{gathered}\\mathtt{ABCDEFGHIJKLM}\\\\ \\mathtt{abcdefghijklm}\\end{gathered}"],
-                    ["Digits", "0123456789 \\quad \\mathbf{0123456789}"],
-                ]],
-                ["Big operators and delimiters", false, [
-                    ["Operators, text and display",
-                        "\\textstyle \\sum \\prod \\coprod \\int \\oint \\bigcup \\bigcap \\bigoplus \\bigotimes \\quad \\displaystyle \\sum \\prod \\coprod \\int \\oint \\bigcup \\bigcap \\bigoplus \\bigotimes"],
-                    ["Multiple integrals",
-                        "\\iint_D f\\,dA \\quad \\iiint_V g\\,dV \\quad \\oiint_S \\mathbf{F}\\cdot d\\mathbf{S}"],
-                    ["Delimiter sizes",
-                        "( \\big( \\Big( \\bigg( \\Bigg( \\quad [ \\big[ \\Big[ \\bigg[ \\Bigg[ \\quad \\{ \\big\\{ \\Big\\{ \\bigg\\{ \\Bigg\\{"],
-                    ["More delimiters",
-                        "\\langle \\Big\\langle \\Bigg\\langle \\quad \\lfloor \\Big\\lfloor \\Bigg\\lfloor \\quad \\lceil \\Big\\lceil \\Bigg\\lceil \\quad | \\Big| \\Bigg| \\quad \\| \\Big\\| \\Bigg\\|"],
-                    ["Radicals",
-                        "\\sqrt{x} \\quad \\sqrt{\\frac{a}{b}} \\quad \\sqrt[3]{\\frac{\\frac{x}{y}}{z}} \\quad \\sqrt{1+\\sqrt{1+\\sqrt{1+x}}}"],
-                    ["Growing delimiters",
-                        "\\left(\\left(\\left(\\left(x\\right)^2\\right)^2\\right)^2\\right)^2"],
-                ]],
-                ["Structures", false, [
-                    ["Matrix",
-                        "A = \\begin{pmatrix} a_{11} & a_{12} & \\cdots & a_{1n} \\\\ a_{21} & a_{22} & \\cdots & a_{2n} \\\\ \\vdots & \\vdots & \\ddots & \\vdots \\\\ a_{m1} & a_{m2} & \\cdots & a_{mn} \\end{pmatrix}"],
-                    ["Determinant",
-                        "\\det\\begin{vmatrix} a & b \\\\ c & d \\end{vmatrix} = ad - bc"],
-                    ["Cases",
-                        "|x| = \\begin{cases} x & \\text{if } x \\geq 0 \\\\ -x & \\text{otherwise} \\end{cases}"],
-                    ["Binomial coefficients",
-                        "\\binom{n}{k} = \\frac{n!}{k!\\,(n-k)!} \\qquad \\sum_{k=0}^{n} \\binom{n}{k} = 2^n"],
-                    ["Commutative diagram",
-                        "\\begin{CD} A @>f>> B \\\\ @VgVV @VVhV \\\\ C @>>k> D \\end{CD}"],
-                    ["Under and over braces",
-                        "\\underbrace{a + \\cdots + a}_{n\\ \\text{times}} = \\overbrace{n \\cdot a}^{\\text{product}}"],
-                ]],
-                ["Symbols", false, [
-                    ["Relations", list("= \\ne \\equiv \\approx \\cong \\sim \\simeq \\propto \\le \\ge \\ll \\gg \\prec \\succ \\subset \\supset \\subseteq \\supseteq \\in \\ni \\notin \\perp \\parallel \\models \\vdash")],
-                    ["Binary operators", list("+ - \\pm \\mp \\times \\div \\cdot \\circ \\bullet \\ast \\star \\oplus \\ominus \\otimes \\oslash \\odot \\cup \\cap \\sqcup \\sqcap \\vee \\wedge \\setminus \\wr")],
-                    ["Arrows", list("\\leftarrow \\rightarrow \\leftrightarrow \\Leftarrow \\Rightarrow \\Leftrightarrow \\longleftarrow \\longrightarrow \\Longrightarrow \\mapsto \\longmapsto \\hookrightarrow \\twoheadrightarrow \\rightharpoonup \\rightleftharpoons \\uparrow \\downarrow \\nearrow \\searrow")],
-                    ["Extensible arrows",
-                        "A \\xrightarrow{\\ \\text{a long label}\\ } B \\xleftarrow[\\text{under}]{\\text{over}} C"],
-                    ["Miscellaneous", list("\\forall \\exists \\nexists \\neg \\emptyset \\varnothing \\infty \\partial \\nabla \\hbar \\ell \\wp \\Re \\Im \\aleph \\beth \\angle \\triangle \\square \\top \\bot \\clubsuit \\diamondsuit \\heartsuit \\spadesuit")],
-                    ["Accents",
-                        "\\hat{a}\\, \\check{a}\\, \\tilde{a}\\, \\acute{a}\\, \\grave{a}\\, \\dot{a}\\, \\ddot{a}\\, \\breve{a}\\, \\bar{a}\\, \\vec{a} \\qquad \\widehat{xyz}\\, \\widetilde{xyz}\\, \\overline{xyz}\\, \\overrightarrow{xyz}"],
-                ]],
-            ];
+<!-- FONT CONFIG -->
+<script defer src="/katex.js" type="text/javascript"></script>
+<script defer src="/contrib/auto-render.js" type="text/javascript"></script>
+<script>
+window.addEventListener("DOMContentLoaded", function() {
+  var macros = {
+    "\\bm": "\\boldsymbol{#1}",
+    "\\id": "\\mathrm{id}",
+  };
+  ["R", "Z", "N", "C", "Q", "F", "E", "P"].forEach(function(letter) {
+    macros["\\" + letter] = "\\mathbb{" + letter + "}";
+  });
+  ["tr", "rank", "Hom", "Ker", "Im", "diam", "supp", "sgn", "Aut",
+    "Gal"].forEach(function(name) {
+    macros["\\" + name] = "\\operatorname{" + name + "}";
+  });
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: "$$", right: "$$", display: true},
+      {left: "$", right: "$", display: false},
+    ],
+    macros: macros,
+    throwOnError: false,
+  });
+});
+</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libertinus+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap">
+</head>
 
-            function render() {
-                const container = document.getElementById("sections");
-                for (const [title, wide, items] of SECTIONS) {
-                    const section = document.createElement("section");
-                    const heading = document.createElement("h2");
-                    heading.textContent = title;
-                    const grid = document.createElement("div");
-                    grid.className = wide ? "grid wide" : "grid";
-                    for (const [caption, tex] of items) {
-                        const figure = document.createElement("figure");
-                        const math = document.createElement("div");
-                        math.className = "math";
-                        katex.render(tex, math, {
-                            displayMode: true,
-                            throwOnError: false,
-                        });
-                        const figcaption = document.createElement("figcaption");
-                        figcaption.textContent = caption;
-                        const code = document.createElement("code");
-                        code.textContent = tex;
-                        figcaption.appendChild(code);
-                        figcaption.addEventListener("click", () => {
-                            figure.classList.toggle("show-source");
-                        });
-                        figure.append(math, figcaption);
-                        grid.appendChild(figure);
-                    }
-                    section.append(heading, grid);
-                    container.appendChild(section);
-                }
-                // Let formulas too wide for one column take the full row.
-                for (const math of document.querySelectorAll(".math")) {
-                    if (math.scrollWidth > math.clientWidth) {
-                        math.parentElement.classList.add("span");
-                    }
-                }
-            }
+<body>
 
-            window.addEventListener("DOMContentLoaded", render);
-        </script>
-    </body>
+<h1>KaTeX with Libertinus Math</h1>
+
+<p class="credit">Adapted from the
+<a href="https://dgleich.github.io/mathjax-fonts/">MathJax font specimens</a>
+by David Gleich
+(<a href="https://github.com/dgleich/mathjax-fonts/tree/34075ed">source</a>).</p>
+
+<div style="background:#f5f5f5; padding:8px 12px; border-radius:6px; margin:0.5em 0; display:flex; align-items:center; gap:12px;">
+  <label style="font-size:13px; white-space:nowrap;">Font size: <span id="sizeVal">17</span>px</label>
+  <input type="range" min="10" max="36" value="17" step="1" style="flex:1;" oninput="document.body.style.fontSize=this.value+'px'; document.getElementById('sizeVal').textContent=this.value;">
+</div>
+
+<nav>
+  <a href="#alphabet">Alphabet</a>
+  <a href="#typmatrix">Typography Matrix</a>
+  <a href="#integrals">Integrals</a>
+  <a href="#linalg">Linear Algebra</a>
+  <a href="#analysis">Analysis &amp; PDEs</a>
+  <a href="#topology">Topology</a>
+  <a href="#combinatorics">Combinatorics</a>
+  <a href="#probability">Probability</a>
+  <a href="#algebra">Abstract Algebra</a>
+  <a href="#physics">Physics</a>
+  <a href="#complex">Complex Analysis</a>
+  <a href="#discrete">Discrete &amp; Algorithms</a>
+  <a href="#display">Display Specimens</a>
+  <a href="#inventory">Glyph Inventory</a>
+</nav>
+
+<!-- ==================== ALPHABET ==================== -->
+<div id="alphabet">
+<h2>Alphabet &amp; Symbols</h2>
+
+<div class="specimen-block">
+<span class="field-label">Latin (upright &amp; italic)</span>
+<p>$\mathrm{A\,B\,C\,D\,E\,F\,G\,H\,I\,J\,K\,L\,M\,N\,O\,P\,Q\,R\,S\,T\,U\,V\,W\,X\,Y\,Z}$</p>
+<p>$A\,B\,C\,D\,E\,F\,G\,H\,I\,J\,K\,L\,M\,N\,O\,P\,Q\,R\,S\,T\,U\,V\,W\,X\,Y\,Z$</p>
+<p>$\mathrm{a\,b\,c\,d\,e\,f\,g\,h\,i\,j\,k\,l\,m\,n\,o\,p\,q\,r\,s\,t\,u\,v\,w\,x\,y\,z}$</p>
+<p>$a\,b\,c\,d\,e\,f\,g\,h\,i\,j\,k\,l\,m\,n\,o\,p\,q\,r\,s\,t\,u\,v\,w\,x\,y\,z$</p>
+<p>$0\;1\;2\;3\;4\;5\;6\;7\;8\;9$</p>
+</div>
+
+<div class="specimen-block">
+<span class="field-label">Greek (uppercase — only non-Latin forms have commands)</span>
+<p>$\Gamma\;\Delta\;\Theta\;\Lambda\;\Xi\;\Pi\;\Sigma\;\Upsilon\;\Phi\;\Psi\;\Omega$</p>
+<span class="field-label">Greek (lowercase)</span>
+<p>$\alpha\;\beta\;\gamma\;\delta\;\epsilon\;\zeta\;\eta\;\theta\;\iota\;\kappa\;\lambda\;\mu\;\nu\;\xi\;\pi\;\rho\;\sigma\;\tau\;\upsilon\;\phi\;\chi\;\psi\;\omega$</p>
+<span class="field-label">Greek (variant forms)</span>
+<p>$\varepsilon\;\vartheta\;\varkappa\;\varpi\;\varrho\;\varsigma\;\varphi$</p>
+</div>
+
+<div class="specimen-block">
+<span class="field-label">Blackboard bold, Calligraphic, Fraktur</span>
+<p>$\mathbb{A\,B\,C\,D\,E\,F\,G\,H\,I\,J\,K\,L\,M\,N\,O\,P\,Q\,R\,S\,T\,U\,V\,W\,X\,Y\,Z}$</p>
+<p>$\mathcal{A\,B\,C\,D\,E\,F\,G\,H\,I\,J\,K\,L\,M\,N\,O\,P\,Q\,R\,S\,T\,U\,V\,W\,X\,Y\,Z}$</p>
+<p>$\mathfrak{A\,B\,C\,D\,E\,F\,G\,H\,I\,J\,K\,L\,M\,N\,O\,P\,Q\,R\,S\,T\,U\,V\,W\,X\,Y\,Z}$</p>
+</div>
+
+<div class="specimen-block">
+<span class="field-label">Operators &amp; Relations</span>
+<p>$+ \;-\; \times\; \div\; \pm\; \mp\; \cdot\; \circ\; \star\; \ast\; \bullet\; \oplus\; \otimes\; \odot$</p>
+<p>$= \;\neq\; <\; >\; \leq\; \geq\; \ll\; \gg\; \approx\; \sim\; \simeq\; \cong\; \equiv\; \propto$</p>
+<p>$\in\; \notin\; \ni\; \subset\; \supset\; \subseteq\; \supseteq\; \cap\; \cup\; \setminus\; \emptyset$</p>
+<p>$\forall\; \exists\; \nexists\; \neg\; \land\; \lor\; \Rightarrow\; \Leftrightarrow\; \vdash\; \models\; \top\; \bot$</p>
+<p>$\infty\; \partial\; \nabla\; \triangle\; \square\; \hbar\; \ell\; \wp\; \Re\; \Im\; \aleph$</p>
+</div>
+</div>
+
+<!-- ==================== TYPOGRAPHY MATRIX ==================== -->
+<div id="typmatrix">
+<h2>Typography Matrix — Style Variants</h2>
+
+<p style="font-size:0.85em;color:#555;">Tests all four style combinations (upright, italic, bold upright, bold italic) for Latin and Greek.
+Each row should use the text font's own glyphs, not the math font's.</p>
+
+<div class="specimen-block">
+<span class="field-label">Uppercase Latin</span>
+<table style="border-collapse:collapse;width:100%;font-size:0.95em;margin:0.5em 0;">
+<tr style="background:#f5f5f5;"><td style="padding:4px 8px;width:140px;font-size:0.8em;color:#666;">Upright (mathrm)</td><td style="padding:4px 8px;">$\mathrm{A\,B\,C\,D\,E\,F\,G\,H\,I\,J\,K\,L\,M\,N\,O\,P\,Q\,R\,S\,T\,U\,V\,W\,X\,Y\,Z}$</td></tr>
+<tr><td style="padding:4px 8px;font-size:0.8em;color:#666;">Italic (default)</td><td style="padding:4px 8px;">$A\,B\,C\,D\,E\,F\,G\,H\,I\,J\,K\,L\,M\,N\,O\,P\,Q\,R\,S\,T\,U\,V\,W\,X\,Y\,Z$</td></tr>
+<tr style="background:#f5f5f5;"><td style="padding:4px 8px;font-size:0.8em;color:#666;">Bold upright (mathbf)</td><td style="padding:4px 8px;">$\mathbf{A\,B\,C\,D\,E\,F\,G\,H\,I\,J\,K\,L\,M\,N\,O\,P\,Q\,R\,S\,T\,U\,V\,W\,X\,Y\,Z}$</td></tr>
+<tr><td style="padding:4px 8px;font-size:0.8em;color:#666;">Bold italic (boldsymbol)</td><td style="padding:4px 8px;">$\boldsymbol{A\,B\,C\,D\,E\,F\,G\,H\,I\,J\,K\,L\,M\,N\,O\,P\,Q\,R\,S\,T\,U\,V\,W\,X\,Y\,Z}$</td></tr>
+</table>
+</div>
+
+<div class="specimen-block">
+<span class="field-label">Lowercase Latin</span>
+<table style="border-collapse:collapse;width:100%;font-size:0.95em;margin:0.5em 0;">
+<tr style="background:#f5f5f5;"><td style="padding:4px 8px;width:140px;font-size:0.8em;color:#666;">Upright (mathrm)</td><td style="padding:4px 8px;">$\mathrm{a\,b\,c\,d\,e\,f\,g\,h\,i\,j\,k\,l\,m\,n\,o\,p\,q\,r\,s\,t\,u\,v\,w\,x\,y\,z}$</td></tr>
+<tr><td style="padding:4px 8px;font-size:0.8em;color:#666;">Italic (default)</td><td style="padding:4px 8px;">$a\,b\,c\,d\,e\,f\,g\,h\,i\,j\,k\,l\,m\,n\,o\,p\,q\,r\,s\,t\,u\,v\,w\,x\,y\,z$</td></tr>
+<tr style="background:#f5f5f5;"><td style="padding:4px 8px;font-size:0.8em;color:#666;">Bold upright (mathbf)</td><td style="padding:4px 8px;">$\mathbf{a\,b\,c\,d\,e\,f\,g\,h\,i\,j\,k\,l\,m\,n\,o\,p\,q\,r\,s\,t\,u\,v\,w\,x\,y\,z}$</td></tr>
+<tr><td style="padding:4px 8px;font-size:0.8em;color:#666;">Bold italic (boldsymbol)</td><td style="padding:4px 8px;">$\boldsymbol{a\,b\,c\,d\,e\,f\,g\,h\,i\,j\,k\,l\,m\,n\,o\,p\,q\,r\,s\,t\,u\,v\,w\,x\,y\,z}$</td></tr>
+</table>
+</div>
+
+<div class="specimen-block">
+<span class="field-label">Uppercase Greek</span>
+<table style="border-collapse:collapse;width:100%;font-size:0.95em;margin:0.5em 0;">
+<tr style="background:#f5f5f5;"><td style="padding:4px 8px;width:140px;font-size:0.8em;color:#666;">Upright (default)</td><td style="padding:4px 8px;">$\Gamma\;\Delta\;\Theta\;\Lambda\;\Xi\;\Pi\;\Sigma\;\Upsilon\;\Phi\;\Psi\;\Omega$</td></tr>
+<tr><td style="padding:4px 8px;font-size:0.8em;color:#666;">Italic (varGamma etc.)</td><td style="padding:4px 8px;">$\varGamma\;\varDelta\;\varTheta\;\varLambda\;\varXi\;\varPi\;\varSigma\;\varUpsilon\;\varPhi\;\varPsi\;\varOmega$</td></tr>
+<tr style="background:#f5f5f5;"><td style="padding:4px 8px;font-size:0.8em;color:#666;">Bold upright (boldsymbol)</td><td style="padding:4px 8px;">$\boldsymbol{\Gamma}\;\boldsymbol{\Delta}\;\boldsymbol{\Theta}\;\boldsymbol{\Lambda}\;\boldsymbol{\Xi}\;\boldsymbol{\Pi}\;\boldsymbol{\Sigma}\;\boldsymbol{\Upsilon}\;\boldsymbol{\Phi}\;\boldsymbol{\Psi}\;\boldsymbol{\Omega}$</td></tr>
+<tr><td style="padding:4px 8px;font-size:0.8em;color:#666;">Bold italic</td><td style="padding:4px 8px;">$\boldsymbol{\varGamma}\;\boldsymbol{\varDelta}\;\boldsymbol{\varTheta}\;\boldsymbol{\varLambda}\;\boldsymbol{\varXi}\;\boldsymbol{\varPi}\;\boldsymbol{\varSigma}\;\boldsymbol{\varUpsilon}\;\boldsymbol{\varPhi}\;\boldsymbol{\varPsi}\;\boldsymbol{\varOmega}$</td></tr>
+</table>
+</div>
+
+<div class="specimen-block">
+<span class="field-label">Lowercase Greek</span>
+<table style="border-collapse:collapse;width:100%;font-size:0.95em;margin:0.5em 0;">
+<tr style="background:#f5f5f5;"><td style="padding:4px 8px;width:140px;font-size:0.8em;color:#666;">Upright (mathrm)</td><td style="padding:4px 8px;">$\mathrm{\alpha\;\beta\;\gamma\;\delta\;\epsilon\;\zeta\;\eta\;\theta\;\iota\;\kappa\;\lambda\;\mu\;\nu\;\xi\;\pi\;\rho\;\sigma\;\tau\;\upsilon\;\phi\;\chi\;\psi\;\omega}$</td></tr>
+<tr><td style="padding:4px 8px;font-size:0.8em;color:#666;">Italic (default)</td><td style="padding:4px 8px;">$\alpha\;\beta\;\gamma\;\delta\;\epsilon\;\zeta\;\eta\;\theta\;\iota\;\kappa\;\lambda\;\mu\;\nu\;\xi\;\pi\;\rho\;\sigma\;\tau\;\upsilon\;\phi\;\chi\;\psi\;\omega$</td></tr>
+<tr style="background:#f5f5f5;"><td style="padding:4px 8px;font-size:0.8em;color:#666;">Bold upright</td><td style="padding:4px 8px;">$\boldsymbol{\mathrm{\alpha\;\beta\;\gamma\;\delta\;\epsilon\;\zeta\;\eta\;\theta\;\iota\;\kappa\;\lambda\;\mu\;\nu\;\xi\;\pi\;\rho\;\sigma\;\tau\;\upsilon\;\phi\;\chi\;\psi\;\omega}}$</td></tr>
+<tr><td style="padding:4px 8px;font-size:0.8em;color:#666;">Bold italic (boldsymbol)</td><td style="padding:4px 8px;">$\boldsymbol{\alpha\;\beta\;\gamma\;\delta\;\epsilon\;\zeta\;\eta\;\theta\;\iota\;\kappa\;\lambda\;\mu\;\nu\;\xi\;\pi\;\rho\;\sigma\;\tau\;\upsilon\;\phi\;\chi\;\psi\;\omega}$</td></tr>
+</table>
+</div>
+
+<div class="specimen-block">
+<span class="field-label">Greek variant forms</span>
+<table style="border-collapse:collapse;width:100%;font-size:0.95em;margin:0.5em 0;">
+<tr style="background:#f5f5f5;"><td style="padding:4px 8px;width:140px;font-size:0.8em;color:#666;">Italic (default)</td><td style="padding:4px 8px;">$\varepsilon\;\vartheta\;\varkappa\;\varpi\;\varrho\;\varsigma\;\varphi$</td></tr>
+<tr><td style="padding:4px 8px;font-size:0.8em;color:#666;">Bold italic</td><td style="padding:4px 8px;">$\boldsymbol{\varepsilon}\;\boldsymbol{\vartheta}\;\boldsymbol{\varkappa}\;\boldsymbol{\varpi}\;\boldsymbol{\varrho}\;\boldsymbol{\varsigma}\;\boldsymbol{\varphi}$</td></tr>
+</table>
+</div>
+
+<div class="specimen-block">
+<span class="field-label">Mixed Latin + Greek (height consistency check)</span>
+<table style="border-collapse:collapse;width:100%;font-size:0.95em;margin:0.5em 0;">
+<tr style="background:#f5f5f5;"><td style="padding:4px 8px;width:140px;font-size:0.8em;color:#666;">Regular</td><td style="padding:4px 8px;">$U \Sigma V^T \quad \alpha x + \beta y = \gamma z \quad \Gamma(n) = (n-1)!$</td></tr>
+<tr><td style="padding:4px 8px;font-size:0.8em;color:#666;">Bold</td><td style="padding:4px 8px;">$\mathbf{U} \boldsymbol{\Sigma} \mathbf{V}^T \quad \boldsymbol{\alpha} \mathbf{x} + \boldsymbol{\beta} \mathbf{y} = \boldsymbol{\gamma} \mathbf{z} \quad \boldsymbol{\Gamma}(\mathbf{n}) = (\mathbf{n}-1)!$</td></tr>
+<tr style="background:#f5f5f5;"><td style="padding:4px 8px;font-size:0.8em;color:#666;">Mixed bold/regular caps</td><td style="padding:4px 8px;">$\mathbf{A}\Sigma\mathbf{B}\Gamma \quad \boldsymbol{\Sigma} = U \Lambda U^T \quad P(\mathbf{X}) = \boldsymbol{\Theta}\,\Phi(X) \quad \mathbf{M}\Delta\mathbf{N}\Omega$</td></tr>
+<tr><td style="padding:4px 8px;font-size:0.8em;color:#666;">Mixed (expressions)</td><td style="padding:4px 8px;">$\boldsymbol{\mu} = \frac{1}{n}\sum_{i=1}^n \mathbf{x}_i \quad \boldsymbol{\Sigma} = \mathbb{E}[(\mathbf{x}-\boldsymbol{\mu})(\mathbf{x}-\boldsymbol{\mu})^T] \quad \rho(\mathbf{A}) = \max|\lambda_i|$</td></tr>
+<tr style="background:#f5f5f5;"><td style="padding:4px 8px;font-size:0.8em;color:#666;">Mixed (physics)</td><td style="padding:4px 8px;">$\boldsymbol{F} = m\mathbf{a} \quad \boldsymbol{\omega} \times \mathbf{r} = \mathbf{v} \quad \boldsymbol{\nabla} \cdot \mathbf{E} = \frac{\rho}{\varepsilon_0} \quad \Psi(\mathbf{r},t) = \phi(\mathbf{r})e^{-i\omega t}$</td></tr>
+</table>
+</div>
+
+<div class="specimen-block">
+<span class="field-label">Greek/Latin scaling checks (large)</span>
+<p style="font-size:1.5em;">$b\beta p\beta a\beta f\beta$ &emsp; $\mathrm{b\beta p\beta a\beta f\beta}$ &emsp; $\mathbf{b}\boldsymbol{\beta}\mathbf{p}\boldsymbol{\beta}\mathbf{a}\boldsymbol{\beta}\mathbf{f}\boldsymbol{\beta}$</p>
+<p style="font-size:1.5em;">$\alpha\boldsymbol{\alpha}$ &ensp; $\beta\boldsymbol{\beta}$ &ensp; $\gamma\boldsymbol{\gamma}$ &ensp; $\theta\boldsymbol{\theta}$ &ensp; $\sigma\boldsymbol{\sigma}$ &ensp; $\Sigma\boldsymbol{\Sigma}$ &ensp; $\Gamma\boldsymbol{\Gamma}$ &ensp; $\Omega\boldsymbol{\Omega}$</p>
+<p style="font-size:1.5em;">$A\Sigma B\Gamma C\Omega$ &emsp; $\mathbf{A}\boldsymbol{\Sigma}\mathbf{B}\boldsymbol{\Gamma}\mathbf{C}\boldsymbol{\Omega}$ &emsp; $x\alpha y\beta z\gamma$ &emsp; $\mathbf{x}\boldsymbol{\alpha}\mathbf{y}\boldsymbol{\beta}\mathbf{z}\boldsymbol{\gamma}$</p>
+</div>
+
+</div>
+
+<!-- ==================== INTEGRALS & LARGE OPERATORS ==================== -->
+<div id="integrals">
+<h2>Integrals &amp; Large Operators</h2>
+
+<div class="specimen-block">
+<span class="field-label">Inline integrals (subscript/superscript positioning)</span>
+<p style="font-size:1.3em;">
+$\int_a^b f(x)\,dx$ &emsp;
+$\int_0^1 g(t)\,dt$ &emsp;
+$\int_\Omega \nabla u \cdot \nabla v\,dx$ &emsp;
+$\int_{-\infty}^{\infty} e^{-x^2}\,dx$ &emsp;
+$\oint_\gamma f(z)\,dz$
+</p>
+<p style="font-size:1.3em;">
+$\iint_\Omega f\,dA$ &emsp;
+$\iiint_V \rho\,dV$ &emsp;
+$\int_0^\pi \sin\theta\,d\theta$ &emsp;
+$\int_a^b \int_c^d f(x,y)\,dy\,dx$
+</p>
+</div>
+
+<div class="specimen-block">
+<span class="field-label">Inline integrals in prose</span>
+<p>The fundamental theorem of calculus states that if $F$ is an antiderivative of $f$,
+then $\int_a^b f(x)\,dx = F(b) - F(a)$. For instance, $\int_0^1 x^2\,dx = \frac{1}{3}$
+and $\int_0^\pi \sin\theta\,d\theta = 2$. The Gaussian integral $\int_{-\infty}^{\infty} e^{-x^2}\,dx = \sqrt{\pi}$
+appears throughout probability and physics.</p>
+
+<p>In complex analysis, the residue theorem gives $\oint_\gamma f(z)\,dz = 2\pi i \sum_k \operatorname{Res}(f, z_k)$,
+where the integral is taken over a closed contour $\gamma$.
+For multivariable calculus, the divergence theorem relates $\iiint_V \nabla \cdot \mathbf{F}\,dV = \iint_{\partial V} \mathbf{F}\cdot\mathbf{n}\,dS$.
+The energy of a signal $f$ is $E = \int_0^T |f(t)|^2\,dt$, and the Fourier transform is
+$\hat{f}(\xi) = \int_{-\infty}^{\infty} f(x)\,e^{-2\pi i x \xi}\,dx$.</p>
+</div>
+
+<div class="specimen-block">
+<span class="field-label">Display integrals</span>
+<div class="display">$$\int_a^b f(x)\,dx = F(b) - F(a)$$</div>
+<div class="display">$$\int_0^\infty e^{-x^2}\,dx = \frac{\sqrt{\pi}}{2}$$</div>
+<div class="display">$$\oint_\gamma f(z)\,dz = 2\pi i \sum_k \operatorname{Res}(f, z_k)$$</div>
+<div class="display">$$\iint_\Omega \nabla u \cdot \nabla v\,dx = \int_\Omega f\,v\,dx \quad \forall v \in H_0^1(\Omega)$$</div>
+</div>
+
+<div class="specimen-block">
+<span class="field-label">Inline large operators</span>
+<p style="font-size:1.3em;">
+$\sum_{i=1}^n a_i$ &emsp;
+$\prod_{j=1}^m b_j$ &emsp;
+$\coprod_{k \in K} G_k$ &emsp;
+$\bigcup_{i=1}^n A_i$ &emsp;
+$\bigcap_{i=1}^n A_i$
+</p>
+</div>
+
+<div class="specimen-block">
+<span class="field-label">Display large operators</span>
+<div class="display">$$\sum_{i=1}^{n} a_i = a_1 + a_2 + \cdots + a_n$$</div>
+<div class="display">$$\prod_{i=1}^{n} \left(1 + \frac{x}{i}\right) \qquad \coprod_{\alpha \in A} G_\alpha$$</div>
+</div>
+
+<div class="specimen-block">
+<span class="field-label">Integral sub/super alignment check (large, look for centering)</span>
+<p style="font-size:2em;">
+$\int_a^b$ &ensp; $\int_0^1$ &ensp; $\int_\Omega$ &ensp; $\oint_\gamma$ &ensp; $\iint_D$ &ensp; $\iiint_V$
+</p>
+<p style="font-size:2em;">
+$\sum_{i=1}^n$ &ensp; $\prod_{j=1}^m$ &ensp; $\bigcup_{k}^{}$ &ensp; $\bigcap_{k}^{}$
+</p>
+</div>
+
+</div>
+
+<!-- ==================== TEXT-MATH HARMONIZATION ==================== -->
+<div id="harmonization">
+<h2>Text–Math Harmonization</h2>
+
+<div class="specimen-block">
+<span class="field-label">Inline math in prose (cap height, x-height, weight)</span>
+<p>The matrix $A$ has eigenvalues $\lambda_1, \ldots, \lambda_n$.
+Let $X$ be a topological space and $L$ a line bundle.
+The function $f(x) = e^{-x^2}$ is in $L^2(\mathbb{R})$.
+We define $T : V \to W$ where $V$ and $W$ are Banach spaces.</p>
+
+<span class="field-label">Capital letters: text vs math interleaved</span>
+<p>A $A$ B $B$ C $C$ D $D$ E $E$ F $F$ G $G$ H $H$ I $I$ J $J$ K $K$ L $L$ M $M$ N $N$ O $O$ P $P$ Q $Q$ R $R$ S $S$ T $T$ U $U$ V $V$ W $W$ X $X$ Y $Y$ Z $Z$</p>
+
+<span class="field-label">Capital letters: text vs bold math interleaved</span>
+<p>A $\mathbf{A}$ B $\mathbf{B}$ C $\mathbf{C}$ D $\mathbf{D}$ E $\mathbf{E}$ F $\mathbf{F}$ G $\mathbf{G}$ H $\mathbf{H}$ I $\mathbf{I}$ J $\mathbf{J}$ K $\mathbf{K}$ L $\mathbf{L}$ M $\mathbf{M}$</p>
+
+<span class="field-label">Lowercase: text vs math interleaved</span>
+<p>a $a$ b $b$ c $c$ d $d$ e $e$ f $f$ g $g$ h $h$ i $i$ j $j$ k $k$ l $l$ m $m$ n $n$ o $o$ p $p$ q $q$ r $r$ s $s$ t $t$ u $u$ v $v$ w $w$ x $x$ y $y$ z $z$</p>
+
+<span class="field-label">Digits: text vs math interleaved</span>
+<p>0 $0$ 1 $1$ 2 $2$ 3 $3$ 4 $4$ 5 $5$ 6 $6$ 7 $7$ 8 $8$ 9 $9$</p>
+
+<span class="field-label">Mixed text and math sizing</span>
+<p>If $n \geq 3$ then the group $G$ acts on $X$ with $|G| = 12$.
+The constant $C > 0$ satisfies $C \leq M$ for all $M$ in the set $S$.
+Theorem 3.1 states that $\|Tx\| \leq K\|x\|$ for every $x \in H$.</p>
+</div>
+</div>
+
+<!-- ==================== LINEAR ALGEBRA ==================== -->
+<div id="linalg">
+<h2>Linear Algebra</h2>
+
+<div class="specimen-block">
+<p>Let $V$ be a finite-dimensional vector space over $\F$ with basis $\{e_1, \ldots, e_n\}$.
+A linear map $T : V \to W$ is represented by a matrix $\mathbf{A} \in \F^{m \times n}$
+whose entries are $a_{ij} = \langle w_i^*, T(e_j) \rangle$.</p>
+
+<div class="display">$$\mathbf{A} = \begin{pmatrix} a_{11} & a_{12} & \cdots & a_{1n} \\ a_{21} & a_{22} & \cdots & a_{2n} \\ \vdots & \vdots & \ddots & \vdots \\ a_{m1} & a_{m2} & \cdots & a_{mn} \end{pmatrix}$$</div>
+
+<p>The <em>eigenvalue problem</em> seeks $\lambda \in \C$ and $\mathbf{v} \neq \mathbf{0}$
+such that $\mathbf{A}\mathbf{v} = \lambda\mathbf{v}$, equivalently
+$\det(\mathbf{A} - \lambda \mathbf{I}) = 0$.
+The <em>characteristic polynomial</em> is</p>
+
+<div class="display">$$p(\lambda) = \det(\mathbf{A} - \lambda \mathbf{I}) = \sum_{k=0}^{n} (-1)^k \, e_{n-k}(\mathbf{A})\, \lambda^k$$</div>
+
+<p>where $e_k(\mathbf{A})$ is the $k$-th elementary symmetric polynomial of the eigenvalues.
+By the Cayley&ndash;Hamilton theorem, $p(\mathbf{A}) = \mathbf{0}$.</p>
+
+<p>The <em>singular value decomposition</em> factors any $\mathbf{A} \in \R^{m \times n}$ as</p>
+
+<div class="display">$$\mathbf{A} = \mathbf{U} \boldsymbol{\Sigma} \mathbf{V}^\top, \qquad \boldsymbol{\Sigma} = \operatorname{diag}(\sigma_1, \ldots, \sigma_r, 0, \ldots, 0)$$</div>
+
+<p>where $\mathbf{U} \in \R^{m \times m}$ and $\mathbf{V} \in \R^{n \times n}$ are orthogonal,
+$\sigma_1 \geq \cdots \geq \sigma_r > 0$, and $r = \rank(\mathbf{A})$.
+The <em>Neumann series</em> $(I - \lambda \mathbf{A})^{-1} = \sum_{k=0}^{\infty} \lambda^k \mathbf{A}^k$
+converges when $|\lambda| \cdot \|\mathbf{A}\| < 1$.</p>
+</div>
+</div>
+
+<!-- ==================== ANALYSIS & PDEs ==================== -->
+<div id="analysis">
+<h2>Analysis &amp; Partial Differential Equations</h2>
+
+<div class="specimen-block">
+<p>Let $\Omega \subset \R^n$ be a bounded domain with smooth boundary $\partial\Omega$.
+Consider the Dirichlet problem for the Laplacian:</p>
+
+<div class="display">$$\begin{cases} -\Delta u = f & \text{in } \Omega, \\ u = g & \text{on } \partial\Omega, \end{cases}$$</div>
+
+<p>where $\Delta u = \sum_{i=1}^{n} \dfrac{\partial^2 u}{\partial x_i^2}$ is the Laplacian.
+A <em>weak solution</em> $u \in H^1(\Omega)$ satisfies</p>
+
+<div class="display">$$\int_\Omega \nabla u \cdot \nabla v \, dx = \int_\Omega f \, v \, dx \qquad \forall\, v \in H^1_0(\Omega).$$</div>
+
+<p>By the Lax&ndash;Milgram theorem, existence and uniqueness follow from the coercivity
+$\|\nabla u\|_{L^2}^2 \geq C \|u\|_{H^1}^2$ (Poincar&eacute; inequality).</p>
+
+<p>The <em>heat equation</em> $\partial_t u - \Delta u = 0$ on $\R^n \times (0,\infty)$
+has fundamental solution</p>
+
+<div class="display">$$\Phi(x, t) = \frac{1}{(4\pi t)^{n/2}} \exp\!\left(-\frac{|x|^2}{4t}\right), \qquad t > 0.$$</div>
+
+<p>The Fourier transform $\hat{f}(\xi) = \int_{\R^n} f(x)\, e^{-2\pi i \langle x, \xi\rangle}\, dx$
+satisfies Parseval's identity $\|\hat{f}\|_{L^2} = \|f\|_{L^2}$ and the convolution theorem
+$\widehat{f * g} = \hat{f} \cdot \hat{g}$.</p>
+</div>
+</div>
+
+<!-- ==================== TOPOLOGY ==================== -->
+<div id="topology">
+<h2>Topology &amp; Geometry</h2>
+
+<div class="specimen-block">
+<p>Let $(X, \tau)$ be a topological space. A sequence of covers
+$\mathcal{U}_1 \succ \mathcal{U}_2 \succ \cdots$ refining each other
+gives rise to the <em>&Ccaron;ech cohomology</em> groups</p>
+
+<div class="display">$$\check{H}^q(X; \, \mathcal{F}) = \varinjlim_{\mathcal{U}} H^q(\mathcal{U}; \, \mathcal{F})$$</div>
+
+<p>where $\mathcal{F}$ is a sheaf on $X$.
+For a compact oriented $n$-manifold $M$ without boundary,
+<em>Poincar&eacute; duality</em> gives an isomorphism</p>
+
+<div class="display">$$H^k(M; \, \Z) \cong H_{n-k}(M; \, \Z)$$</div>
+
+<p>and the <em>Euler characteristic</em> satisfies $\chi(M) = \sum_{k=0}^{n} (-1)^k \, b_k$
+where $b_k = \rank H_k(M; \, \Z)$ are the Betti numbers.</p>
+
+<p>The <em>Gauss&ndash;Bonnet theorem</em> for a compact surface $\Sigma$ states</p>
+
+<div class="display">$$\int_\Sigma K \, dA + \int_{\partial\Sigma} \kappa_g \, ds = 2\pi \, \chi(\Sigma)$$</div>
+
+<p>where $K$ is the Gaussian curvature and $\kappa_g$ is the geodesic curvature of the boundary.
+For a closed surface, this reduces to $\int_\Sigma K \, dA = 2\pi\,\chi(\Sigma)$.</p>
+
+<p>The long exact sequence of a fibration $F \hookrightarrow E \twoheadrightarrow B$ is</p>
+
+<div class="display">$$\cdots \to \pi_{n+1}(B) \xrightarrow{\;\partial\;} \pi_n(F) \xrightarrow{\;i_*\;} \pi_n(E) \xrightarrow{\;p_*\;} \pi_n(B) \xrightarrow{\;\partial\;} \pi_{n-1}(F) \to \cdots$$</div>
+</div>
+</div>
+
+<!-- ==================== COMBINATORICS ==================== -->
+<div id="combinatorics">
+<h2>Combinatorics &amp; Discrete Mathematics</h2>
+
+<div class="specimen-block">
+<p>The number of ways to partition a set of $n$ elements into $k$ non-empty subsets
+is the <em>Stirling number of the second kind</em>, given by</p>
+
+<div class="display">$$S(n, k) = \frac{1}{k!} \sum_{j=0}^{k} (-1)^{k-j} \binom{k}{j} j^n.$$</div>
+
+<p>The <em>exponential generating function</em> is
+$\sum_{n \geq k} S(n,k)\, \frac{x^n}{n!} = \frac{(e^x - 1)^k}{k!}$.</p>
+
+<p>The <em>Catalan numbers</em> $C_n = \frac{1}{n+1}\binom{2n}{n}$ count the number of
+Dyck paths from $(0,0)$ to $(2n,0)$. Their generating function satisfies</p>
+
+<div class="display">$$C(x) = \sum_{n=0}^{\infty} C_n x^n = \frac{1 - \sqrt{1 - 4x}}{2x} = \frac{2}{1 + \sqrt{1 - 4x}}.$$</div>
+
+<p>By the <em>matrix-tree theorem</em>, the number of spanning trees of a graph $G$ on $n$ vertices
+equals any cofactor of the <em>Laplacian</em> $\mathbf{L} = \mathbf{D} - \mathbf{A}$:</p>
+
+<div class="display">$$\tau(G) = \frac{1}{n} \lambda_1 \lambda_2 \cdots \lambda_{n-1}$$</div>
+
+<p>where $0 = \lambda_0 \leq \lambda_1 \leq \cdots \leq \lambda_{n-1}$ are the eigenvalues of $\mathbf{L}$.
+The <em>chromatic polynomial</em> $\chi_G(k)$ counts proper $k$-colorings and satisfies
+the deletion&ndash;contraction recurrence $\chi_G(k) = \chi_{G-e}(k) - \chi_{G/e}(k)$.</p>
+</div>
+</div>
+
+<!-- ==================== PROBABILITY ==================== -->
+<div id="probability">
+<h2>Probability &amp; Statistics</h2>
+
+<div class="specimen-block">
+<p>Let $X_1, X_2, \ldots$ be i.i.d. random variables with $\E[X_i] = \mu$ and
+$\operatorname{Var}(X_i) = \sigma^2 < \infty$. The <em>central limit theorem</em> states</p>
+
+<div class="display">$$\frac{\bar{X}_n - \mu}{\sigma / \sqrt{n}} \xrightarrow{\;d\;} \mathcal{N}(0, 1) \qquad \text{as } n \to \infty$$</div>
+
+<p>where $\bar{X}_n = \frac{1}{n}\sum_{i=1}^n X_i$. The density of $\mathcal{N}(\mu, \sigma^2)$ is</p>
+
+<div class="display">$$f(x) = \frac{1}{\sigma\sqrt{2\pi}} \exp\!\left(-\frac{(x - \mu)^2}{2\sigma^2}\right).$$</div>
+
+<p>For a Markov chain with transition matrix $\mathbf{P} = (p_{ij})$, the stationary
+distribution $\boldsymbol{\pi}$ satisfies $\boldsymbol{\pi}^\top \mathbf{P} = \boldsymbol{\pi}^\top$
+and $\sum_i \pi_i = 1$. The <em>ergodic theorem</em> gives</p>
+
+<div class="display">$$\P\!\left(\lim_{n \to \infty} \frac{1}{n} \sum_{k=0}^{n-1} \mathbf{1}_{X_k = j} = \pi_j\right) = 1.$$</div>
+
+<p>Bayes' theorem: $\P(A \mid B) = \dfrac{\P(B \mid A)\,\P(A)}{\P(B)}$,
+or in density form, $f_{\Theta|X}(\theta \mid x) \propto f_{X|\Theta}(x \mid \theta) \, f_\Theta(\theta)$.</p>
+</div>
+</div>
+
+<!-- ==================== ABSTRACT ALGEBRA ==================== -->
+<div id="algebra">
+<h2>Abstract Algebra</h2>
+
+<div class="specimen-block">
+<p>Let $G$ be a finite group acting on a set $S$. By <em>Burnside's lemma</em>,
+the number of distinct orbits is</p>
+
+<div class="display">$$|S / G| = \frac{1}{|G|} \sum_{g \in G} |S^g|$$</div>
+
+<p>where $S^g = \{s \in S : g \cdot s = s\}$ is the fixed-point set of $g$.</p>
+
+<p>For a Galois extension $L/K$ with $\Gal(L/K) \cong G$, the <em>fundamental theorem
+of Galois theory</em> establishes a bijection</p>
+
+<div class="display">$$\{\text{intermediate fields } K \subseteq E \subseteq L\} \;\longleftrightarrow\; \{\text{subgroups } H \leq G\}$$</div>
+
+<p>given by $E \mapsto \Gal(L/E)$ and $H \mapsto L^H$, where $[E : K] = [G : H]$.</p>
+
+<p>In a principal ideal domain $R$, every finitely generated module $M$ decomposes as</p>
+
+<div class="display">$$M \cong R^r \oplus \bigoplus_{i=1}^{s} R/(p_i^{a_i})$$</div>
+
+<p>where $r = \rank(M)$ and $p_1^{a_1}, \ldots, p_s^{a_s}$ are the <em>elementary divisors</em>.
+For $R = \Z$, this gives the classification of finitely generated abelian groups.</p>
+</div>
+</div>
+
+<!-- ==================== PHYSICS ==================== -->
+<div id="physics">
+<h2>Physics</h2>
+
+<div class="specimen-block">
+<p>Maxwell's equations in differential form (Gaussian units):</p>
+
+<div class="display">$$\nabla \cdot \mathbf{E} = 4\pi\rho, \qquad \nabla \times \mathbf{E} = -\frac{1}{c}\frac{\partial \mathbf{B}}{\partial t}$$</div>
+<div class="display">$$\nabla \cdot \mathbf{B} = 0, \qquad \nabla \times \mathbf{B} = \frac{4\pi}{c}\mathbf{J} + \frac{1}{c}\frac{\partial \mathbf{E}}{\partial t}$$</div>
+
+<p>The <em>Schr&ouml;dinger equation</em> for a particle of mass $m$ in potential $V$ is</p>
+
+<div class="display">$$i\hbar \frac{\partial \Psi}{\partial t} = -\frac{\hbar^2}{2m}\nabla^2 \Psi + V\Psi$$</div>
+
+<p>and the time-independent version $\hat{H}\psi = E\psi$ with Hamiltonian
+$\hat{H} = -\frac{\hbar^2}{2m}\nabla^2 + V$ has eigenvalues $E_n$ forming the energy spectrum.</p>
+
+<p>Einstein's field equations of general relativity:</p>
+
+<div class="display">$$R_{\mu\nu} - \frac{1}{2}R\,g_{\mu\nu} + \Lambda\, g_{\mu\nu} = \frac{8\pi G}{c^4}\, T_{\mu\nu}$$</div>
+
+<p>where $R_{\mu\nu}$ is the Ricci tensor, $R = g^{\mu\nu}R_{\mu\nu}$ is the scalar curvature,
+$g_{\mu\nu}$ is the metric tensor, $\Lambda$ is the cosmological constant,
+and $T_{\mu\nu}$ is the stress&ndash;energy tensor.</p>
+</div>
+</div>
+
+<!-- ==================== COMPLEX ANALYSIS ==================== -->
+<div id="complex">
+<h2>Complex Analysis</h2>
+
+<div class="specimen-block">
+<p>A function $f : \C \to \C$ is <em>holomorphic</em> on a domain $\Omega$ if
+$\bar{\partial} f = 0$, where $\bar{\partial} = \frac{1}{2}\left(\frac{\partial}{\partial x} + i\frac{\partial}{\partial y}\right)$.
+Equivalently, $f$ satisfies the <em>Cauchy&ndash;Riemann equations</em>:</p>
+
+<div class="display">$$\frac{\partial u}{\partial x} = \frac{\partial v}{\partial y}, \qquad \frac{\partial u}{\partial y} = -\frac{\partial v}{\partial x}$$</div>
+
+<p>where $f = u + iv$. Cauchy's integral formula gives the value of $f$ at any point
+$z_0$ inside a simple closed contour $\gamma$:</p>
+
+<div class="display">$$f(z_0) = \frac{1}{2\pi i} \oint_\gamma \frac{f(z)}{z - z_0}\,dz$$</div>
+
+<p>and its $n$-th derivative is $f^{(n)}(z_0) = \frac{n!}{2\pi i} \oint_\gamma \frac{f(z)}{(z - z_0)^{n+1}}\,dz$.
+A function with an isolated singularity at $z_0$ has a <em>Laurent expansion</em></p>
+
+<div class="display">$$f(z) = \sum_{n=-\infty}^{\infty} a_n (z - z_0)^n, \qquad a_n = \frac{1}{2\pi i}\oint_\gamma \frac{f(z)}{(z - z_0)^{n+1}}\,dz$$</div>
+
+<p>The coefficient $a_{-1} = \operatorname{Res}(f, z_0)$ is the <em>residue</em>, and the
+<em>residue theorem</em> states $\oint_\gamma f(z)\,dz = 2\pi i \sum_k \operatorname{Res}(f, z_k)$.
+A useful application: $\int_0^\infty \frac{\sin x}{x}\,dx = \frac{\pi}{2}$, proved via
+the contour integral $\oint_\gamma \frac{e^{iz}}{z}\,dz$ over an indented semicircle.</p>
+
+<p>The <em>Riemann mapping theorem</em> states that any simply connected domain
+$\Omega \subsetneq \C$ is biholomorphic to the unit disk $\mathbb{D} = \{z : |z| < 1\}$.
+The <em>Schwarz&ndash;Christoffel formula</em> maps $\mathbb{H} \to P$:</p>
+
+<div class="display">$$f(z) = A + C \int^z \prod_{k=1}^{n} (\zeta - x_k)^{\alpha_k - 1}\,d\zeta$$</div>
+</div>
+</div>
+
+<!-- ==================== DISCRETE & ALGORITHMS ==================== -->
+<div id="discrete">
+<h2>Discrete Mathematics &amp; Algorithms</h2>
+
+<div class="specimen-block">
+<p>The number of subsets of $\{1, 2, \ldots, n\}$ of size $k$ is the binomial coefficient
+$\binom{n}{k} = \frac{n!}{k!(n-k)!}$. The <em>binomial theorem</em> gives</p>
+
+<div class="display">$$(x + y)^n = \sum_{k=0}^{n} \binom{n}{k} x^k y^{n-k}$$</div>
+
+<p>A graph $G = (V, E)$ has adjacency matrix $\mathbf{A} \in \{0,1\}^{n \times n}$ where
+$A_{ij} = 1$ iff $\{i, j\} \in E$. The number of walks of length $k$ from $i$ to $j$
+is $(\mathbf{A}^k)_{ij}$. The <em>chromatic polynomial</em> $P(G, k)$ counts the number of proper
+$k$-colorings; for a tree on $n$ vertices, $P(T_n, k) = k(k-1)^{n-1}$.</p>
+
+<p>The <em>Master theorem</em> for divide-and-conquer recurrences: if $T(n) = aT(n/b) + \Theta(n^c)$, then</p>
+
+<div class="display">$$T(n) = \begin{cases} \Theta(n^c) & \text{if } \log_b a < c \\ \Theta(n^c \log n) & \text{if } \log_b a = c \\ \Theta(n^{\log_b a}) & \text{if } \log_b a > c \end{cases}$$</div>
+
+<p>For instance, merge sort has $T(n) = 2T(n/2) + \Theta(n)$, so $a = b = 2$, $c = 1$,
+$\log_2 2 = 1 = c$, giving $T(n) = \Theta(n \log n)$. Strassen's matrix multiplication
+achieves $T(n) = 7T(n/2) + \Theta(n^2)$, yielding $T(n) = \Theta(n^{\log_2 7}) \approx \Theta(n^{2.807})$.</p>
+
+<p>The <em>generating function</em> for the Fibonacci numbers $F_n$ is</p>
+
+<div class="display">$$\sum_{n=0}^{\infty} F_n x^n = \frac{x}{1 - x - x^2}$$</div>
+
+<p>and the closed form is $F_n = \frac{\varphi^n - \hat{\varphi}^n}{\sqrt{5}}$ where
+$\varphi = \frac{1 + \sqrt{5}}{2}$ and $\hat{\varphi} = \frac{1 - \sqrt{5}}{2}$.
+The number of binary trees with $n$ internal nodes is the Catalan number
+$C_n = \frac{1}{n+1}\binom{2n}{n} = \frac{(2n)!}{(n+1)!\,n!}$.</p>
+</div>
+</div>
+
+<!-- ==================== DISPLAY SPECIMENS ==================== -->
+<div id="display">
+<h2>Display Specimens</h2>
+
+<div class="specimen-block">
+<span class="field-label">Large operators &amp; delimiters</span>
+<div class="display">$$\prod_{p \text{ prime}} \frac{1}{1 - p^{-s}} = \sum_{n=1}^{\infty} \frac{1}{n^s} = \zeta(s), \qquad \Re(s) > 1$$</div>
+
+<div class="display">$$\oint_{\partial D} f(z)\, dz = 2\pi i \sum_{k=1}^{n} \operatorname{Res}(f, z_k)$$</div>
+
+<div class="display">$$\left\| \sum_{k=1}^{n} f_k \right\|_p \leq \left( \sum_{k=1}^{n} \|f_k\|_p^p \right)^{1/p}$$</div>
+</div>
+
+<div class="specimen-block">
+<span class="field-label">Matrices &amp; systems</span>
+<div class="display">$$\det \begin{pmatrix} a & b & c \\ d & e & f \\ g & h & i \end{pmatrix} = a(ei - fh) - b(di - fg) + c(dh - eg)$$</div>
+
+<div class="display">$$\begin{pmatrix} x' \\ y' \end{pmatrix} = \begin{pmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{pmatrix} \begin{pmatrix} x \\ y \end{pmatrix}$$</div>
+</div>
+
+<div class="specimen-block">
+<span class="field-label">Multiline &amp; aligned</span>
+<div class="display">$$\begin{aligned}
+\nabla \times (\nabla \times \mathbf{A}) &= \nabla(\nabla \cdot \mathbf{A}) - \nabla^2 \mathbf{A} \\
+&= \nabla(\nabla \cdot \mathbf{A}) - \Delta \mathbf{A}
+\end{aligned}$$</div>
+
+<div class="display">$$\begin{aligned}
+e^{i\theta} &= \cos\theta + i\sin\theta \\
+e^{-i\theta} &= \cos\theta - i\sin\theta \\
+\cos\theta &= \frac{e^{i\theta} + e^{-i\theta}}{2} \\
+\sin\theta &= \frac{e^{i\theta} - e^{-i\theta}}{2i}
+\end{aligned}$$</div>
+</div>
+
+<div class="specimen-block">
+<span class="field-label">Fractions, roots, accents</span>
+<div class="display">$$\cfrac{1}{1 + \cfrac{1}{1 + \cfrac{1}{1 + \cfrac{1}{1 + \cdots}}}}$$</div>
+
+<div class="display">$$\sqrt{1 + \sqrt{1 + \sqrt{1 + \sqrt{1 + \cdots}}}} = \frac{1 + \sqrt{5}}{2} = \varphi$$</div>
+
+<div class="display">$$\hat{f}(\xi) = \int_{-\infty}^{\infty} f(x)\, e^{-2\pi i x \xi}\, dx, \qquad \tilde{f}(x) = \overline{f(-x)}$$</div>
+</div>
+</div>
+
+<!-- ==================== COMPLETE GLYPH INVENTORY ==================== -->
+<div id="inventory">
+<h2>Complete Glyph Inventory</h2>
+
+<!-- ===== ACCENTS ===== -->
+<div class="specimen-block">
+<span class="field-label">Single-letter accents</span>
+<p>$\hat{a}\;\hat{f}\;\hat{x}\;\hat{y}\;\hat{A}\;\hat{F}$
+&emsp;
+$\tilde{a}\;\tilde{f}\;\tilde{x}\;\tilde{y}\;\tilde{A}\;\tilde{F}$
+&emsp;
+$\bar{a}\;\bar{f}\;\bar{x}\;\bar{y}\;\bar{A}\;\bar{F}$</p>
+<p>$\dot{a}\;\dot{f}\;\dot{x}\;\dot{y}\;\dot{A}\;\dot{F}$
+&emsp;
+$\ddot{a}\;\ddot{f}\;\ddot{x}\;\ddot{y}\;\ddot{A}\;\ddot{F}$
+&emsp;
+$\vec{a}\;\vec{f}\;\vec{x}\;\vec{y}\;\vec{A}\;\vec{F}$</p>
+<p>$\check{a}\;\check{f}\;\check{x}\;\check{y}\;\check{A}\;\check{F}$
+&emsp;
+$\breve{a}\;\breve{f}\;\breve{x}\;\breve{y}\;\breve{A}\;\breve{F}$
+&emsp;
+$\acute{a}\;\acute{f}\;\acute{x}\;\acute{y}\;\acute{A}\;\acute{F}$</p>
+<p>$\grave{a}\;\grave{f}\;\grave{x}\;\grave{y}\;\grave{A}\;\grave{F}$</p>
+</div>
+
+<div class="specimen-block">
+<span class="field-label">Wide accents (progressively wider content)</span>
+<p>$\widehat{x}\quad \widehat{xy}\quad \widehat{xyz}\quad \widehat{xyzw}\quad \widehat{xyzwv}$</p>
+<p>$\widetilde{x}\quad \widetilde{xy}\quad \widetilde{xyz}\quad \widetilde{xyzw}\quad \widetilde{xyzwv}$</p>
+<p>$\overline{x}\quad \overline{xy}\quad \overline{xyz}\quad \overline{xyzw}\quad \overline{x+y+z+w+v}$</p>
+<div class="display">$$\overbrace{a + b + c}^{3} \qquad \overbrace{a + b + c + d + e}^{5} \qquad \overbrace{a_1 + a_2 + \cdots + a_n}^{n \text{ terms}}$$</div>
+<div class="display">$$\underbrace{x_1 + x_2 + x_3}_{3} \qquad \underbrace{x_1 + x_2 + \cdots + x_n}_{n \text{ terms}}$$</div>
+</div>
+
+<div class="specimen-block">
+<span class="field-label">Accents on Greek letters</span>
+<p>$\hat{\alpha}\;\hat{\beta}\;\hat{\lambda}$
+&emsp;
+$\tilde{\sigma}\;\tilde{\omega}$
+&emsp;
+$\bar{\mu}\;\dot{\theta}\;\vec{\rho}$</p>
+</div>
+
+<!-- ===== FULL ALPHABETS ===== -->
+<div class="specimen-block">
+<span class="field-label">Regular (mathrm) — uppercase</span>
+<p>$\mathrm{A\;B\;C\;D\;E\;F\;G\;H\;I\;J\;K\;L\;M\;N\;O\;P\;Q\;R\;S\;T\;U\;V\;W\;X\;Y\;Z}$</p>
+<span class="field-label">Regular (mathrm) — lowercase</span>
+<p>$\mathrm{a\;b\;c\;d\;e\;f\;g\;h\;i\;j\;k\;l\;m\;n\;o\;p\;q\;r\;s\;t\;u\;v\;w\;x\;y\;z}$</p>
+<span class="field-label">Regular (mathrm) — digits</span>
+<p>$\mathrm{0\;1\;2\;3\;4\;5\;6\;7\;8\;9}$</p>
+</div>
+
+<div class="specimen-block">
+<span class="field-label">Italic (math default) — uppercase</span>
+<p>$A\;B\;C\;D\;E\;F\;G\;H\;I\;J\;K\;L\;M\;N\;O\;P\;Q\;R\;S\;T\;U\;V\;W\;X\;Y\;Z$</p>
+<span class="field-label">Italic (math default) — lowercase</span>
+<p>$a\;b\;c\;d\;e\;f\;g\;h\;i\;j\;k\;l\;m\;n\;o\;p\;q\;r\;s\;t\;u\;v\;w\;x\;y\;z$</p>
+<span class="field-label">Italic (math default) — digits</span>
+<p>$0\;1\;2\;3\;4\;5\;6\;7\;8\;9$</p>
+</div>
+
+<div class="specimen-block">
+<span class="field-label">Bold (mathbf) — uppercase</span>
+<p>$\mathbf{A\;B\;C\;D\;E\;F\;G\;H\;I\;J\;K\;L\;M\;N\;O\;P\;Q\;R\;S\;T\;U\;V\;W\;X\;Y\;Z}$</p>
+<span class="field-label">Bold (mathbf) — lowercase</span>
+<p>$\mathbf{a\;b\;c\;d\;e\;f\;g\;h\;i\;j\;k\;l\;m\;n\;o\;p\;q\;r\;s\;t\;u\;v\;w\;x\;y\;z}$</p>
+<span class="field-label">Bold (mathbf) — digits</span>
+<p>$\mathbf{0\;1\;2\;3\;4\;5\;6\;7\;8\;9}$</p>
+</div>
+
+<div class="specimen-block">
+<span class="field-label">Bold Italic (boldsymbol) — uppercase</span>
+<p>$\boldsymbol{A\;B\;C\;D\;E\;F\;G\;H\;I\;J\;K\;L\;M\;N\;O\;P\;Q\;R\;S\;T\;U\;V\;W\;X\;Y\;Z}$</p>
+<span class="field-label">Bold Italic (boldsymbol) — lowercase</span>
+<p>$\boldsymbol{a\;b\;c\;d\;e\;f\;g\;h\;i\;j\;k\;l\;m\;n\;o\;p\;q\;r\;s\;t\;u\;v\;w\;x\;y\;z}$</p>
+<span class="field-label">Bold Italic (boldsymbol) — digits</span>
+<p>$\boldsymbol{0\;1\;2\;3\;4\;5\;6\;7\;8\;9}$</p>
+</div>
+
+<!-- ===== GREEK (ALL FOUR STYLES) ===== -->
+<div class="specimen-block">
+<span class="field-label">Greek uppercase — upright</span>
+<p>$\Gamma\;\Delta\;\Theta\;\Lambda\;\Xi\;\Pi\;\Sigma\;\Upsilon\;\Phi\;\Psi\;\Omega$</p>
+<span class="field-label">Greek uppercase — bold</span>
+<p>$\boldsymbol{\Gamma}\;\boldsymbol{\Delta}\;\boldsymbol{\Theta}\;\boldsymbol{\Lambda}\;\boldsymbol{\Xi}\;\boldsymbol{\Pi}\;\boldsymbol{\Sigma}\;\boldsymbol{\Upsilon}\;\boldsymbol{\Phi}\;\boldsymbol{\Psi}\;\boldsymbol{\Omega}$</p>
+</div>
+
+<div class="specimen-block">
+<span class="field-label">Greek lowercase — regular</span>
+<p>$\alpha\;\beta\;\gamma\;\delta\;\epsilon\;\zeta\;\eta\;\theta\;\iota\;\kappa\;\lambda\;\mu\;\nu\;\xi\;\pi\;\rho\;\sigma\;\tau\;\upsilon\;\phi\;\chi\;\psi\;\omega$</p>
+<span class="field-label">Greek lowercase — bold</span>
+<p>$\boldsymbol{\alpha}\;\boldsymbol{\beta}\;\boldsymbol{\gamma}\;\boldsymbol{\delta}\;\boldsymbol{\epsilon}\;\boldsymbol{\zeta}\;\boldsymbol{\eta}\;\boldsymbol{\theta}\;\boldsymbol{\iota}\;\boldsymbol{\kappa}\;\boldsymbol{\lambda}\;\boldsymbol{\mu}\;\boldsymbol{\nu}\;\boldsymbol{\xi}\;\boldsymbol{\pi}\;\boldsymbol{\rho}\;\boldsymbol{\sigma}\;\boldsymbol{\tau}\;\boldsymbol{\upsilon}\;\boldsymbol{\phi}\;\boldsymbol{\chi}\;\boldsymbol{\psi}\;\boldsymbol{\omega}$</p>
+</div>
+
+<div class="specimen-block">
+<span class="field-label">Greek variant forms — regular</span>
+<p>$\varepsilon\;\vartheta\;\varkappa\;\varpi\;\varrho\;\varsigma\;\varphi$</p>
+<span class="field-label">Greek variant forms — bold</span>
+<p>$\boldsymbol{\varepsilon}\;\boldsymbol{\vartheta}\;\boldsymbol{\varkappa}\;\boldsymbol{\varpi}\;\boldsymbol{\varrho}\;\boldsymbol{\varsigma}\;\boldsymbol{\varphi}$</p>
+</div>
+
+<!-- ===== SCRIPT AND DECORATIVE ALPHABETS ===== -->
+<div class="specimen-block">
+<span class="field-label">Blackboard bold — uppercase</span>
+<p>$\mathbb{A\;B\;C\;D\;E\;F\;G\;H\;I\;J\;K\;L\;M\;N\;O\;P\;Q\;R\;S\;T\;U\;V\;W\;X\;Y\;Z}$</p>
+<span class="field-label">Blackboard bold — lowercase (if available)</span>
+<p>$\mathbb{a\;b\;c\;d\;e\;f\;g\;h\;i\;j\;k\;l\;m\;n\;o\;p\;q\;r\;s\;t\;u\;v\;w\;x\;y\;z}$</p>
+</div>
+
+<div class="specimen-block">
+<span class="field-label">Calligraphic — uppercase</span>
+<p>$\mathcal{A\;B\;C\;D\;E\;F\;G\;H\;I\;J\;K\;L\;M\;N\;O\;P\;Q\;R\;S\;T\;U\;V\;W\;X\;Y\;Z}$</p>
+</div>
+
+<div class="specimen-block">
+<span class="field-label">Fraktur — uppercase</span>
+<p>$\mathfrak{A\;B\;C\;D\;E\;F\;G\;H\;I\;J\;K\;L\;M\;N\;O\;P\;Q\;R\;S\;T\;U\;V\;W\;X\;Y\;Z}$</p>
+<span class="field-label">Fraktur — lowercase</span>
+<p>$\mathfrak{a\;b\;c\;d\;e\;f\;g\;h\;i\;j\;k\;l\;m\;n\;o\;p\;q\;r\;s\;t\;u\;v\;w\;x\;y\;z}$</p>
+</div>
+
+<div class="specimen-block">
+<span class="field-label">Script (mathscr) — uppercase</span>
+<p>$\mathscr{A\;B\;C\;D\;E\;F\;G\;H\;I\;J\;K\;L\;M\;N\;O\;P\;Q\;R\;S\;T\;U\;V\;W\;X\;Y\;Z}$</p>
+</div>
+
+<!-- ===== OPERATORS AND SYMBOLS ===== -->
+<div class="specimen-block">
+<span class="field-label">Arithmetic</span>
+<p>$+\;\; -\;\; \times\;\; \div\;\; \pm\;\; \mp\;\; \cdot\;\; \circ\;\; \star\;\; \ast\;\; \bullet$</p>
+</div>
+
+<div class="specimen-block">
+<span class="field-label">Binary operations</span>
+<p>$\oplus\;\; \otimes\;\; \odot\;\; \ominus\;\; \oslash\;\; \wedge\;\; \vee\;\; \cap\;\; \cup$</p>
+</div>
+
+<div class="specimen-block">
+<span class="field-label">Relations</span>
+<p>$=\;\; \neq\;\; <\;\; >\;\; \leq\;\; \geq\;\; \ll\;\; \gg\;\; \approx\;\; \sim\;\; \simeq\;\; \cong\;\; \equiv\;\; \propto$</p>
+<p>$\prec\;\; \succ\;\; \preceq\;\; \succeq$</p>
+</div>
+
+<div class="specimen-block">
+<span class="field-label">Set theory</span>
+<p>$\in\;\; \notin\;\; \ni\;\; \subset\;\; \supset\;\; \subseteq\;\; \supseteq$</p>
+<p>$\sqsubset\;\; \sqsupset\;\; \sqsubseteq\;\; \sqsupseteq$</p>
+</div>
+
+<div class="specimen-block">
+<span class="field-label">Arrows</span>
+<p>$\rightarrow\;\; \leftarrow\;\; \Rightarrow\;\; \Leftarrow\;\; \leftrightarrow\;\; \Leftrightarrow\;\; \mapsto$</p>
+<p>$\hookrightarrow\;\; \hookleftarrow\;\; \uparrow\;\; \downarrow\;\; \updownarrow$</p>
+<p>$\nearrow\;\; \searrow\;\; \nwarrow\;\; \swarrow$</p>
+<p>$\longrightarrow\;\; \longleftarrow\;\; \Longrightarrow\;\; \Longleftarrow$</p>
+</div>
+
+<div class="specimen-block">
+<span class="field-label">Logic</span>
+<p>$\forall\;\; \exists\;\; \nexists\;\; \neg\;\; \land\;\; \lor\;\; \vdash\;\; \models\;\; \top\;\; \bot\;\; \vDash\;\; \Vdash$</p>
+</div>
+
+<div class="specimen-block">
+<span class="field-label">Miscellaneous symbols</span>
+<p>$\infty\;\; \partial\;\; \nabla\;\; \triangle\;\; \square\;\; \diamond\;\; \hbar\;\; \ell\;\; \wp\;\; \Re\;\; \Im\;\; \aleph\;\; \beth$</p>
+</div>
+
+<div class="specimen-block">
+<span class="field-label">Large operators</span>
+<div class="display">$$\sum_{i=1}^{n} \qquad \prod_{i=1}^{n} \qquad \coprod_{i=1}^{n} \qquad \int_{a}^{b} \qquad \oint_{\gamma} \qquad \iint_{\Omega}$$</div>
+<div class="display">$$\bigcup_{i=1}^{n} \qquad \bigcap_{i=1}^{n} \qquad \bigoplus_{i=1}^{n} \qquad \bigotimes_{i=1}^{n} \qquad \bigvee_{i=1}^{n} \qquad \bigwedge_{i=1}^{n}$$</div>
+</div>
+
+<div class="specimen-block">
+<span class="field-label">Dots</span>
+<p>$a_1, a_2, \ldots, a_n \qquad a_1 + a_2 + \cdots + a_n$</p>
+<div class="display">$$\begin{pmatrix} 1 & 0 & \cdots & 0 \\ 0 & 1 & \cdots & 0 \\ \vdots & \vdots & \ddots & \vdots \\ 0 & 0 & \cdots & 1 \end{pmatrix}$$</div>
+</div>
+
+<div class="specimen-block">
+<span class="field-label">Delimiters at multiple sizes</span>
+<p>1x: $( ) \quad [ ] \quad \{ \} \quad \langle \rangle \quad | \quad \|$</p>
+<div class="display">$$2\text{x: } \left(\frac{a}{b}\right) \quad \left[\frac{a}{b}\right] \quad \left\{\frac{a}{b}\right\} \quad \left\langle\frac{a}{b}\right\rangle \quad \left|\frac{a}{b}\right| \quad \left\|\frac{a}{b}\right\|$$</div>
+<div class="display">$$3\text{x: } \left(\frac{\displaystyle\sum_{i=1}^{n} x_i}{\displaystyle\prod_{j=1}^{m} y_j}\right) \quad \left[\frac{\displaystyle\sum_{i=1}^{n} x_i}{\displaystyle\prod_{j=1}^{m} y_j}\right] \quad \left\{\frac{\displaystyle\sum_{i=1}^{n} x_i}{\displaystyle\prod_{j=1}^{m} y_j}\right\} \quad \left\langle\frac{\displaystyle\sum_{i=1}^{n} x_i}{\displaystyle\prod_{j=1}^{m} y_j}\right\rangle \quad \left|\frac{\displaystyle\sum_{i=1}^{n} x_i}{\displaystyle\prod_{j=1}^{m} y_j}\right| \quad \left\|\frac{\displaystyle\sum_{i=1}^{n} x_i}{\displaystyle\prod_{j=1}^{m} y_j}\right\|$$</div>
+</div>
+
+<!-- ===== SPACING AND SIZING ===== -->
+<div class="specimen-block">
+<span class="field-label">Spacing and sizing — same formula at different sizes</span>
+<p>Display style: $\displaystyle \sum_{k=0}^{\infty} \frac{x^k}{k!} = e^x$</p>
+<p>Text style: $\textstyle \sum_{k=0}^{\infty} \frac{x^k}{k!} = e^x$</p>
+<p>Script style: $\scriptstyle \sum_{k=0}^{\infty} \frac{x^k}{k!} = e^x$</p>
+<p>Scriptscript style: $\scriptscriptstyle \sum_{k=0}^{\infty} \frac{x^k}{k!} = e^x$</p>
+</div>
+
+</div>
+
+</body>
 </html>
