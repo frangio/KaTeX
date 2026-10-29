@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<!--To view this page from a clone of the repository, run `pnpm start`
+    in the root KaTeX directory and then visit:
+    http://localhost:7936/showcase.html
+  -->
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>KaTeX Libertinus Showcase</title>
+        <script defer src="/katex.js" type="text/javascript"></script>
+        <style>
+            :root {
+                --fg: #1b1b1b;
+                --muted: #6b6b6b;
+                --rule: #e3e0d8;
+                --bg: #fbfaf7;
+                --card: #ffffff;
+            }
+            @media (prefers-color-scheme: dark) {
+                :root {
+                    --fg: #ece9e2;
+                    --muted: #9a968d;
+                    --rule: #34322e;
+                    --bg: #171614;
+                    --card: #1f1e1b;
+                }
+            }
+            * { box-sizing: border-box; }
+            body {
+                margin: 0;
+                background: var(--bg);
+                color: var(--fg);
+                font-family: "Libertinus Serif", "Linux Libertine", Georgia, serif;
+                font-size: 18px;
+                line-height: 1.5;
+            }
+            header, section {
+                max-width: 1080px;
+                margin: 0 auto;
+                padding: 0 16px;
+            }
+            header { padding-top: 64px; padding-bottom: 32px; }
+            header h1 { font-size: 3em; font-weight: normal; margin: 0; }
+            header p { color: var(--muted); margin: 8px 0 0; }
+            section { margin-top: 48px; }
+            section h2 {
+                font-weight: normal;
+                font-variant: small-caps;
+                letter-spacing: 0.04em;
+                border-bottom: 1px solid var(--rule);
+                padding-bottom: 6px;
+            }
+            .grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+                gap: 16px;
+                grid-auto-flow: dense;
+            }
+            .grid.wide { grid-template-columns: 1fr; }
+            figure.span { grid-column: 1 / -1; }
+            figure {
+                margin: 0;
+                background: var(--card);
+                border: 1px solid var(--rule);
+                border-radius: 6px;
+                padding: 20px 16px 12px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                min-width: 0;
+            }
+            .math {
+                font-size: 1.25em;
+                overflow-x: auto;
+                overflow-y: hidden;
+                padding: 4px 0;
+            }
+            figcaption {
+                color: var(--muted);
+                font-size: 0.8em;
+                margin-top: 8px;
+                cursor: pointer;
+            }
+            figcaption code {
+                display: none;
+                white-space: pre-wrap;
+                word-break: break-word;
+                margin-top: 6px;
+                font-size: 0.95em;
+            }
+            figure.show-source figcaption code { display: block; }
+            footer {
+                max-width: 1080px;
+                margin: 64px auto;
+                padding: 0 16px;
+                color: var(--muted);
+                font-size: 0.85em;
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <h1 id="title">KaTeX with Libertinus</h1>
+            <p>Math typeset with the Libertinus fonts. Click a caption to
+                see its source.</p>
+        </header>
+        <div id="sections"></div>
+        <footer>
+            Libertinus fonts are licensed under the SIL Open Font License.
+        </footer>
+        <script>
+            // Lay out a space-separated list of symbols in evenly spaced rows.
+            function list(symbols, perRow = 6) {
+                const items = symbols.split(" ");
+                const rows = [];
+                for (let i = 0; i < items.length; i += perRow) {
+                    rows.push(items.slice(i, i + perRow).join("\\quad "));
+                }
+                return "\\begin{gathered}" + rows.join("\\\\") +
+                    "\\end{gathered}";
+            }
+
+            // [section title, wide?, [[caption, tex], ...]]
+            const SECTIONS = [
+                ["Classics", false, [
+                    ["Euler’s identity", "e^{i\\pi} + 1 = 0"],
+                    ["Gaussian integral",
+                        "\\int_{-\\infty}^{\\infty} e^{-x^2}\\,dx = \\sqrt{\\pi}"],
+                    ["Basel problem",
+                        "\\sum_{n=1}^{\\infty} \\frac{1}{n^2} = \\frac{\\pi^2}{6}"],
+                    ["Fourier transform",
+                        "\\hat f(\\xi) = \\int_{-\\infty}^{\\infty} f(x)\\, e^{-2\\pi i \\xi x}\\,dx"],
+                    ["Cauchy’s integral formula",
+                        "f(a) = \\frac{1}{2\\pi i} \\oint_\\gamma \\frac{f(z)}{z-a}\\,dz"],
+                    ["Stirling’s approximation",
+                        "n! \\sim \\sqrt{2\\pi n}\\left(\\frac{n}{e}\\right)^{\\!n}"],
+                    ["Quadratic formula",
+                        "x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}"],
+                    ["Euler product",
+                        "\\zeta(s) = \\sum_{n=1}^\\infty \\frac{1}{n^s} = \\prod_{p\\ \\text{prime}} \\frac{1}{1-p^{-s}}"],
+                ]],
+                ["Showpieces", true, [
+                    ["Rogers–Ramanujan continued fraction",
+                        "\\frac{1}{\\Bigl(\\sqrt{\\phi \\sqrt{5}}-\\phi\\Bigr) e^{\\frac25 \\pi}} = 1+\\frac{e^{-2\\pi}} {1+\\frac{e^{-4\\pi}} {1+\\frac{e^{-6\\pi}} {1+\\frac{e^{-8\\pi}} {1+\\cdots} } } }"],
+                    ["Cauchy–Schwarz inequality",
+                        "\\left( \\sum_{k=1}^n a_k b_k \\right)^{\\!2} \\leq \\left( \\sum_{k=1}^n a_k^2 \\right) \\left( \\sum_{k=1}^n b_k^2 \\right)"],
+                    ["Maxwell’s equations",
+                        "\\begin{aligned} \\nabla \\cdot \\mathbf{E} &= \\frac{\\rho}{\\varepsilon_0} & \\nabla \\times \\mathbf{E} &= -\\frac{\\partial \\mathbf{B}}{\\partial t} \\\\ \\nabla \\cdot \\mathbf{B} &= 0 & \\nabla \\times \\mathbf{B} &= \\mu_0 \\mathbf{J} + \\mu_0\\varepsilon_0 \\frac{\\partial \\mathbf{E}}{\\partial t} \\end{aligned}"],
+                    ["Navier–Stokes",
+                        "\\rho\\left(\\frac{\\partial \\mathbf{u}}{\\partial t} + (\\mathbf{u}\\cdot\\nabla)\\mathbf{u}\\right) = -\\nabla p + \\mu \\nabla^2 \\mathbf{u} + \\mathbf{f}"],
+                    ["Einstein field equations",
+                        "R_{\\mu\\nu} - \\tfrac{1}{2} R\\, g_{\\mu\\nu} + \\Lambda g_{\\mu\\nu} = \\frac{8\\pi G}{c^4} T_{\\mu\\nu}"],
+                ]],
+                ["Alphabets", false, [
+                    ["Italic", "\\begin{gathered}ABCDEFGHIJKLM\\\\ abcdefghijklm\\end{gathered}"],
+                    ["Upright", "\\begin{gathered}\\mathrm{ABCDEFGHIJKLM}\\\\ \\mathrm{abcdefghijklm}\\end{gathered}"],
+                    ["Bold", "\\begin{gathered}\\mathbf{ABCDEFGHIJKLM}\\\\ \\boldsymbol{abcdefghijklm}\\end{gathered}"],
+                    ["Greek",
+                        "\\begin{gathered}\\alpha\\beta\\gamma\\delta\\epsilon\\varepsilon\\zeta\\eta\\theta\\vartheta\\iota\\kappa\\lambda\\mu\\\\ \\nu\\xi\\pi\\varpi\\rho\\varrho\\sigma\\varsigma\\tau\\upsilon\\phi\\varphi\\chi\\psi\\omega\\end{gathered}"],
+                    ["Upright Greek",
+                        "\\Gamma\\Delta\\Theta\\Lambda\\Xi\\Pi\\Sigma\\Upsilon\\Phi\\Psi\\Omega"],
+                    ["Calligraphic", "\\begin{gathered}\\mathcal{ABCDEFGHIJKLM}\\\\ \\mathcal{NOPQRSTUVWXYZ}\\end{gathered}"],
+                    ["Script", "\\begin{gathered}\\mathscr{ABCDEFGHIJKLM}\\\\ \\mathscr{NOPQRSTUVWXYZ}\\end{gathered}"],
+                    ["Fraktur", "\\begin{gathered}\\mathfrak{ABCDEFGHIJKLM}\\\\ \\mathfrak{abcdefghijklm}\\end{gathered}"],
+                    ["Blackboard bold", "\\begin{gathered}\\mathbb{ABCDEFGHIJKLM}\\\\ \\mathbb{NOPQRSTUVWXYZ}\\end{gathered}"],
+                    ["Sans serif", "\\begin{gathered}\\mathsf{ABCDEFGHIJKLM}\\\\ \\mathsf{abcdefghijklm}\\end{gathered}"],
+                    ["Typewriter", "\\begin{gathered}\\mathtt{ABCDEFGHIJKLM}\\\\ \\mathtt{abcdefghijklm}\\end{gathered}"],
+                    ["Digits", "0123456789 \\quad \\mathbf{0123456789}"],
+                ]],
+                ["Big operators and delimiters", false, [
+                    ["Operators, text and display",
+                        "\\textstyle \\sum \\prod \\coprod \\int \\oint \\bigcup \\bigcap \\bigoplus \\bigotimes \\quad \\displaystyle \\sum \\prod \\coprod \\int \\oint \\bigcup \\bigcap \\bigoplus \\bigotimes"],
+                    ["Multiple integrals",
+                        "\\iint_D f\\,dA \\quad \\iiint_V g\\,dV \\quad \\oiint_S \\mathbf{F}\\cdot d\\mathbf{S}"],
+                    ["Delimiter sizes",
+                        "( \\big( \\Big( \\bigg( \\Bigg( \\quad [ \\big[ \\Big[ \\bigg[ \\Bigg[ \\quad \\{ \\big\\{ \\Big\\{ \\bigg\\{ \\Bigg\\{"],
+                    ["More delimiters",
+                        "\\langle \\Big\\langle \\Bigg\\langle \\quad \\lfloor \\Big\\lfloor \\Bigg\\lfloor \\quad \\lceil \\Big\\lceil \\Bigg\\lceil \\quad | \\Big| \\Bigg| \\quad \\| \\Big\\| \\Bigg\\|"],
+                    ["Radicals",
+                        "\\sqrt{x} \\quad \\sqrt{\\frac{a}{b}} \\quad \\sqrt[3]{\\frac{\\frac{x}{y}}{z}} \\quad \\sqrt{1+\\sqrt{1+\\sqrt{1+x}}}"],
+                    ["Growing delimiters",
+                        "\\left(\\left(\\left(\\left(x\\right)^2\\right)^2\\right)^2\\right)^2"],
+                ]],
+                ["Structures", false, [
+                    ["Matrix",
+                        "A = \\begin{pmatrix} a_{11} & a_{12} & \\cdots & a_{1n} \\\\ a_{21} & a_{22} & \\cdots & a_{2n} \\\\ \\vdots & \\vdots & \\ddots & \\vdots \\\\ a_{m1} & a_{m2} & \\cdots & a_{mn} \\end{pmatrix}"],
+                    ["Determinant",
+                        "\\det\\begin{vmatrix} a & b \\\\ c & d \\end{vmatrix} = ad - bc"],
+                    ["Cases",
+                        "|x| = \\begin{cases} x & \\text{if } x \\geq 0 \\\\ -x & \\text{otherwise} \\end{cases}"],
+                    ["Binomial coefficients",
+                        "\\binom{n}{k} = \\frac{n!}{k!\\,(n-k)!} \\qquad \\sum_{k=0}^{n} \\binom{n}{k} = 2^n"],
+                    ["Commutative diagram",
+                        "\\begin{CD} A @>f>> B \\\\ @VgVV @VVhV \\\\ C @>>k> D \\end{CD}"],
+                    ["Under and over braces",
+                        "\\underbrace{a + \\cdots + a}_{n\\ \\text{times}} = \\overbrace{n \\cdot a}^{\\text{product}}"],
+                ]],
+                ["Symbols", false, [
+                    ["Relations", list("= \\ne \\equiv \\approx \\cong \\sim \\simeq \\propto \\le \\ge \\ll \\gg \\prec \\succ \\subset \\supset \\subseteq \\supseteq \\in \\ni \\notin \\perp \\parallel \\models \\vdash")],
+                    ["Binary operators", list("+ - \\pm \\mp \\times \\div \\cdot \\circ \\bullet \\ast \\star \\oplus \\ominus \\otimes \\oslash \\odot \\cup \\cap \\sqcup \\sqcap \\vee \\wedge \\setminus \\wr")],
+                    ["Arrows", list("\\leftarrow \\rightarrow \\leftrightarrow \\Leftarrow \\Rightarrow \\Leftrightarrow \\longleftarrow \\longrightarrow \\Longrightarrow \\mapsto \\longmapsto \\hookrightarrow \\twoheadrightarrow \\rightharpoonup \\rightleftharpoons \\uparrow \\downarrow \\nearrow \\searrow")],
+                    ["Extensible arrows",
+                        "A \\xrightarrow{\\ \\text{a long label}\\ } B \\xleftarrow[\\text{under}]{\\text{over}} C"],
+                    ["Miscellaneous", list("\\forall \\exists \\nexists \\neg \\emptyset \\varnothing \\infty \\partial \\nabla \\hbar \\ell \\wp \\Re \\Im \\aleph \\beth \\angle \\triangle \\square \\top \\bot \\clubsuit \\diamondsuit \\heartsuit \\spadesuit")],
+                    ["Accents",
+                        "\\hat{a}\\, \\check{a}\\, \\tilde{a}\\, \\acute{a}\\, \\grave{a}\\, \\dot{a}\\, \\ddot{a}\\, \\breve{a}\\, \\bar{a}\\, \\vec{a} \\qquad \\widehat{xyz}\\, \\widetilde{xyz}\\, \\overline{xyz}\\, \\overrightarrow{xyz}"],
+                ]],
+            ];
+
+            function render() {
+                const container = document.getElementById("sections");
+                for (const [title, wide, items] of SECTIONS) {
+                    const section = document.createElement("section");
+                    const heading = document.createElement("h2");
+                    heading.textContent = title;
+                    const grid = document.createElement("div");
+                    grid.className = wide ? "grid wide" : "grid";
+                    for (const [caption, tex] of items) {
+                        const figure = document.createElement("figure");
+                        const math = document.createElement("div");
+                        math.className = "math";
+                        katex.render(tex, math, {
+                            displayMode: true,
+                            throwOnError: false,
+                        });
+                        const figcaption = document.createElement("figcaption");
+                        figcaption.textContent = caption;
+                        const code = document.createElement("code");
+                        code.textContent = tex;
+                        figcaption.appendChild(code);
+                        figcaption.addEventListener("click", () => {
+                            figure.classList.toggle("show-source");
+                        });
+                        figure.append(math, figcaption);
+                        grid.appendChild(figure);
+                    }
+                    section.append(heading, grid);
+                    container.appendChild(section);
+                }
+                // Let formulas too wide for one column take the full row.
+                for (const math of document.querySelectorAll(".math")) {
+                    if (math.scrollWidth > math.clientWidth) {
+                        math.parentElement.classList.add("span");
+                    }
+                }
+            }
+
+            window.addEventListener("DOMContentLoaded", render);
+        </script>
+    </body>
+</html>
