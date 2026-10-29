@@ -6,12 +6,20 @@ By changing the variables in the `src/styles/fonts.scss` file,
 you can change several properties of how KaTeX uses fonts.
 
 ## Font size and lengths
-By default, KaTeX math is rendered in a 1.21× larger font than the surrounding
-context, which makes super- and subscripts easier to read. You can control
-this using CSS, for example, to set to 1.1×:
+By default, KaTeX math is sized so that its x-height (the height of a
+lowercase x) matches the x-height of the surrounding text, whatever the text
+font. You can control this using CSS, for example, to make math 10% larger:
 
 ```css
-.katex { font-size: 1.1em; }
+.katex { font-size: calc(1.1ex / 0.429); }
+```
+
+Here `1ex` is the x-height of the surrounding text and 0.429 is the x-height
+of the math fonts. To set math at a fixed ratio to the surrounding font size
+instead, as stock KaTeX does with 1.21×, use an `em` value:
+
+```css
+.katex { font-size: 1.21em; }
 ```
 
 KaTeX supports all TeX units, including absolute units like `cm` and `in`.

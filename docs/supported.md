@@ -719,7 +719,7 @@ where:
 
 F = (font size of surrounding HTML text)/(10 pt)
 
-G = 1.21 by default, because KaTeX font-size is normally 1.21 × the surrounding font size. This value [can be overridden](font.md#font-size-and-lengths) by the CSS of an HTML page.
+G = (KaTeX font size)/(font size of surrounding HTML text). By default KaTeX matches the x-height of the surrounding text, so G depends on the text font. This value [can be overridden](font.md#font-size-and-lengths) by the CSS of an HTML page.
 
 </div>
 
