@@ -827,13 +827,12 @@ for (let i = 0; i < letters.length; i++) {
     defineSymbol(math, main, mathord, ch, wideChar);
     defineSymbol(text, main, textord, ch, wideChar);
 
-    if (i < 26) {
-        // KaTeX fonts have only capital letters for blackboard bold and script.
-        // See exception for k below.
-        wideChar = String.fromCharCode(0xD835, 0xDD38 + i); // A-Z double struck
-        defineSymbol(math, main, mathord, ch, wideChar);
-        defineSymbol(text, main, textord, ch, wideChar);
+    wideChar = String.fromCharCode(0xD835, 0xDD38 + i);  // A-Z a-z double struck
+    defineSymbol(math, main, mathord, ch, wideChar);
+    defineSymbol(text, main, textord, ch, wideChar);
 
+    if (i < 26) {
+        // KaTeX fonts have only capital letters for script.
         wideChar = String.fromCharCode(0xD835, 0xDC9C + i); // A-Z script
         defineSymbol(math, main, mathord, ch, wideChar);
         defineSymbol(text, main, textord, ch, wideChar);
@@ -841,11 +840,6 @@ for (let i = 0; i < letters.length; i++) {
 
     // TODO: Add bold script when it is supported by a KaTeX font.
 }
-// "k" is the only double struck lower case letter in the KaTeX fonts.
-wideChar = String.fromCharCode(0xD835, 0xDD5C);   // k double struck
-defineSymbol(math, main, mathord, "k", wideChar);
-defineSymbol(text, main, textord, "k", wideChar);
-
 // Next, some wide character numerals
 for (let i = 0; i < 10; i++) {
     const ch = i.toString();

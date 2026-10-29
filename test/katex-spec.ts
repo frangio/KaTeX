@@ -1980,6 +1980,13 @@ describe("An HTML font tree-builder", function() {
         expect(markup).toContain("<span class=\"mord mathbb\">R</span>");
     });
 
+    it("should render lowercase \\mathbb letters with the correct font", function() {
+        const markup = katex.renderToString(r`\mathbb{x}`, {output: "html"});
+        expect(markup).toContain("<span class=\"mord mathbb\">x</span>");
+        expect(katex.renderToString("\u{1D569}", {output: "html", strict: false}))
+            .toEqual(markup);
+    });
+
     it("should render \\mathrm{R} with the correct font", function() {
         const markup = katex.renderToString(r`\mathrm{R}`);
         expect(markup).toContain("<span class=\"mord mathrm\">R</span>");
@@ -3630,6 +3637,17 @@ describe("Symbols", function() {
         const symbols = available(r`\yen\checkmark\circledR\maltese`);
         expect(symbols).toBuild();
         expect(`\\text{${symbols}}`).toBuild(strictSettings);
+    });
+
+    it("should draw AMS symbols Libertinus lacks in the reader's math font", function() {
+        const markup = katex.renderToString(r`\checkmark\pitchfork`, {output: "html"});
+        expect(markup).toContain("<span class=\"mord amsrm\">✓</span>");
+        expect(markup).toContain("<span class=\"mrel amsrm\">⋔</span>");
+    });
+
+    it("should report symbols no font can stand in for", function() {
+        expect`\nleqq`.not.toParse();
+        expect`\diagup`.not.toParse();
     });
 });
 
