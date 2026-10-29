@@ -93,6 +93,32 @@ const sigmasAndXis: Record<string, [number, number, number]> = {
     stackGapMin: [0.2, 0.2, 0.2],
     stackDisplayStyleGapMin: [0.33, 0.33, 0.33],
 
+    // The shifts of the numerator and denominator of \atop, \binom and the
+    // like. TeX shifts them as it does those of a fraction (num1 and denom1
+    // in display style, num3 and denom2 otherwise); OpenType gives them their
+    // own, with StackTopShiftUp as num3.
+    stackTopDisplayStyleShiftUp: [0.75, 0.75, 0.75],
+    stackBottomShiftDown: [0.38, 0.38, 0.38],
+    stackBottomDisplayStyleShiftDown: [0.7, 0.7, 0.7],
+
+    // Bounds TeX takes as fractions of the x-height (sigma5), kept as their
+    // own values so a font's can be used: the least height of a
+    // superscript's bottom (1/4 sigma5), the most height of a subscript's top
+    // (4/5 sigma5), and the height up to which a superscript's bottom is
+    // raised when a subscript pushes the two apart (4/5 sigma5); and the
+    // height of the base up to which an accent is not raised (sigma5).
+    superscriptBottomMin: [0.12, 0.12, 0.12],
+    subscriptTopMax: [0.36, 0.36, 0.36],
+    superscriptBottomMaxWithSubscript: [0.38, 0.38, 0.38],
+    accentBaseHeight: [0.44, 0.44, 0.44],
+
+    // The gap between a radical's rule and its radicand, which TeX makes
+    // xi8 + xi8 / 4, or xi8 + sigma5 / 4 in display style, and the space
+    // above the rule, which TeX makes the rule's thickness.
+    radicalVerticalGap: [0.09, 0.09, 0.09],
+    radicalDisplayStyleVerticalGap: [0.17, 0.17, 0.17],
+    radicalExtraAscender: [0.065, 0.065, 0.065],
+
     // Where a root's index sits. Zero follows TeX, which raises the index's
     // baseline by 0.6 of the radical's height less its depth. Otherwise the
     // index's bottom is raised from the radical's bottom by this fraction of

@@ -132,15 +132,16 @@ defineFunctionBuilders({
 
         let supsub;
         if (supm && subm) {
-            supShift = Math.max(
-                supShift, minSupShift, supm.depth + 0.25 * metrics.xHeight);
+            supShift = Math.max(supShift, minSupShift,
+                supm.depth + metrics.superscriptBottomMin);
             subShift = Math.max(subShift, metrics.sub2);
 
             // Rule 18e
             const maxWidth = metrics.subSuperscriptGapMin;
             if ((supShift - supm.depth) - (subm.height - subShift) < maxWidth) {
                 subShift = maxWidth - (supShift - supm.depth) + subm.height;
-                const psi = 0.8 * metrics.xHeight - (supShift - supm.depth);
+                const psi = metrics.superscriptBottomMaxWithSubscript -
+                    (supShift - supm.depth);
                 if (psi > 0) {
                     supShift += psi;
                     subShift -= psi;
@@ -161,7 +162,7 @@ defineFunctionBuilders({
             // Rule 18b
             subShift = Math.max(
                 subShift, metrics.sub1,
-                subm.height - 0.8 * metrics.xHeight);
+                subm.height - metrics.subscriptTopMax);
 
             const vlistElem =
                 [{type: "elem" as const, elem: subm, marginLeft, marginRight}];
@@ -174,7 +175,7 @@ defineFunctionBuilders({
         } else if (supm) {
             // Rule 18c, d
             supShift = Math.max(supShift, minSupShift,
-                supm.depth + 0.25 * metrics.xHeight);
+                supm.depth + metrics.superscriptBottomMin);
 
             supsub = makeVList({
                 positionType: "shift",

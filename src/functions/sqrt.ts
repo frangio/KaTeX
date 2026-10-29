@@ -42,18 +42,14 @@ defineFunction({
 
         // Calculate the minimum size for the \surd delimiter
         const metrics = options.fontMetrics();
-        const theta = metrics.defaultRuleThickness;
-
-        let phi = theta;
-        if (options.style.id < Style.TEXT.id) {
-            phi = options.fontMetrics().xHeight;
-        }
 
         // Calculate the clearance between the body and line
-        let lineClearance = theta + phi / 4;
+        let lineClearance = options.style.id < Style.TEXT.id
+            ? metrics.radicalDisplayStyleVerticalGap
+            : metrics.radicalVerticalGap;
 
         const minDelimiterHeight = (inner.height + inner.depth +
-            lineClearance + theta);
+            lineClearance + metrics.sqrtRuleThickness);
 
         // Create a sqrt SVG of the required minimum size
         const {span: img, ruleWidth, advanceWidth} =
@@ -79,7 +75,7 @@ defineFunction({
                 {type: "elem", elem: inner, wrapperClasses: ["svg-align"]},
                 {type: "kern", size: -(inner.height + imgShift)},
                 {type: "elem", elem: img},
-                {type: "kern", size: ruleWidth},
+                {type: "kern", size: metrics.radicalExtraAscender},
             ],
         }, options);
 

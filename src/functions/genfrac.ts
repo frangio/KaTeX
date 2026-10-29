@@ -57,22 +57,25 @@ const htmlBuilder: HtmlBuilder<"genfrac"> = (group, options) => {
     let clearance;
     let denomShift;
     if (style.size === Style.DISPLAY.size) {
-        numShift = options.fontMetrics().num1;
         if (ruleWidth > 0) {
+            numShift = options.fontMetrics().num1;
             clearance = 3 * ruleSpacing;
+            denomShift = options.fontMetrics().denom1;
         } else {
+            numShift = options.fontMetrics().stackTopDisplayStyleShiftUp;
             clearance = options.fontMetrics().stackDisplayStyleGapMin;
+            denomShift = options.fontMetrics().stackBottomDisplayStyleShiftDown;
         }
-        denomShift = options.fontMetrics().denom1;
     } else {
         if (ruleWidth > 0) {
             numShift = options.fontMetrics().num2;
             clearance = ruleSpacing;
+            denomShift = options.fontMetrics().denom2;
         } else {
             numShift = options.fontMetrics().num3;
             clearance = options.fontMetrics().stackGapMin;
+            denomShift = options.fontMetrics().stackBottomShiftDown;
         }
-        denomShift = options.fontMetrics().denom2;
     }
 
     let frac;
@@ -122,9 +125,19 @@ const htmlBuilder: HtmlBuilder<"genfrac"> = (group, options) => {
         }, options);
     }
 
+    // The least size of delimiters that reach from the axis as far up and
+    // down as the fraction does, as \left and \right would be without
+    // TeX's shortfall. TeX's own sizes (Rule 15e) are made for Computer
+    // Modern, whose fractions and stacks they cover; another font's may be
+    // taller. Measured before the size change below, in the units of the
+    // delimiters, which are drawn in the fraction's style.
+    newOptions = options.havingStyle(style);
+    const axisHeight = newOptions.fontMetrics().axisHeight;
+    const coverSize =
+        2 * Math.max(frac.height - axisHeight, frac.depth + axisHeight);
+
     // Since we manually change the style sometimes (with \dfrac or \tfrac),
     // account for the possible size change here.
-    newOptions = options.havingStyle(style);
     frac.height *= newOptions.sizeMultiplier / options.sizeMultiplier;
     frac.depth *= newOptions.sizeMultiplier / options.sizeMultiplier;
 
@@ -137,6 +150,7 @@ const htmlBuilder: HtmlBuilder<"genfrac"> = (group, options) => {
     } else {
         delimSize = options.fontMetrics().delim2;
     }
+    delimSize = Math.max(delimSize, coverSize);
 
     let leftDelim;
     let rightDelim;
