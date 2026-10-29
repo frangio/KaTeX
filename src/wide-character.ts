@@ -102,7 +102,7 @@ const wideLatinLetterData = [
     script, noFont, // A-Z script, a-z — no font
     noFont, noFont, // A-Z bold script, a-z bold script — no font
     fraktur, fraktur,          // A-Z, a-z
-    doubleStruck, doubleStruck, // A-Z double-struck, k double-struck
+    doubleStruck, doubleStruck, // A-Z, a-z
     // Note that we are using a bold font, but font metrics for regular Fraktur.
     boldFraktur, boldFraktur,  // A-Z, a-z
     sansSerif, sansSerif,      // A-Z, a-z
