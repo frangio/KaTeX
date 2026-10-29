@@ -415,7 +415,7 @@ def sized(cp, target_total):
 
 
 KATEX_FONTS = {
-    "AMS-Regular": [alphabet("doublestruck", extra={ord("k"): 0x1D55C}), identity("math"),
+    "AMS-Regular": [alphabet("doublestruck"), identity("math"),
                     substitute("math", SUBSTITUTES), substitute("math-turned", TURNED),
                     identity("serif")],
     "Caligraphic-Regular": [alphabet("script"), identity("math")],
@@ -444,8 +444,11 @@ EXTRA_FONT_FILES = {
 }
 ZERO_WIDTH_SPACE = 0x200B
 # Characters KaTeX's fonts lack that Libertinus has and KaTeX uses when the
-# font does: © and ® for \textcopyright and \textregistered.
+# font does: © and ® for \textcopyright and \textregistered, and the
+# lowercase double-struck letters for \mathbb, where KaTeX's AMS font has
+# only k (\Bbbk).
 EXTRA_CODEPOINTS = {font: [0xA9, 0xAE] for font in ("Main-Regular", "Main-Bold", "Main-Italic", "Main-BoldItalic")}
+EXTRA_CODEPOINTS["AMS-Regular"] = list(range(ord("a"), ord("z") + 1))
 SKEWED_FONTS = {"Math-Italic", "Math-BoldItalic", "Caligraphic-Regular", "Script-Regular"}
 ITALIC_FONTS = {"Main-Italic", "Main-BoldItalic", "Math-Italic", "Math-BoldItalic", "SansSerif-Italic"}
 
