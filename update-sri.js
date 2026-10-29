@@ -6,6 +6,8 @@ const fs = require("fs-extra");
 const sriToolbox = require("sri-toolbox");
 
 const version = process.argv[2] === "package" ? require("./package.json").version : process.argv[2];
+// CDN urls of this package, by its name in package.json
+const name = require("./package.json").name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 Promise.all(process.argv.slice(3).map(file =>
     fs.readFile(file, "utf8")
@@ -18,8 +20,10 @@ Promise.all(process.argv.slice(3).map(file =>
         // 5 - integrity opening quote: "
         // 6 - old hash: sha384-…
         // 7 - integrity hash algorithm: sha384
-        // eslint-disable-next-line max-len
-        const cdnRe = /((["'])https?:\/\/cdn\.jsdelivr\.net\/npm\/katex@)[^/"']+(\/([^"']+)\2(?:\s+integrity=(["'])(([^-]+)-[^"']+)\5)?)/g;
+        const cdnRe = new RegExp(
+            `((["'])https?://cdn\\.jsdelivr\\.net/npm/${name}@)[^/"']+` +
+            `(/([^"']+)\\2(?:\\s+integrity=(["'])(([^-]+)-[^"']+)\\5)?)`,
+            "g");
         const hashes = {};
         body = body.replace(cdnRe, (m, pre, oq1, post, file, oq2, old, algo) => {
             if (old) {
