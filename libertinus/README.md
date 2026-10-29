@@ -58,7 +58,7 @@ pnpm clean-install && pnpm test
 npm version 0.19.N --no-git-tag-version   # builds dist/ and the release archives,
                                           # and updates README.md's CDN links and hashes
 npm pack --dry-run                        # dist/ with only Libertinus fonts, fonts/OFL.txt, LICENSE
-git commit -am "release: 0.19.N"
+git commit -am "release: libertinus-v0.19.N"
 git tag -a libertinus-v0.19.N -m "Based on KaTeX 0.19.Z"
 git push origin libertinus libertinus-v0.19.N
 npm publish
