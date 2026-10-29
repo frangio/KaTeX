@@ -3638,6 +3638,17 @@ describe("Symbols", function() {
         expect(symbols).toBuild();
         expect(`\\text{${symbols}}`).toBuild(strictSettings);
     });
+
+    it("should draw AMS symbols Libertinus lacks in the reader's math font", function() {
+        const markup = katex.renderToString(r`\checkmark\pitchfork`, {output: "html"});
+        expect(markup).toContain("<span class=\"mord amsrm\">✓</span>");
+        expect(markup).toContain("<span class=\"mrel amsrm\">⋔</span>");
+    });
+
+    it("should report symbols no font can stand in for", function() {
+        expect`\nleqq`.not.toParse();
+        expect`\diagup`.not.toParse();
+    });
 });
 
 describe("A macro expander", function() {

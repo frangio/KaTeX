@@ -128,7 +128,8 @@ $display-margin: 1em 0 !default;
     }
 
     .amsrm {
-        font-family: KaTeX_AMS;
+        /* The reader's math font draws the AMS symbols Libertinus lacks. */
+        font-family: KaTeX_AMS, math;
     }
 
     .mathbb,
