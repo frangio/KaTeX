@@ -5,6 +5,13 @@
 
 // In all paths below, the viewBox-to-em scale is 1000:1.
 
+// Most paths below are adapted from glyphs in the Libertinus fonts by
+// libertinus/build.py: the radicals, the tall delimiters and their
+// extenders, and the stretchy arrows, braces, brackets and wide accents.
+// Copyright © 2012-2024 The Libertinus Project Authors.
+// Licensed under the SIL Open Font License, Version 1.1; see fonts/OFL.txt.
+// The others are adapted from glyphs in KaTeX's fonts; see src/stretchy.ts.
+
 // Second Brush Stroke
 //    Low resolution monitors struggle to display images in fine detail.
 //    So browsers apply anti-aliasing. A long straight arrow shaft therefore

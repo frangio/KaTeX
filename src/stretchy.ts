@@ -71,7 +71,8 @@ export const stretchyMathML = function(label: string): MathNode {
     return node;
 };
 
-// Many of the KaTeX SVG images have been adapted from glyphs in KaTeX fonts.
+// The KaTeX SVG images not drawn from the Libertinus fonts (see
+// src/svgGeometry.ts) have been adapted from glyphs in KaTeX fonts.
 // Copyright (c) 2009-2010, Design Science, Inc. (<www.mathjax.org>)
 // Copyright (c) 2014-2017 Khan Academy (<www.khanacademy.org>)
 // Licensed under the SIL Open Font License, Version 1.1.
