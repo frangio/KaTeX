@@ -1,0 +1,65 @@
+name: Pages
+
+on:
+  push:
+    branches: [ libertinus ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v7
+      with:
+        persist-credentials: false # minimize exposure and prevent accidental pushes
+
+    - name: Enable Corepack
+      run: corepack enable
+
+    - name: Use Node.js 24
+      uses: actions/setup-node@v7
+      with:
+        node-version: '24'
+        cache: pnpm
+
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+
+    - name: Build
+      run: pnpm build
+
+    # The showcase loads KaTeX from the dev server, whose katex.js also
+    # injects the CSS. Point it at the built files instead.
+    - name: Assemble site
+      run: |
+        mkdir -p _site
+        cp -r dist/fonts dist/katex.min.css dist/katex.min.js \
+          dist/contrib/auto-render.min.js _site/
+        sed \
+          -e 's#<script defer src="/katex.js" type="text/javascript"></script>#<link rel="stylesheet" href="katex.min.css">\n<script defer src="katex.min.js" type="text/javascript"></script>#' \
+          -e 's#src="/contrib/auto-render.js"#src="auto-render.min.js"#' \
+          static/showcase.html > _site/libertinus.html
+        ! grep -n 'src="/' _site/libertinus.html
+
+    - uses: actions/upload-pages-artifact@v4
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}libertinus
+
+    steps:
+    - id: deployment
+      uses: actions/deploy-pages@v4
