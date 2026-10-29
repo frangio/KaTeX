@@ -1,7 +1,7 @@
 {
-  "name": "katex",
+  "name": "@frangio/katex-libertinus",
   "version": "0.19.0",
-  "description": "Fast math typesetting for the web.",
+  "description": "KaTeX, fast math typesetting for the web, set in the Libertinus fonts.",
   "main": "dist/katex.js",
   "types": "types/katex.d.ts",
   "exports": {
@@ -67,10 +67,14 @@
     },
     "./*": "./*"
   },
-  "homepage": "https://katex.org",
+  "homepage": "https://github.com/frangio/KaTeX/tree/libertinus#readme",
+  "bugs": "https://github.com/frangio/KaTeX/issues",
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/KaTeX/KaTeX.git"
+    "url": "https://github.com/frangio/KaTeX.git"
   },
   "funding": [
     "https://opencollective.com/katex",
@@ -188,7 +192,7 @@
     "build:fonts": "dockers/fonts/buildFonts.sh",
     "build:metrics": "dockers/fonts/buildMetrics.sh",
     "watch": "pnpm build --watch",
-    "postversion": "pnpm dist && node update-sri.js package README.md contrib/*/README.md docs/*.md website/pages/index.html",
+    "postversion": "pnpm dist && node update-sri.js package README.md",
     "semantic-release": "semantic-release",
     "dist": "pnpm build && pnpm dist:zip",
     "dist:zip": "rimraf katex/ katex.tar.gz katex.zip && cp -R dist katex && tar czf katex.tar.gz katex && zip -rq katex.zip katex && rimraf katex/",

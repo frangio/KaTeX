@@ -44,6 +44,32 @@ version does not say which KaTeX release it is based on: each release
 records that in its notes and in the message of its git tag.
 Prereleases can never satisfy `^V`, so versions have no suffixes.
 
+## Releasing
+
+The package is published as `@frangio/katex-libertinus`. For a release
+based on a new KaTeX version, first rebase this branch onto that
+version's tag, rerun `build.py` and commit its output. Then, with the
+version chosen as above:
+
+```sh
+pnpm clean-install && pnpm test
+npm version 0.19.N --no-git-tag-version   # builds dist/ and the release archives,
+                                          # and updates README.md's CDN links and hashes
+npm pack --dry-run                        # dist/ with only Libertinus fonts, fonts/OFL.txt, LICENSE
+git commit -am "release: 0.19.N"
+git tag -a v0.19.N -m "Based on KaTeX 0.19.Z"
+git push origin libertinus v0.19.N
+npm publish
+```
+
+`npm version` runs the `postversion` script, which builds the package
+and stamps the version and the integrity hashes of the files just built
+into the jsDelivr links in `README.md`. To rebuild those links without
+changing the version, run `pnpm dist && node update-sri.js package
+README.md`. Upstream's continuous integration publishes with
+semantic-release on pushes to `main`; this branch is not `main` and the
+repository holds no npm token, so it never runs.
+
 ## Licenses
 
 KaTeX's code, and this fork's changes to it, are under the MIT license

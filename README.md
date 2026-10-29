@@ -1,120 +1,64 @@
-<h1><a href="https://katex.org/">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://katex.org/img/katex-logo.svg">
-    <img alt="KaTeX" width=130 src="https://katex.org/img/katex-logo-black.svg">
-  </picture>
-</a></h1>
+# KaTeX in Libertinus
 
-[![npm](https://img.shields.io/npm/v/katex.svg)](https://www.npmjs.com/package/katex)
-[![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
-[![CI](https://github.com/KaTeX/KaTeX/workflows/CI/badge.svg?branch=main&event=push)](https://github.com/KaTeX/KaTeX/actions?query=workflow%3ACI)
-[![codecov](https://codecov.io/gh/KaTeX/KaTeX/branch/main/graph/badge.svg)](https://codecov.io/gh/KaTeX/KaTeX)
-[![Discussions](https://img.shields.io/badge/Discussions-join-brightgreen)](https://github.com/KaTeX/KaTeX/discussions)
-[![jsDelivr](https://data.jsdelivr.com/v1/package/npm/katex/badge?style=rounded)](https://www.jsdelivr.com/package/npm/katex)
-![katex.min.js size](https://img.badgesize.io/https://unpkg.com/katex/dist/katex.min.js?compression=gzip)
-[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/KaTeX/KaTeX)
-[![Financial Contributors on Open Collective](https://opencollective.com/katex/all/badge.svg?label=financial+contributors)](https://opencollective.com/katex)
+[KaTeX](https://katex.org), the fast math typesetting library for the
+web, set in the [Libertinus](https://github.com/alerque/libertinus) fonts
+instead of Computer Modern. Its glyphs, per-glyph metrics and font-wide
+parameters all come from Libertinus Math and its companion text fonts,
+including the font's own sizes of delimiters, radicals and wide accents.
+Otherwise it is KaTeX: the same API, options, supported functions and
+extensions.
 
-KaTeX is a fast, easy-to-use JavaScript library for TeX math rendering on the web.
+What differs from Libertinus and from KaTeX, which symbols Libertinus
+lacks, and how the fonts are rebuilt is described in
+[`libertinus/README.md`](libertinus/README.md).
 
- * **Fast:** KaTeX renders its math synchronously and doesn't need to reflow the page. See how it compares to a competitor in [this speed test](https://www.intmath.com/cg5/katex-mathjax-comparison.php).
- * **Print quality:** KaTeX's layout is based on Donald Knuth's TeX, the gold standard for math typesetting.
- * **Self contained:** KaTeX has no dependencies and can easily be bundled with your website resources.
- * **Server side rendering:** KaTeX produces the same output regardless of browser or environment, so you can pre-render expressions using Node.js and send them as plain HTML.
+## Install
 
-KaTeX is compatible with all major browsers, including Chrome, Safari, Firefox, Opera, and Edge.
+Install it under KaTeX's name, so that code and extensions that import
+`katex` use it:
 
-KaTeX supports much (but not all) of LaTeX and many LaTeX packages. See the [list of supported functions](https://katex.org/docs/supported.html).
+```sh
+npm install katex@npm:@frangio/katex-libertinus
+```
 
-Try out KaTeX [on the demo page](https://katex.org/#demo)!
+Each release can stand in for the KaTeX release it is based on: see
+[Versioning](libertinus/README.md#versioning). It replaces KaTeX on a
+page and cannot be used alongside it.
 
-## Getting started
-
-### Starter template
+## Starter template
 
 ```html
 <!DOCTYPE html>
 <!-- KaTeX requires the use of the HTML5 doctype. Without it, KaTeX may not render properly -->
 <html>
   <head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/katex.min.css" integrity="sha384-3rdsX6e5mueWyoweR9NIVmtEsUkokpBT/0ALqKKIBMr9j4qhHkaIkAcGgsE6uVlp" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@frangio/katex-libertinus@0.19.0/dist/katex.min.css" integrity="sha384-w5OuLBw3Y0pyXZ+EabxiCJn8r9QeoONY7i9chqh1/Y27/UgULa4O5OA+1Zzvn31M" crossorigin="anonymous">
 
     <!-- The loading of KaTeX is deferred to speed up page rendering -->
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/katex.min.js" integrity="sha384-QFFtAGzvvj+bfgCGxXJlNZZR1nXEZgvG8tDLCCY1F19xl20WlfTYgguB4VcNdxYk" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@frangio/katex-libertinus@0.19.0/dist/katex.min.js" integrity="sha384-oECKICeOGeeEDW3rQ7ZnGjGlcSqjwXgibz0/1NXaGz19xhiWd6nCW8vUrUgnize5" crossorigin="anonymous"></script>
 
     <!-- To automatically render math in text elements, include the auto-render extension: -->
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/contrib/auto-render.min.js" integrity="sha384-bjyGPfbij8/NDKJhSGZNP/khQVgtHUE5exjm4Ydllo42FwIgYsdLO2lXGmRBf5Mz" crossorigin="anonymous"
+    <script defer src="https://cdn.jsdelivr.net/npm/@frangio/katex-libertinus@0.19.0/dist/contrib/auto-render.min.js" integrity="sha384-bjyGPfbij8/NDKJhSGZNP/khQVgtHUE5exjm4Ydllo42FwIgYsdLO2lXGmRBf5Mz" crossorigin="anonymous"
         onload="renderMathInElement(document.body);"></script>
   </head>
   ...
 </html>
 ```
 
-You can also [download KaTeX](https://github.com/KaTeX/KaTeX/releases) and host it yourself.
+## Documentation
 
-For details on how to configure auto-render extension, refer to [the documentation](https://katex.org/docs/autorender.html).
-
-### API
-
-Call `katex.render` to render a TeX expression directly into a DOM element.
-For example:
-
-```js
-katex.render("c = \\pm\\sqrt{a^2 + b^2}", element, {
-    throwOnError: false
-});
-```
-
-Call `katex.renderToString` to generate an HTML string of the rendered math,
-e.g., for server-side rendering.  For example:
-
-```js
-var html = katex.renderToString("c = \\pm\\sqrt{a^2 + b^2}", {
-    throwOnError: false
-});
-// '<span class="katex">...</span>'
-```
-
-Make sure to include the CSS and font files in both cases.
-If you are doing all rendering on the server, there is no need to include the
-JavaScript on the client.
-
-The examples above use the `throwOnError: false` option, which renders invalid
-inputs as the TeX source code in red (by default), with the error message as
-hover text.  For other available options, see the
-[API documentation](https://katex.org/docs/api.html),
-[options documentation](https://katex.org/docs/options.html), and
-[handling errors documentation](https://katex.org/docs/error.html).
-
-## Demo and Documentation
-
-Learn more about using KaTeX [on the website](https://katex.org)!
-
-## Contributors
-
-### Code Contributors
-
-This project exists thanks to all the people who contribute code. If you'd like to help, see [our guide to contributing code](CONTRIBUTING.md).
-<a href="https://github.com/KaTeX/KaTeX/graphs/contributors"><img src="https://contributors-svg.opencollective.com/katex/contributors.svg?width=890&button=false" alt="Code contributors" /></a>
-
-### Financial Contributors
-
-Become a financial contributor and help us sustain our community.
-
-#### Individuals
-
-<a href="https://opencollective.com/katex"><img src="https://opencollective.com/katex/individuals.svg?width=890" alt="Contribute on Open Collective"></a>
-
-#### Organizations
-
-Support this project with your organization. Your logo will show up here with a link to your website.
-
-<a href="https://opencollective.com/katex/organization/0/website"><img src="https://opencollective.com/katex/organization/0/avatar.svg?avatarHeight=112" alt="Organization 1" width="112"></a>
-<a href="https://opencollective.com/katex/organization/1/website"><img src="https://opencollective.com/katex/organization/1/avatar.svg?avatarHeight=96" alt="Organization 2" width="96"></a>
-<a href="https://opencollective.com/katex/organization/2/website"><img src="https://opencollective.com/katex/organization/2/avatar.svg" alt="Organization 3"></a>
-<a href="https://opencollective.com/katex/organization/3/website"><img src="https://opencollective.com/katex/organization/3/avatar.svg" alt="Organization 4"></a>
-<a href="https://opencollective.com/katex/organization/4/website"><img src="https://opencollective.com/katex/organization/4/avatar.svg" alt="Organization 5"></a>
+KaTeX's documentation applies: the [API](https://katex.org/docs/api.html),
+[options](https://katex.org/docs/options.html),
+[error handling](https://katex.org/docs/error.html),
+[auto-render](https://katex.org/docs/autorender.html) and the
+[supported functions](https://katex.org/docs/supported.html), except for
+the symbols Libertinus has no glyph for, listed in
+[`libertinus/README.md`](libertinus/README.md#not-available).
 
 ## License
 
-KaTeX is licensed under the [MIT License](https://opensource.org/licenses/MIT).
+KaTeX is by Khan Academy and [its contributors](https://github.com/KaTeX/KaTeX/graphs/contributors),
+under the MIT License, which also covers this fork's changes
+([`LICENSE`](LICENSE)). The fonts are modified Libertinus fonts, by the
+Libertinus Project Authors, under the SIL Open Font License 1.1
+([`fonts/OFL.txt`](fonts/OFL.txt)), as are the SVG paths drawn from them.
