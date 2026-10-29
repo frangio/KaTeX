@@ -52,8 +52,9 @@
   .credit { color: #777; font-size: 0.85em; }
   /* KaTeX scales math to 1.21em to match Computer Modern against typical
      text fonts. Libertinus Serif has the same x-height as the math fonts,
-     so math should be set at the text size. */
-  .katex { font-size: 1em; }
+     so math should be set at the text size. The extra selector beats
+     katex.css, which loads after this stylesheet. */
+  body .katex { font-size: 1em; }
 </style>
 
 <!-- FONT CONFIG -->
