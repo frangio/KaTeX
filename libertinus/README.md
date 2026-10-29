@@ -75,7 +75,7 @@ fork replaces KaTeX on a page and cannot be used alongside it.
 | File | Contents |
 |---|---|
 | `fonts/Libertinus_*.woff2` | Subsets of Libertinus Math, Serif, Sans and Mono with glyphs remapped to the codepoints KaTeX emits, for example math italic *x* (U+1D465) at `x` and each delimiter size at its plain codepoint in the Size fonts. Big operators have their advance reduced by their italic correction, converting OpenType's convention to TeX's. Where KaTeX keeps a symbol at a codepoint Libertinus leaves empty, the Libertinus glyph for the same symbol is placed there: the AMS corners `\ulcorner` … `\lrcorner` (KaTeX's box-drawing codepoints) from ⌜ ⌝ ⌞ ⌟, `\triangleright` and `\triangleleft` from ▷ and ◁, `\Finv` from Libertinus Serif, and the slash of `\not` from the combining long solidus U+0338, moved right to sit over the relation that follows it rather than the character before it. The Main fonts also get © and ®, which KaTeX's fonts lack (the regular weight from Libertinus Math, the others from Libertinus Serif), so `\textcopyright` and `\textregistered` use them instead of building them with `\textcircled`. The AMS font gets all 26 lowercase double-struck letters, where KaTeX's has only `k` for `\Bbbk`, so `\mathbb` draws lowercase letters too. |
-| `src/unavailableSymbols.ts` | The commands whose glyph is in no Libertinus font, the characters that stand for them in input, and the macros built on them. KaTeX reports each as a parse error instead of drawing it in a fallback font (see below). |
+| `src/unavailableSymbols.ts` | The commands whose glyph is in no Libertinus font and that KaTeX keeps at codepoints no other font draws them at, the characters that stand for them in input, and the macros built on them. KaTeX reports each as a parse error (see below). |
 | `src/styles/libertinus.scss` | `@font-face` rules for those subsets under KaTeX's family names, with `unicode-range`. Each subset also covers the zero-width space KaTeX puts in its vertical layouts. |
 | `src/styles/fonts.scss` | KaTeX's own `@font-face` rules removed, so the build ships only the Libertinus subsets. |
 | `src/fontMetricsData.js` | Height, depth, italic correction, skew and width of every glyph, from the outlines and the MATH table. |
@@ -145,23 +145,26 @@ fork replaces KaTeX on a page and cannot be used alongside it.
 
 ## Not available
 
-- 38 AMS symbols are in no Libertinus font: `\lessapprox` `\gtrapprox`
+- 36 AMS symbols are in no Libertinus font: `\lessapprox` `\gtrapprox`
   `\lnapprox` `\gnapprox` `\lesseqqgtr` `\gtreqqless` `\precapprox`
   `\succapprox` `\precnapprox` `\succnapprox` `\subseteqq` `\supseteqq`
   `\subsetneqq` `\supsetneqq` `\Subset` `\Supset` `\bumpeq` `\Bumpeq`
   `\pitchfork` `\multimap` `\Cap` `\doublecap` `\Cup` `\doublecup`
   `\intercal` `\veebar` `\barwedge` `\doublebarwedge` `\divideontimes`
-  `\leftthreetimes` `\rightthreetimes` `\Game` `\diagup` `\diagdown`
-  `\checkmark` `\maltese` `\blacklozenge`. Nor are the 14 negated
-  relations KaTeX draws from its private-use glyphs: `\nleqq` `\ngeqq`
+  `\leftthreetimes` `\rightthreetimes` `\Game` `\checkmark` `\maltese`
+  `\blacklozenge`. KaTeX keeps them at their Unicode codepoints, and the
+  stylesheet lists the generic family `math` after the AMS font, so they
+  are drawn in the reader's math font (Cambria Math, STIX Two Math and
+  the like) with Computer Modern's metrics.
+- 16 commands are a parse error ("`\nleqq` is not available: the fonts
+  have no glyph for it"), as is typing their character: the 14 negated
+  relations KaTeX draws from its private-use glyphs, `\nleqq` `\ngeqq`
   `\nleqslant` `\ngeqslant` `\lvertneqq` `\gvertneqq` `\nsubseteqq`
   `\nsupseteqq` `\varsubsetneq` `\varsupsetneq` `\varsubsetneqq`
-  `\varsupsetneqq` `\nshortmid` `\nshortparallel`. Using one of these
-  commands, or typing its character, is a parse error ("`\checkmark` is
-  not available: the fonts have no glyph for it"). KaTeX's own fonts are
-  not shipped, so the alternative would be the reader's system fonts with
-  Computer Modern's metrics. A page that defines one with `\renewcommand`
-  gets its own definition.
+  `\varsupsetneqq` `\nshortmid` `\nshortparallel`, and `\diagup` and
+  `\diagdown`, which KaTeX keeps at the box-drawing diagonals U+2571 and
+  U+2572. No other font has these glyphs at those codepoints. A page that
+  defines one with `\renewcommand` gets its own definition.
 
 ## Still from Computer Modern
 
