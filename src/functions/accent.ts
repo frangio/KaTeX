@@ -94,7 +94,7 @@ export const htmlBuilder: HtmlBuilderSupSub<"accent"> = (grp, options) => {
         ? body.height + body.depth
         : Math.min(
             body.height,
-            options.fontMetrics().xHeight);
+            options.fontMetrics().accentBaseHeight);
 
     // Build the accent
     let accentBody;

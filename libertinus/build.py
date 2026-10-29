@@ -1485,6 +1485,16 @@ def global_metrics():
         "subSuperscriptGapMin": c["SubSuperscriptGapMin"],
         "stackGapMin": c["StackGapMin"],
         "stackDisplayStyleGapMin": c["StackDisplayStyleGapMin"],
+        "stackTopDisplayStyleShiftUp": c["StackTopDisplayStyleShiftUp"],
+        "stackBottomShiftDown": c["StackBottomShiftDown"],
+        "stackBottomDisplayStyleShiftDown": c["StackBottomDisplayStyleShiftDown"],
+        "superscriptBottomMin": c["SuperscriptBottomMin"],
+        "subscriptTopMax": c["SubscriptTopMax"],
+        "superscriptBottomMaxWithSubscript": c["SuperscriptBottomMaxWithSubscript"],
+        "accentBaseHeight": c["AccentBaseHeight"],
+        "radicalVerticalGap": c["RadicalVerticalGap"],
+        "radicalDisplayStyleVerticalGap": c["RadicalDisplayStyleVerticalGap"],
+        "radicalExtraAscender": c["RadicalExtraAscender"],
         "radicalDegreeBottomRaise": math.constants["RadicalDegreeBottomRaisePercent"] / 100,
     }
     return {k: round(v, 5) for k, v in values.items()}
