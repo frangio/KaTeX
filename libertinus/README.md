@@ -41,7 +41,9 @@ fork's own fixes are patch releases. For example:
 
 The patch numbers of the fork and of KaTeX therefore drift apart, and a
 version does not say which KaTeX release it is based on: each release
-records that in its notes and in the message of its git tag.
+records that in its notes and in the message of its git tag. Tags are
+named `libertinus-vW` so they never collide with KaTeX's own `vV` tags,
+which this fork's history contains.
 Prereleases can never satisfy `^V`, so versions have no suffixes.
 
 ## Releasing
@@ -57,8 +59,8 @@ npm version 0.19.N --no-git-tag-version   # builds dist/ and the release archive
                                           # and updates README.md's CDN links and hashes
 npm pack --dry-run                        # dist/ with only Libertinus fonts, fonts/OFL.txt, LICENSE
 git commit -am "release: 0.19.N"
-git tag -a v0.19.N -m "Based on KaTeX 0.19.Z"
-git push origin libertinus v0.19.N
+git tag -a libertinus-v0.19.N -m "Based on KaTeX 0.19.Z"
+git push origin libertinus libertinus-v0.19.N
 npm publish
 ```
 
