@@ -84,7 +84,7 @@
     "dist/",
     "types/"
   ],
-  "license": "MIT",
+  "license": "MIT AND OFL-1.1",
   "packageManager": "pnpm@11.4.0",
   "devDependencies": {
     "@babel/core": "^7.29.0",
