@@ -13,7 +13,10 @@
     "verbatimModuleSyntax": true,
     "skipLibCheck": true,
     "noEmit": true,
-    "baseUrl": "."
+    "baseUrl": ".",
+    "paths": {
+      "katex/contrib/*": ["./types/contrib/*.d.mts"]
+    }
   },
   "include": [
     "katex.ts",
