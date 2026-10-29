@@ -22,8 +22,14 @@ $version: "" !default;
 // CSS margin property for math in display mode
 $display-margin: 1em 0 !default;
 
+// The x-height of the Libertinus math fonts, as in fontMetrics.ts (sigma5).
+$x-height: 0.429;
+
 .katex {
-    font: normal 1.21em KaTeX_Main, math, Times New Roman, serif;
+    // Size math so that its x-height matches that of the surrounding text,
+    // whatever the text font. In font-size, 1ex is the parent's x-height.
+    /* stylelint-disable-next-line declaration-property-value-no-unknown */
+    font: normal calc(1ex / $x-height) KaTeX_Main, math, Times New Roman, serif;
     line-height: 1.2;
     position: relative;
 
