@@ -32,10 +32,10 @@ page and cannot be used alongside it.
 <!-- KaTeX requires the use of the HTML5 doctype. Without it, KaTeX may not render properly -->
 <html>
   <head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@frangio/katex-libertinus@0.19.0/dist/katex.min.css" integrity="sha384-w5OuLBw3Y0pyXZ+EabxiCJn8r9QeoONY7i9chqh1/Y27/UgULa4O5OA+1Zzvn31M" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@frangio/katex-libertinus@0.19.0/dist/katex.min.css" integrity="sha384-4ylBr26Cb4OalJmPaRvHYRGNOtPRU/GuU+CbuT86lhMIvXti2FoNTKi5RpZ5KOaj" crossorigin="anonymous">
 
     <!-- The loading of KaTeX is deferred to speed up page rendering -->
-    <script defer src="https://cdn.jsdelivr.net/npm/@frangio/katex-libertinus@0.19.0/dist/katex.min.js" integrity="sha384-oECKICeOGeeEDW3rQ7ZnGjGlcSqjwXgibz0/1NXaGz19xhiWd6nCW8vUrUgnize5" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@frangio/katex-libertinus@0.19.0/dist/katex.min.js" integrity="sha384-yo65JxJ0W4Rw8IA1FTZw4T6ByrgcPa7V5LFpC2LIQ40utgFdDKACOLb1bH1xk5HJ" crossorigin="anonymous"></script>
 
     <!-- To automatically render math in text elements, include the auto-render extension: -->
     <script defer src="https://cdn.jsdelivr.net/npm/@frangio/katex-libertinus@0.19.0/dist/contrib/auto-render.min.js" integrity="sha384-bjyGPfbij8/NDKJhSGZNP/khQVgtHUE5exjm4Ydllo42FwIgYsdLO2lXGmRBf5Mz" crossorigin="anonymous"
